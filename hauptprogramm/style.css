@@ -1,0 +1,140 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.app-container {
+  max-width: 500px;
+  width: 100%;
+  margin-top: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #777;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+#chat-box {
+  margin-bottom: 20px;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.bubble {
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.bubble.blue {
+  background-color: #e3edff;
+  color: #1a1a1a;
+}
+
+.sql-code {
+  background-color: #f1f1f1;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  color: #333;
+  font-size: 14px;
+  margin-left: 42px;
+  margin-bottom: 10px;
+}
+
+.user-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+input[type="text"] {
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 16px;
+  font-size: 14px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #3367d6;
+}
+
+.next {
+  background-color: #f0f0f0;
+  color: #333;
+  width: 100%;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+}
+
+.loading {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 10px;
+  margin-left: 42px;
+}
+
+.hidden {
+  display: none;
+}
