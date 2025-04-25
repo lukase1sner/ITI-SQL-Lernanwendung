@@ -1,0 +1,9 @@
+# Um .env-Dateien zu ignorieren
+hauptprogramm/.env
+hauptprogramm/.env.example
+
+# Um node_modules zu ignorieren
+node_modules/
+
+# Um Test-Schlüssel oder andere sensiblen Dateien zu ignorieren
+hauptprogramm/node_modules/public-encrypt/test/test_rsa_privkey.pem
