@@ -17,16 +17,16 @@ const __dirname = path.dirname(__filename);
 
 app.use(cors());
 app.use(bodyParser.json());
-// 💥 Dashboard als Startseite ausliefern – das MUSS vor express.static kommen!
+
+// Dashboard als Startseite ausliefern
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+  res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-// Dann statische Dateien
-app.use(express.static(path.join(__dirname, 'public')));
+// 👉 Statische Dateien direkt aus dem aktuellen Ordner (z. B. index.html, style.css)
+app.use(express.static(__dirname));
 
-
-// Deine OpenAI-API Route bleibt wie gehabt:
+// OpenAI-API-Route
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 app.post('/api/gpt', async (req, res) => {

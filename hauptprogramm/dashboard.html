@@ -1,3 +1,4 @@
+<!-- Vollständiger HTML-Code, identisch mit deinem, nur Button angepasst -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -101,57 +102,57 @@
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>SQLMate</h2>
-    <a href="#dashboard"><i data-lucide="compass"></i> Dashboard</a>
-    <a href="#chatbot"><i data-lucide="bot"></i> Chatbot lernen</a>
-    <a href="#fortschritt"><i data-lucide="bar-chart-3"></i> Fortschritt</a>
-    <a href="#account"><i data-lucide="user-cog"></i> Profil</a>
-    <a href="../signup-frontend/signup.html"><i data-lucide="log-out"></i> Logout</a>
+<div class="sidebar">
+  <h2>SQLMate</h2>
+  <a href="#dashboard"><i data-lucide="compass"></i> Dashboard</a>
+  <a href="#chatbot"><i data-lucide="bot"></i> Chatbot lernen</a>
+  <a href="#fortschritt"><i data-lucide="bar-chart-3"></i> Fortschritt</a>
+  <a href="#account"><i data-lucide="user-cog"></i> Profil</a>
+  <a href="../signup-frontend/signup.html"><i data-lucide="log-out"></i> Logout</a>
+</div>
+
+<div class="main-content">
+  <div class="dashboard-header">
+    <h1>Willkommen zurück, Held!</h1>
+    <button class="btn-glow" id="goToChatbot">Zum Chatbot &rarr;</button>
   </div>
 
-  <div class="main-content">
-    <div class="dashboard-header">
-      <h1>Willkommen zurück, Held!</h1>
-      <button class="btn-glow" id="goToChatbot">Zum Chatbot &rarr;</button>
-    </div>
-
-    <div class="card mb-4">
-      <h4>Dein aktueller Status</h4>
-      <div class="card-stats mt-3">
-        <div class="stat">
-          <h5>Level</h5>
-          <p>4 – Apprentice</p>
-        </div>
-        <div class="stat">
-          <h5>XP</h5>
-          <p>310 / 500</p>
-        </div>
-        <div class="stat">
-          <h5>Gesamtzeit</h5>
-          <p>1h 45min</p>
-        </div>
+  <div class="card mb-4">
+    <h4>Dein aktueller Status</h4>
+    <div class="card-stats mt-3">
+      <div class="stat">
+        <h5>Level</h5>
+        <p>4 – Apprentice</p>
+      </div>
+      <div class="stat">
+        <h5>XP</h5>
+        <p>310 / 500</p>
+      </div>
+      <div class="stat">
+        <h5>Gesamtzeit</h5>
+        <p>1h 45min</p>
       </div>
     </div>
-
-    <div class="card">
-      <h4>Nächste Lektion</h4>
-      <p class="mt-2">Bereit für dein nächstes SQL-Abenteuer? Klicke unten, um loszulegen.</p>
-      <button class="btn-glow mt-3" id="startLesson">Jetzt starten</button>
-    </div>
   </div>
 
-  <script>
-    lucide.createIcons();
+  <div class="card">
+    <h4>Nächste Lektion</h4>
+    <p class="mt-2">Bereit für dein nächstes SQL-Abenteuer? Klicke unten, um loszulegen.</p>
+    <button class="btn-glow mt-3" id="startLesson">Jetzt starten</button>
+  </div>
+</div>
 
-    document.getElementById('goToChatbot').addEventListener('click', () => {
-      window.location.href = '../hauptprogramm/index.html';
-    });
+<script>
+  lucide.createIcons();
 
-    document.getElementById('startLesson').addEventListener('click', () => {
-      alert('Deine nächste SQL-Lektion wird geladen!');
-      // window.location.href = '/lesson.html'; // wenn du eine Lektion-Seite hast
-    });
-  </script>
+  document.getElementById('goToChatbot').addEventListener('click', () => {
+    // ✅ Korrigierter Pfad:
+    window.location.href = '/index.html';
+  });
+
+  document.getElementById('startLesson').addEventListener('click', () => {
+    alert('Deine nächste SQL-Lektion wird geladen!');
+  });
+</script>
 </body>
 </html>

@@ -159,83 +159,83 @@
   </style>
 </head>
 <body>
-  <div class="main-wrapper mt-5">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <a href="../hauptprogramm/dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
-      <img src="assets/avatar.png" alt="Charakter Avatar" class="avatar-large" />
-      <div class="level-title">LEVEL 4</div>
-      <div class="rank-label">APPRENTICE</div>
-    </div>
-
-    <!-- Hauptinhalt -->
-    <div class="content">
-      <h2 class="neon-title">SQLMate</h2>
-      <p class="text-muted">Lerne SQL durch smarte Fragen & Antworten</p>
-
-      <div class="d-flex align-items-start mb-3">
-        <img src="assets/tutor.png" class="me-3" width="60" style="border-radius: 50%;" />
-        <div class="bubble">Wie lautet der SQL-Befehl, um alle Kunden anzuzeigen?</div>
-      </div>
-
-      <div class="input-group mb-4">
-        <input type="text" id="user-input" class="form-control" placeholder="Antwort eingeben..." />
-        <button class="btn-send" id="send-btn">Senden</button>
-      </div>
-
-      <div id="feedback-box" class="mt-4 p-3 rounded d-none"></div>
-
-      <div class="skill-bar">
-        <div class="skill-label">
-          <span>SELECT</span><span>80 %</span>
-        </div>
-        <div class="progress">
-          <div class="progress-bar" style="width: 80%"></div>
-        </div>
-      </div>
-
-      <div class="skill-bar">
-        <div class="skill-label">
-          <span>JOIN</span><span>60 %</span>
-        </div>
-        <div class="progress">
-          <div class="progress-bar" style="width: 60%"></div>
-        </div>
-      </div>
-
-      <div class="skill-bar">
-        <div class="skill-label">
-          <span>WHERE</span><span>45 %</span>
-        </div>
-        <div class="progress">
-          <div class="progress-bar" style="width: 45%"></div>
-        </div>
-      </div>
-
-      <div class="text-center">
-        <button class="next-btn">NÄCHSTE FRAGE</button>
-      </div>
-    </div>
+<div class="main-wrapper mt-5">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <a href="/dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
+    <img src="assets/avatar.png" alt="Charakter Avatar" class="avatar-large" />
+    <div class="level-title">LEVEL 4</div>
+    <div class="rank-label">APPRENTICE</div>
   </div>
 
-  <script>
-    const feedbackBox = document.getElementById("feedback-box");
-    const sendBtn = document.getElementById("send-btn");
-    const userInput = document.getElementById("user-input");
+  <!-- Hauptinhalt -->
+  <div class="content">
+    <h2 class="neon-title">SQLMate</h2>
+    <p class="text-muted">Lerne SQL durch smarte Fragen & Antworten</p>
 
-    sendBtn.addEventListener("click", () => {
-      const input = userInput.value.trim().toLowerCase();
+    <div class="d-flex align-items-start mb-3">
+      <img src="assets/tutor.png" class="me-3" width="60" style="border-radius: 50%;" />
+      <div class="bubble">Wie lautet der SQL-Befehl, um alle Kunden anzuzeigen?</div>
+    </div>
 
-      if (input === "select * from kunden;") {
-        feedbackBox.className = "mt-4 p-3 rounded correct";
-        feedbackBox.innerHTML = "<strong>✅ Richtig!</strong> Du hast korrekt alle Datensätze aus der Tabelle 'Kunden' abgefragt.";
-      } else {
-        feedbackBox.className = "mt-4 p-3 rounded incorrect";
-        feedbackBox.innerHTML = "<strong>❌ Falsch.</strong> Tipp: Mit <code>SELECT * FROM Kunden;</code> liest du alles aus.";
-      }
+    <div class="input-group mb-4">
+      <input type="text" id="user-input" class="form-control" placeholder="Antwort eingeben..." />
+      <button class="btn-send" id="send-btn">Senden</button>
+    </div>
 
-      feedbackBox.classList.remove("d-none");
-    });
-  </script>
+    <div id="feedback-box" class="mt-4 p-3 rounded d-none"></div>
+
+    <div class="skill-bar">
+      <div class="skill-label">
+        <span>SELECT</span><span>80 %</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" style="width: 80%"></div>
+      </div>
+    </div>
+
+    <div class="skill-bar">
+      <div class="skill-label">
+        <span>JOIN</span><span>60 %</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" style="width: 60%"></div>
+      </div>
+    </div>
+
+    <div class="skill-bar">
+      <div class="skill-label">
+        <span>WHERE</span><span>45 %</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" style="width: 45%"></div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <button class="next-btn">NÄCHSTE FRAGE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const feedbackBox = document.getElementById("feedback-box");
+  const sendBtn = document.getElementById("send-btn");
+  const userInput = document.getElementById("user-input");
+
+  sendBtn.addEventListener("click", () => {
+    const input = userInput.value.trim().toLowerCase();
+
+    if (input === "select * from kunden;") {
+      feedbackBox.className = "mt-4 p-3 rounded correct";
+      feedbackBox.innerHTML = "<strong>✅ Richtig!</strong> Du hast korrekt alle Datensätze aus der Tabelle 'Kunden' abgefragt.";
+    } else {
+      feedbackBox.className = "mt-4 p-3 rounded incorrect";
+      feedbackBox.innerHTML = "<strong>❌ Falsch.</strong> Tipp: Mit <code>SELECT * FROM Kunden;</code> liest du alles aus.";
+    }
+
+    feedbackBox.classList.remove("d-none");
+  });
+</script>
 </body>
 </html>
