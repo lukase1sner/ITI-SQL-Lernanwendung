@@ -1,4 +1,3 @@
-<!-- Vollständiger HTML-Code, identisch mit deinem, nur Button angepasst -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -89,15 +88,18 @@
     }
     .stat {
       flex: 1;
-      background-color: #1f223a;
+      background-color: #8b5cf6;
       border-radius: 1rem;
       padding: 1rem;
       text-align: center;
-      box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.05);
+      box-shadow: 0 0 15px #8b5cf670;
     }
     .stat h5 {
       color: #00f2ff;
       margin-bottom: 0.5rem;
+    }
+    .stat p {
+      color: #ffffff;
     }
   </style>
 </head>
@@ -136,9 +138,45 @@
   </div>
 
   <div class="card">
-    <h4>Nächste Lektion</h4>
-    <p class="mt-2">Bereit für dein nächstes SQL-Abenteuer? Klicke unten, um loszulegen.</p>
+    <h4>Lehreinheit 1 - Einführung</h4>
+    <p class="mt-2">Hier kommt noch Text hin.</p>
     <button class="btn-glow mt-3" id="startLesson">Jetzt starten</button>
+  </div>
+
+  <div class="card mt-4">
+    <h4>Lehreinheit 2 - Relationenmodell mit Relationenalgebra</h4>
+    <p class="mt-2">Hier kommt noch Text hin.</p>
+    <button class="btn-glow mt-3">Jetzt starten</button>
+  </div>
+
+  <div class="card mt-4">
+    <h4>Lehreinheit 3 - SQL-Grundlagen</h4>
+    <p class="mt-2">Hier kommt noch Text hin.</p>
+    <button class="btn-glow mt-3">Jetzt starten</button>
+  </div>
+
+  <div class="card mt-4">
+    <h4>Lehreinheit 4 - Datenbankanwendungsprogrammierung</h4>
+    <p class="mt-2">Hier kommt noch Text hin.</p>
+    <button class="btn-glow mt-3">Jetzt starten</button>
+  </div>
+
+  <div class="card mt-4">
+    <h4>Lehreinheit 5 - Transaktionsverarbeitung</h4>
+    <p class="mt-2">Hier kommt noch Text hin.</p>
+    <button class="btn-glow mt-3">Jetzt starten</button>
+  </div>
+
+  <div class="card mt-4">
+    <h4>Lehreinheit 6 - Sichten, Zugriffskontrolle, Integritätsbedingungen</h4>
+    <p class="mt-2">Hier kommt noch Text hin.</p>
+    <button class="btn-glow mt-3">Jetzt starten</button>
+  </div>
+
+  <div class="card mt-4">
+    <h4>Lehreinheit 7 - Datenbankschemaentwurf</h4>
+    <p class="mt-2">Hier kommt noch Text hin.</p>
+    <button class="btn-glow mt-3">Jetzt starten</button>
   </div>
 </div>
 
@@ -146,7 +184,6 @@
   lucide.createIcons();
 
   document.getElementById('goToChatbot').addEventListener('click', () => {
-    // ✅ Korrigierter Pfad:
     window.location.href = '/index.html';
   });
 
