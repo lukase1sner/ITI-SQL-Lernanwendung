@@ -13,8 +13,8 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'W3!x7dKvN2R',           // Dein MySQL-Passwort (falls gesetzt)
-  database: 'sqlmate'     // Der Name deiner Datenbank
+  password: '',  // XAMPP hat oft KEIN Passwort für root
+  database: 'sqlmate'
 });
 
 db.connect((err) => {

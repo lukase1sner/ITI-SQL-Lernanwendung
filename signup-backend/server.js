@@ -15,8 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // MySQL-Verbindung
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',     // Hier deinen MySQL-Nutzer eintragen
-  password: 'W3!x7dKvN2R',     // Hier dein MySQL-Passwort eintragen
+  user: 'root',
+  password: '',  // XAMPP hat oft KEIN Passwort für root
   database: 'sqlmate'
 });
 
