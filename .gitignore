@@ -1,9 +1,27 @@
-# Um .env-Dateien zu ignorieren
-hauptprogramm/.env
-hauptprogramm/.env.example
+# 🔒 Um .env-Dateien überall zu ignorieren
+.env
+.env.local
+.env.example
 
-# Um node_modules zu ignorieren
+# 🗃️ Um node_modules überall zu ignorieren
 node_modules/
 
-# Um Test-Schlüssel oder andere sensiblen Dateien zu ignorieren
-hauptprogramm/node_modules/public-encrypt/test/test_rsa_privkey.pem
+# 🧠 IntelliJ / VSCode / andere IDEs
+.idea/
+.vscode/
+
+# 💻 System-Dateien
+.DS_Store
+Thumbs.db
+
+# 📦 Log- und Lock-Dateien
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 🔐 Testschlüssel & sensible Dateien
+**/test_*.pem

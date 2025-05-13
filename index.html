@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Lerne SQL auf unterhaltsame Weise – mit interaktiven Lektionen und KI-Bot. Ideal für Anfänger." />
+    <meta property="og:title" content="SQLMate – Lerne SQL spielerisch" />
+    <meta property="og:description" content="Starte deine SQL-Reise mit interaktiven Aufgaben, KI-Unterstützung und Spaß!" />
+    <title>SQLMate – Lerne SQL spielerisch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+    <style>
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        html, body {
+          font-family: 'Inter', sans-serif;
+          background: #0b0e1a;
+          color: #fff;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          overflow: hidden;
+        }
+
+        #particles-js {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+        }
+
+        .nav, .main, .footer {
+          position: relative;
+          z-index: 1;
+        }
+
+        .nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 2rem 3rem;
+          font-size: 1rem;
+        }
+
+        .nav a {
+          color: #fff;
+          text-decoration: none;
+          margin-left: 1rem;
+        }
+
+        .nav a:hover {
+          text-decoration: underline;
+        }
+
+        .logo {
+          font-weight: 800;
+          color: #00f2ff;
+          font-size: 1.5rem;
+        }
+
+        .main {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 2rem;
+          text-align: center;
+        }
+
+        .main h1 {
+          font-size: 2.7rem;
+          color: #00f2ff;
+          margin-bottom: 0.5rem;
+        }
+
+        .main p {
+          font-size: 1.2rem;
+          color: #ccc;
+          margin-bottom: 2rem;
+        }
+
+        .features {
+          display: flex;
+          gap: 2rem;
+          margin-bottom: 2.5rem;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .feature {
+          text-align: center;
+          max-width: 200px;
+          background-color: rgba(255, 255, 255, 0.05);
+          padding: 1rem;
+          border-radius: 1rem;
+          transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+          transform: scale(1.05);
+        }
+
+        .feature img {
+          width: 48px;
+          height: 48px;
+          margin-bottom: 0.5rem;
+          filter: invert(1) brightness(1.5);
+        }
+
+        .feature-title {
+          font-weight: 600;
+          margin-bottom: 0.2rem;
+          color: #fff;
+        }
+
+        .feature small {
+          color: #ccc;
+          font-size: 0.85rem;
+        }
+
+        .buttons {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .btn {
+          background-color: #8b5cf6;
+          color: white;
+          padding: 0.75rem 2rem;
+          border: none;
+          border-radius: 1rem;
+          font-size: 1rem;
+          font-weight: bold;
+          text-decoration: none;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+          background-color: #a078fa;
+          transform: scale(1.05);
+        }
+
+        .testimonial {
+          color: #ccc;
+          margin-top: 3rem;
+          font-style: italic;
+          font-size: 0.95rem;
+          max-width: 500px;
+        }
+
+        .cta {
+          margin-top: 2rem;
+          font-size: 1.1rem;
+          color: #fff;
+        }
+
+        .footer {
+          text-align: center;
+          padding: 1rem;
+          font-size: 0.85rem;
+          color: #888;
+          background: rgba(255, 255, 255, 0.02);
+        }
+
+        .footer a {
+          color: #aaa;
+          text-decoration: none;
+          margin: 0 0.5rem;
+        }
+
+        .footer a:hover {
+          text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+          .main h1 {
+            font-size: 2rem;
+          }
+
+          .feature {
+            max-width: 100%;
+          }
+        }
+    </style>
+</head>
+<body>
+<div id="particles-js"></div>
+<nav class="nav">
+    <div class="logo">SQLMate</div>
+    <div>
+        <a href="loginFrontend/login.html">Login</a>
+        <a href="signupFrontend/signup.html">Registrieren</a>
+    </div>
+</nav>
+
+<main class="main">
+    <h1>Willkommen bei SQLMate.</h1>
+    <p>Lerne SQL spielerisch und interaktiv mit sofortigem Feedback und KI-Unterstützung.</p>
+
+    <div class="features">
+        <div class="feature" data-aos="fade-up">
+            <img src="https://www.svgrepo.com/show/518991/rocketbook.svg" alt="XP sammeln" />
+            <div class="feature-title">XP sammeln</div>
+            <small>Sammle Erfahrungspunkte für deinen Fortschritt.</small>
+        </div>
+        <div class="feature" data-aos="fade-up" data-aos-delay="100">
+            <img src="https://www.svgrepo.com/show/129946/notebook.svg" alt="Lektion meistern" />
+            <div class="feature-title">Lektionen meistern</div>
+            <small>Übe SQL mit verständlichen Aufgaben.</small>
+        </div>
+        <div class="feature" data-aos="fade-up" data-aos-delay="200">
+            <img src="https://www.svgrepo.com/show/205205/robot.svg" alt="Mit Bot lernen" />
+            <div class="feature-title">Mit Bot lernen</div>
+            <small>Trainiere mit einem KI-unterstützten Lernbot.</small>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <a href="signupFrontend/signup.html" class="btn">Jetzt kostenlos starten</a>
+        <a href="loginFrontend/login.html" class="btn">Login</a>
+    </div>
+
+
+</main>
+
+<footer class="footer">
+    <p>&copy; 2025 SQLMate. <a href="impressum.html">Impressum</a> | <a href="datenschutz.html">Datenschutz</a> | <a href="mailto:kontakt@sqlmate.de">Kontakt</a></p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script>
+    AOS.init();
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: "#00f2ff" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5 },
+        size: { value: 3 },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#00f2ff",
+          opacity: 0.4,
+          width: 1,
+        },
+        move: { enable: true, speed: 2 }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" },
+        },
+        modes: {
+          repulse: { distance: 100 },
+          push: { particles_nb: 4 }
+        }
+      },
+      retina_detect: true
+    });
+</script>
+</body>
+</html>

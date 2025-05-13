@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | SQLMate</title>
+    <link rel="stylesheet" href="login.css" />
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+</head>
+<body>
+<div id="particles-js"></div>
+
+<div class="container">
+    <h1>Login</h1>
+    <form id="loginForm">
+        <input type="email" placeholder="E-Mail" name="email" required />
+        <input type="password" placeholder="Passwort" name="password" required />
+        <button type="submit">Einloggen</button>
+    </form>
+    <a class="back-link" href="../index.html">← Zurück zur Startseite</a>
+</div>
+
+<script>
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: "#00f2ff" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5 },
+        size: { value: 3 },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#00f2ff",
+          opacity: 0.4,
+          width: 1,
+        },
+        move: { enable: true, speed: 2 }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" },
+        },
+        modes: {
+          repulse: { distance: 100 },
+          push: { particles_nb: 4 }
+        }
+      },
+      retina_detect: true
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const email = e.target.email.value;
+      const password = e.target.password.value;
+
+      const res = await fetch("http://localhost:3001/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Login erfolgreich!");
+        localStorage.setItem("token", data.token);
+        window.location.href = "../hauptprogramm/dashboard.html";
+      } else {
+        alert(data.message || "Login fehlgeschlagen");
+      }
+    });
+</script>
+</body>
+</html>

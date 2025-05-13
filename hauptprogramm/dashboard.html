@@ -5,101 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SQLMate Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    body {
-      background-color: #0b0e1a;
-      color: #e0e0e0;
-      font-family: 'Segoe UI', sans-serif;
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+      transition: all 0.3s ease;
     }
-    .sidebar {
-      width: 250px;
-      background-color: #14172b;
-      height: 100vh;
-      padding: 2rem 1rem;
-      box-shadow: 4px 0 20px rgba(0, 242, 255, 0.1);
-      position: fixed;
-      top: 0;
-      left: 0;
-    }
-    .sidebar h2 {
-      color: #00f2ff;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .sidebar a {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: #ccc;
-      padding: 0.8rem 1rem;
-      margin-bottom: 1rem;
-      text-decoration: none;
+    .progress {
+      background: #1a1e33;
       border-radius: 8px;
-      font-size: 1.05rem;
+      overflow: hidden;
+      height: 8px;
     }
-    .sidebar a:hover {
-      background-color: #202336;
-      color: #00f2ff;
+    .progress-bar {
+      background: #00f2ff;
+      transition: width 0.6s ease;
     }
     .sidebar i {
-      width: 20px;
-      height: 20px;
+      filter: brightness(1.3);
     }
-    .main-content {
-      margin-left: 270px;
-      padding: 2rem;
+    .btn-glow:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
     }
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
+    .dashboard-header h1::before {
+      content: '🧠 ';
     }
-    .dashboard-header h1 {
-      color: #00f2ff;
-      font-size: 2.2rem;
+    canvas {
+      margin-top: 1rem;
+      max-width: 50%;
+      height: 300px !important;
     }
-    .card {
-      background-color: #1a1e33;
-      border: none;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      box-shadow: 0 0 10px rgba(0, 242, 255, 0.05);
-      color: #f0f0f0;
+    #lessonsContainer {
+      overflow: hidden;
+      transition: max-height 0.5s ease, opacity 0.5s ease;
     }
-    .card h4 {
-      color: #ffffff;
+    #lessonsContainer.collapsed {
+      max-height: 0;
+      opacity: 0;
+      padding: 0;
+      margin: 0;
     }
-    .btn-glow {
-      background-color: #8b5cf6;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 1rem;
-      font-weight: bold;
-      box-shadow: 0 0 15px #8b5cf670;
-    }
-    .card-stats {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-    .stat {
-      flex: 1;
-      background-color: #8b5cf6;
-      border-radius: 1rem;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 0 15px #8b5cf670;
-    }
-    .stat h5 {
-      color: #00f2ff;
-      margin-bottom: 0.5rem;
-    }
-    .stat p {
-      color: #ffffff;
+    #lessonsContainer.expanded {
+      max-height: 2000px;
+      opacity: 1;
     }
   </style>
 </head>
@@ -110,7 +62,8 @@
   <a href="#chatbot"><i data-lucide="bot"></i> Chatbot lernen</a>
   <a href="#fortschritt"><i data-lucide="bar-chart-3"></i> Fortschritt</a>
   <a href="#account"><i data-lucide="user-cog"></i> Profil</a>
-  <a href="../signup-frontend/signup.html"><i data-lucide="log-out"></i> Logout</a>
+  <a href="/index.html"><i data-lucide="log-out"></i> Logout</a>
+
 </div>
 
 <div class="main-content">
@@ -120,75 +73,137 @@
   </div>
 
   <div class="card mb-4">
-    <h4>Dein aktueller Status</h4>
+    <h4>Dein aktueller Status <span style="font-size: 1.5rem;">⚔️</span></h4>
     <div class="card-stats mt-3">
-      <div class="stat">
-        <h5>Level</h5>
-        <p>4 – Apprentice</p>
-      </div>
-      <div class="stat">
-        <h5>XP</h5>
-        <p>310 / 500</p>
-      </div>
-      <div class="stat">
-        <h5>Gesamtzeit</h5>
-        <p>1h 45min</p>
-      </div>
+      <div class="stat"><h5>Level</h5><p>4 – Apprentice</p></div>
+      <div class="stat"><h5>XP</h5><p>310 / 500</p></div>
+      <div class="stat"><h5>Gesamtzeit</h5><p>1h 45min</p></div>
     </div>
   </div>
 
   <div class="card">
-    <h4>Lehreinheit 1 - Einführung</h4>
-    <p class="mt-2">Hier kommt noch Text hin.</p>
-    <button class="btn-glow mt-3" id="startLesson">Jetzt starten</button>
+    <h4>Nächste Lektion</h4>
+    <p class="mt-2">Bereit für dein nächstes SQL-Abenteuer? Klicke unten, um loszulegen.</p>
+    <button class="btn-glow mt-3" onclick="window.location.href='lektion1.html'">Jetzt starten</button>
   </div>
 
   <div class="card mt-4">
-    <h4>Lehreinheit 2 - Relationenmodell mit Relationenalgebra</h4>
-    <p class="mt-2">Hier kommt noch Text hin.</p>
-    <button class="btn-glow mt-3">Jetzt starten</button>
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Deine SQL-Lerneinheiten</h4>
+      <button class="btn btn-sm btn-outline-light" id="toggleLessons">▶</button>
+    </div>
+    <div id="lessonsContainer" class="mt-3 collapsed">
+      <div class="row g-4">
+        <!-- Lektionen 1–6 -->
+        <div class="col-md-4">
+          <div class="card lesson-card h-100">
+            <h5>Lektion 1</h5><p class="small text-muted">Thema: SELECT</p>
+            <div class="progress"><div class="progress-bar" style="width: 60%"></div></div>
+            <small class="progress-text">Fortschritt: 60%</small>
+            <button class="btn-glow w-100 mt-3" onclick="window.location.href='lektion1.html'">Starten</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card lesson-card h-100">
+            <h5>Lektion 2</h5><p class="small text-muted">Thema: WHERE</p>
+            <div class="progress"><div class="progress-bar" style="width: 30%"></div></div>
+            <small class="progress-text">Fortschritt: 30%</small>
+            <button class="btn-glow w-100 mt-3" onclick="window.location.href='lektion2.html'">Starten</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card lesson-card h-100">
+            <h5>Lektion 3</h5><p class="small text-muted">Thema: JOIN</p>
+            <div class="progress"><div class="progress-bar" style="width: 80%"></div></div>
+            <small class="progress-text">Fortschritt: 80%</small>
+            <button class="btn-glow w-100 mt-3" onclick="window.location.href='lektion3.html'">Starten</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card lesson-card h-100">
+            <h5>Lektion 4</h5><p class="small text-muted">Thema: GROUP BY</p>
+            <div class="progress"><div class="progress-bar" style="width: 10%"></div></div>
+            <small class="progress-text">Fortschritt: 10%</small>
+            <button class="btn-glow w-100 mt-3" onclick="window.location.href='lektion4.html'">Starten</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card lesson-card h-100">
+            <h5>Lektion 5</h5><p class="small text-muted">Thema: ORDER BY</p>
+            <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
+            <small class="progress-text">Fortschritt: 50%</small>
+            <button class="btn-glow w-100 mt-3" onclick="window.location.href='lektion5.html'">Starten</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card lesson-card h-100">
+            <h5>Lektion 6</h5><p class="small text-muted">Thema: LIKE</p>
+            <div class="progress"><div class="progress-bar" style="width: 100%"></div></div>
+            <small class="progress-text">Fortschritt: 100%</small>
+            <button class="btn-glow w-100 mt-3" onclick="window.location.href='lektion6.html'">Starten</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="card mt-4">
-    <h4>Lehreinheit 3 - SQL-Grundlagen</h4>
-    <p class="mt-2">Hier kommt noch Text hin.</p>
-    <button class="btn-glow mt-3">Jetzt starten</button>
-  </div>
-
-  <div class="card mt-4">
-    <h4>Lehreinheit 4 - Datenbankanwendungsprogrammierung</h4>
-    <p class="mt-2">Hier kommt noch Text hin.</p>
-    <button class="btn-glow mt-3">Jetzt starten</button>
-  </div>
-
-  <div class="card mt-4">
-    <h4>Lehreinheit 5 - Transaktionsverarbeitung</h4>
-    <p class="mt-2">Hier kommt noch Text hin.</p>
-    <button class="btn-glow mt-3">Jetzt starten</button>
-  </div>
-
-  <div class="card mt-4">
-    <h4>Lehreinheit 6 - Sichten, Zugriffskontrolle, Integritätsbedingungen</h4>
-    <p class="mt-2">Hier kommt noch Text hin.</p>
-    <button class="btn-glow mt-3">Jetzt starten</button>
-  </div>
-
-  <div class="card mt-4">
-    <h4>Lehreinheit 7 - Datenbankschemaentwurf</h4>
-    <p class="mt-2">Hier kommt noch Text hin.</p>
-    <button class="btn-glow mt-3">Jetzt starten</button>
+    <h4>Dein XP-Verlauf</h4>
+    <canvas id="xpChart"></canvas>
   </div>
 </div>
 
 <script>
   lucide.createIcons();
 
-  document.getElementById('goToChatbot').addEventListener('click', () => {
-    window.location.href = '/index.html';
+  const toggleBtn = document.getElementById("toggleLessons");
+  const container = document.getElementById("lessonsContainer");
+  let expanded = false;
+
+  toggleBtn.addEventListener("click", function () {
+    expanded = !expanded;
+    container.classList.toggle("collapsed", !expanded);
+    container.classList.toggle("expanded", expanded);
+    toggleBtn.textContent = expanded ? "▼" : "▶";
   });
 
-  document.getElementById('startLesson').addEventListener('click', () => {
-    alert('Deine nächste SQL-Lektion wird geladen!');
+  const ctx = document.getElementById('xpChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Tag 1', 'Tag 2', 'Tag 3', 'Heute'],
+      datasets: [{
+        label: 'XP',
+        data: [50, 120, 220, 310],
+        backgroundColor: 'rgba(0, 242, 255, 0.1)',
+        borderColor: '#00f2ff',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#00f2ff',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#cfd4ff' },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        },
+        x: {
+          ticks: { color: '#cfd4ff' },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#f0f0f0' }
+        }
+      }
+    }
   });
 </script>
 </body>
