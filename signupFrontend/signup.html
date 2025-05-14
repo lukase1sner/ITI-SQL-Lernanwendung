@@ -4,12 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registrieren – SQLMate</title>
+
+    <!-- Verknüpft externes CSS für Layout & Stil -->
     <link rel="stylesheet" href="signup.css" />
+
+    <!-- Particles.js für animierten Hintergrundeffekt -->
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
 <body>
+
+<!-- Container für animierte Partikel -->
 <div id="particles-js"></div>
 
+<!-- Registrierungsformular -->
 <div class="container">
     <h1>Registrieren</h1>
     <form id="signupForm">
@@ -17,10 +24,14 @@
         <input type="password" name="password" placeholder="Passwort" required />
         <button type="submit">Registrieren</button>
     </form>
+
+    <!-- Link zur Startseite -->
     <a class="back-link" href="../index.html">← Zurück zur Startseite</a>
 </div>
 
+<!-- JavaScript: Partikeleffekt + Formular-Handling -->
 <script>
+    // Partikeleffekt initialisieren
     particlesJS("particles-js", {
       particles: {
         number: { value: 80, density: { enable: true, value_area: 800 } },
@@ -33,7 +44,7 @@
           distance: 150,
           color: "#00f2ff",
           opacity: 0.4,
-          width: 1,
+          width: 1
         },
         move: { enable: true, speed: 2 }
       },
@@ -41,7 +52,7 @@
         detect_on: "canvas",
         events: {
           onhover: { enable: true, mode: "repulse" },
-          onclick: { enable: true, mode: "push" },
+          onclick: { enable: true, mode: "push" }
         },
         modes: {
           repulse: { distance: 100 },
@@ -51,29 +62,34 @@
       retina_detect: true
     });
 
+    // Formular absenden → Registrierung + Auto-Login
     document.getElementById("signupForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
+      e.preventDefault(); // Standardverhalten (Seitenreload) verhindern
+
       const email = e.target.email.value;
       const password = e.target.password.value;
 
+      // Schritt 1: POST an /api/auth/register
       const res = await fetch("http://localhost:3001/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
 
       const data = await res.json();
 
       if (res.ok) {
+        // Schritt 2: Direkt im Anschluss Login durchführen
         const loginRes = await fetch("http://localhost:3001/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password })
         });
 
         const loginData = await loginRes.json();
 
         if (loginRes.ok) {
+          // ✅ Token speichern & Weiterleitung ins Dashboard
           localStorage.setItem("token", loginData.token);
           localStorage.setItem("userId", loginData.userId);
           alert("Registrierung & Login erfolgreich!");
@@ -81,6 +97,7 @@
         } else {
           alert("Registrierung erfolgreich, aber Login fehlgeschlagen.");
         }
+
       } else {
         alert(data.message || "Fehler bei der Registrierung");
       }

@@ -4,12 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login | SQLMate</title>
+
+    <!-- Login-spezifisches CSS (eigene Datei für Styling) -->
     <link rel="stylesheet" href="login.css" />
+
+    <!-- Particles.js für animierte Hintergrundpartikel -->
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
 <body>
+
+<!-- Animierter Partikel-Hintergrund -->
 <div id="particles-js"></div>
 
+<!-- Login-Container mit Formular -->
 <div class="container">
     <h1>Login</h1>
     <form id="loginForm">
@@ -17,15 +24,19 @@
         <input type="password" placeholder="Passwort" name="password" required />
         <button type="submit">Einloggen</button>
     </form>
+
+    <!-- Link zurück zur Startseite -->
     <a class="back-link" href="../index.html">← Zurück zur Startseite</a>
 </div>
 
+<!-- JavaScript: Partikel-Effekt initialisieren + Login-Logik -->
 <script>
+    // Initialisiere Partikel-Effekt im Hintergrund
     particlesJS("particles-js", {
       particles: {
         number: { value: 80, density: { enable: true, value_area: 800 } },
-        color: { value: "#00f2ff" },
-        shape: { type: "circle" },
+        color: { value: "#00f2ff" },           // Farbe der Partikel
+        shape: { type: "circle" },             // Form: Kreis
         opacity: { value: 0.5 },
         size: { value: 3 },
         line_linked: {
@@ -33,44 +44,51 @@
           distance: 150,
           color: "#00f2ff",
           opacity: 0.4,
-          width: 1,
+          width: 1
         },
         move: { enable: true, speed: 2 }
       },
       interactivity: {
         detect_on: "canvas",
         events: {
-          onhover: { enable: true, mode: "repulse" },
-          onclick: { enable: true, mode: "push" },
+          onhover: { enable: true, mode: "repulse" }, // Partikel stoßen bei Hover zurück
+          onclick: { enable: true, mode: "push" }     // Bei Klick neue Partikel
         },
         modes: {
           repulse: { distance: 100 },
           push: { particles_nb: 4 }
         }
       },
-      retina_detect: true
+      retina_detect: true // Optimiert für Retina-Displays
     });
 
+    // Event-Handler für Formular
     document.getElementById("loginForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
+      e.preventDefault(); // Seite nicht neu laden
+
       const email = e.target.email.value;
       const password = e.target.password.value;
 
+      // Anfrage an Backend senden
       const res = await fetch("http://localhost:3001/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
 
       const data = await res.json();
+
       if (res.ok) {
+        // ✅ Login erfolgreich → Token speichern & weiterleiten
         alert("Login erfolgreich!");
         localStorage.setItem("token", data.token);
-        window.location.href = "../hauptprogramm/dashboard.html";
+        window.location.href = "../hauptprogramm/dashboard.html"; // Weiterleitung ins Dashboard
       } else {
+        // ❌ Fehlerhafte Anmeldung
         alert(data.message || "Login fehlgeschlagen");
       }
     });
 </script>
+
 </body>
 </html>

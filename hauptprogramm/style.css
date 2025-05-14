@@ -1,22 +1,24 @@
+/* ======== Basis-Layout ======== */
 body {
-  background-color: #0b0e1a;
-  color: #e0e0e0;
-  font-family: 'Segoe UI', sans-serif;
+  background-color: #0b0e1a; /* Dunkler Hintergrund für Kontrast */
+  color: #e0e0e0;            /* Standard-Textfarbe */
+  font-family: 'Segoe UI', sans-serif; /* Lesbare, moderne Schriftart */
 }
 
+/* ======== Sidebar / Navigationsleiste ======== */
 .sidebar {
   width: 250px;
-  background-color: #14172b;
-  height: 100vh;
+  background-color: #14172b;       /* Dunkles Blau-Violett als Hintergrund */
+  height: 100vh;                   /* Volle Bildschirmhöhe */
   padding: 2rem 1rem;
-  box-shadow: 4px 0 20px rgba(0, 242, 255, 0.1);
+  box-shadow: 4px 0 20px rgba(0, 242, 255, 0.1); /* Leuchtende Seitenkante */
   position: fixed;
   top: 0;
   left: 0;
 }
 
 .sidebar h2 {
-  color: #00f2ff;
+  color: #00f2ff;                  /* Türkis-Akzentfarbe */
   font-weight: bold;
   text-align: center;
   margin-bottom: 2rem;
@@ -35,20 +37,22 @@ body {
 }
 
 .sidebar a:hover {
-  background-color: #202336;
-  color: #00f2ff;
+  background-color: #202336;       /* Hover-Hintergrund */
+  color: #00f2ff;                  /* Hover-Farbe: Akzent */
 }
 
 .sidebar i {
-  filter: brightness(1.3);
+  filter: brightness(1.3);         /* Icons leicht heller dargestellt */
 }
 
+/* ======== Hauptinhalt ======== */
 .main-content {
-  margin-left: 270px;
+  margin-left: 270px;              /* Platz für Sidebar schaffen */
   padding: 2rem;
   max-width: calc(100% - 270px);
 }
 
+/* ======== Dashboard-Header ======== */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -62,9 +66,10 @@ body {
 }
 
 .dashboard-header h1::before {
-  content: '🧠 ';
+  content: '🧠 '; /* Emoji als visuelles Element */
 }
 
+/* ======== Karten-Komponenten (z. B. Status, Lektionen) ======== */
 .card {
   background-color: #1a1e33;
   border: none;
@@ -76,10 +81,11 @@ body {
 }
 
 .card:hover {
-  transform: scale(1.02);
+  transform: scale(1.02);          /* Leichter Zoom beim Hover */
   box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
 }
 
+/* Spezielle Karten für Lektionen */
 .lesson-card {
   background-color: #2a2e4a;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -87,7 +93,7 @@ body {
 }
 
 .lesson-card:hover {
-  transform: translateY(-4px) scale(1.02);
+  transform: translateY(-4px) scale(1.02); /* leichter Aufwärts-Hovereffekt */
   box-shadow: 0 0 25px rgba(0, 242, 255, 0.2);
 }
 
@@ -96,14 +102,15 @@ body {
   font-weight: 600;
 }
 
+/* ======== Buttons mit Leuchteffekt ======== */
 .btn-glow {
-  background-color: #8b5cf6;
+  background-color: #8b5cf6;         /* Violett */
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 1rem;
   font-weight: bold;
-  box-shadow: 0 0 15px #8b5cf670;
+  box-shadow: 0 0 15px #8b5cf670;    /* Leuchteffekt */
   transition: all 0.3s ease-in-out;
 }
 
@@ -113,6 +120,7 @@ body {
   box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
 }
 
+/* ======== Statistiken (Level, XP, Zeit etc.) ======== */
 .card-stats {
   display: flex;
   gap: 2rem;
@@ -125,7 +133,7 @@ body {
   border-radius: 1rem;
   padding: 1rem;
   text-align: center;
-  box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.05);
+  box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.05); /* innerer Glow */
 }
 
 .stat h5 {
@@ -133,6 +141,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* ======== Fortschrittsbalken für Lektionen ======== */
 .progress {
   height: 8px;
   background-color: #2d2f40;
@@ -141,14 +150,11 @@ body {
 }
 
 .progress-bar {
-  background-color: #00f2ff;
-  transition: width 0.6s ease;
+  background-color: #00f2ff; /* Akzentfarbe für Fortschritt */
+  transition: width 0.6s ease; /* fließende Animation */
 }
 
-/* Fortschrittstext gut lesbar */
-
-
-/* Falls noch vorhanden */
+/* ======== Text unter Lektionen & Fortschrittsanzeige ======== */
 .small.text-muted {
   color: #cfd4ff !important;
   font-size: 0.95rem;
@@ -156,6 +162,7 @@ body {
   margin-top: 0.2rem;
   display: block;
 }
+
 .progress-wrapper {
   display: flex;
   flex-direction: column;
@@ -168,6 +175,5 @@ body {
   font-weight: 500;
   margin-top: 0.4rem;
   display: block;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.6); /* Lesbarkeit auf dunklem Hintergrund */
 }
-

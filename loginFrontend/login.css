@@ -1,74 +1,74 @@
-/* Basislayout */
+/* ==================== Basislayout ==================== */
 body {
-  background-color: #0b0e1a;
-  color: #f0f0f0;
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+  background-color: #0b0e1a;              /* Dunkler Hintergrund für Kontrast */
+  color: #f0f0f0;                         /* Helle Schriftfarbe */
+  font-family: 'Segoe UI', sans-serif;   /* Klare, moderne Schrift */
+  display: flex;                         /* Zentrierung mit Flexbox */
+  align-items: center;                   /* Vertikale Zentrierung */
+  justify-content: center;               /* Horizontale Zentrierung */
+  height: 100vh;                         /* Volle Bildschirmhöhe */
   margin: 0;
   position: relative;
-  overflow: hidden;
+  overflow: hidden;                      /* Kein Scrollen, sauberer Look */
 }
 
-/* Partikelhintergrund */
+/* ==================== Hintergrund mit Partikeln ==================== */
 #particles-js {
-  position: fixed;
+  position: fixed;                       /* Bleibt im Hintergrund */
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: 0;                            /* Ganz hinten */
   width: 100%;
   height: 100%;
-  background: #0b0e1a;
+  background: #0b0e1a;                   /* Fallback-Farbe */
 }
 
-/* Login-Box */
+/* ==================== Login-Box Container ==================== */
 .container {
   position: relative;
-  z-index: 1;
-  background: rgba(20, 24, 40, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 242, 255, 0.08);
-  box-shadow: 0 8px 24px rgba(0, 242, 255, 0.1);
+  z-index: 1;                            /* Über dem Partikelhintergrund */
+  background: rgba(20, 24, 40, 0.85);    /* Halbtransparent mit dunklem Farbton */
+  backdrop-filter: blur(10px);          /* Weicher Glaseffekt */
+  border: 1px solid rgba(0, 242, 255, 0.08); /* Leicht leuchtender Rand */
+  box-shadow: 0 8px 24px rgba(0, 242, 255, 0.1); /* Weicher Schatten */
   padding: 2rem;
   border-radius: 1rem;
   width: 90%;
-  max-width: 400px;
+  max-width: 400px;                     /* Begrenzung für große Bildschirme */
   text-align: center;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease;     /* Smooth Hover-Animation */
 }
 
 .container:hover {
-  box-shadow: 0 0 35px rgba(0, 242, 255, 0.15);
+  box-shadow: 0 0 35px rgba(0, 242, 255, 0.15); /* Leuchtet bei Hover */
 }
 
-/* Überschrift */
+/* ==================== Überschrift ==================== */
 h1 {
-  color: #00f2ff;
+  color: #00f2ff;                        /* Türkisfarbener Akzent */
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
 }
 
-/* Eingabefelder */
+/* ==================== Eingabefelder ==================== */
 input {
   width: 100%;
   padding: 0.9rem;
   margin: 0.5rem 0;
   border: none;
   border-radius: 0.5rem;
-  background-color: #2c304d;
+  background-color: #2c304d;            /* Dunkler Hintergrund fürs Feld */
   color: white;
   font-size: 1rem;
 }
 
 input::placeholder {
-  color: #aaa;
+  color: #aaa;                           /* Platzhaltertext abgeschwächt */
 }
 
-/* Button */
+/* ==================== Login-Button ==================== */
 button {
-  background-color: #8b5cf6;
+  background-color: #8b5cf6;            /* Lila Akzentfarbe */
   color: white;
   border: none;
   padding: 0.9rem 1.2rem;
@@ -78,16 +78,16 @@ button {
   width: 100%;
   font-weight: bold;
   font-size: 1rem;
-  box-shadow: 0 0 12px #8b5cf670;
+  box-shadow: 0 0 12px #8b5cf670;       /* Leichter Glow */
   transition: all 0.3s ease;
 }
 
 button:hover {
-  background-color: #7a4ee6;
-  transform: scale(1.02);
+  background-color: #7a4ee6;            /* Etwas dunklerer Farbton beim Hover */
+  transform: scale(1.02);               /* Leichter Zoom-Effekt */
 }
 
-/* Link zurück */
+/* ==================== Zurück-Link ==================== */
 .back-link {
   display: block;
   margin-top: 1.5rem;
@@ -98,5 +98,5 @@ button:hover {
 }
 
 .back-link:hover {
-  color: #00f2ff;
+  color: #00f2ff;                        /* Türkis beim Hover */
 }

@@ -5,13 +5,236 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lektion 1 – SELECT</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+          background: linear-gradient(135deg, #0b0e1a, #11142d);
+          color: #f0f0f0;
+          font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+        }
+        .lesson-container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 4rem auto;
+          background: rgba(20, 24, 40, 0.97);
+          padding: 2.5rem 3rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        h1, h2, h3 {
+          color: #00f2ff;
+        }
+        p, li {
+          line-height: 1.6;
+        }
+        pre, code {
+          background-color: #1f223a;
+          padding: 0.6rem 1rem;
+          border-radius: 0.5rem;
+          display: block;
+          overflow-x: auto;
+        }
+        textarea {
+          width: 100%;
+          padding: 1rem;
+          font-family: monospace;
+          font-size: 1rem;
+          border-radius: 0.5rem;
+          background-color: #1a1e33;
+          color: white;
+          border: none;
+          margin-top: 1rem;
+        }
+        .btn {
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background-color: #8b5cf6;
+          color: white;
+          border: none;
+          border-radius: 1rem;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          display: inline-block;
+        }
+        .btn:hover {
+          background-color: #a78bfa;
+          transform: scale(1.03);
+        }
+        .feedback {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+        .hidden {
+          display: none;
+        }
+        @media (min-width: 992px) {
+          .lesson-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+          }
+          .lesson-container > *:first-child {
+            grid-column: 1 / -1;
+          }
+          .feedback, .btn {
+            grid-column: 1 / -1;
+          }
+        }
+    </style>
 </head>
 <body>
-<div class="main-content">
-    <h1>Lektion 1: SELECT</h1>
-    <p>Hier kommt später der Inhalt zu <code>SELECT</code> hin.</p>
+<div class="lesson-container">
+    <h1>Lektion 1: Erste Schritte mit SQL – Der SELECT-Befehl</h1>
 
-    <a href="dashboard.html" class="btn-glow">Zurück zum Dashboard</a>
+    <div>
+        <h2>Was ist SQL?</h2>
+        <p>SQL (Structured Query Language) ist eine standardisierte Sprache zur Verwaltung von Daten in relationalen Datenbanksystemen. Sie wurde in den 1970er Jahren von IBM entwickelt und ist heute der De-facto-Standard zur Kommunikation mit relationalen Datenbanken. SQL ist deklarativ – das bedeutet, du beschreibst, <em>was</em> du haben möchtest, nicht <em>wie</em> es berechnet werden soll.</p>
+        <p>Ein grundlegender Vorteil relationaler Datenbanken ist, dass die Daten logisch in Tabellen organisiert sind, was SQL sehr intuitiv macht. Die wichtigsten Aufgaben von SQL sind:</p>
+        <ul>
+            <li>Daten abfragen (SELECT)</li>
+            <li>Daten einfügen (INSERT)</li>
+            <li>Daten ändern (UPDATE)</li>
+            <li>Daten löschen (DELETE)</li>
+            <li>Datenbankstrukturen definieren (CREATE, ALTER, DROP)</li>
+        </ul>
+
+        <h2>Was ist eine Tabelle?</h2>
+        <p>Eine Tabelle (oder Relation) ist das zentrale Element einer relationalen Datenbank. Jede Tabelle besteht aus:</p>
+        <ul>
+            <li><strong>Spalten (Attribute)</strong>, die bestimmte Eigenschaften der gespeicherten Daten beschreiben (z. B. Name, Gehalt).</li>
+            <li><strong>Zeilen (Tupel)</strong>, die jeweils einen konkreten Datensatz darstellen.</li>
+        </ul>
+        <p>Die Struktur einer Tabelle wird durch ein sogenanntes <em>Relationenschema</em> beschrieben – es legt die Spaltennamen und Datentypen fest.</p>
+
+        <h3>Beispieltabelle: Personal</h3>
+        <pre><code>+--------+----------------+-------------+---------+
+| Persnr | Name           | Ort         | Gehalt  |
++--------+----------------+-------------+---------+
+| 1      | Maria Forster  | Regensburg  | 4800.00 |
+| 2      | Anna Kraus     | Regensburg  | 2300.00 |
+| 3      | U. Rank        | Frankfurt   | 2700.00 |
++--------+----------------+-------------+---------+</code></pre>
+
+        <h2>Der SELECT-Befehl</h2>
+        <p>Die wohl wichtigste SQL-Anweisung ist <code>SELECT</code>. Damit kannst du gezielt Daten aus einer oder mehreren Tabellen abfragen. Die grundlegende Syntax lautet:</p>
+        <pre><code>SELECT [Spaltenliste] FROM [Tabellenname];</code></pre>
+        <p>Beispiel: Alle Spalten und Zeilen aus der Tabelle <code>Personal</code> anzeigen:</p>
+        <pre><code>SELECT * FROM Personal;</code></pre>
+        <p>Erklärung:</p>
+        <ul>
+            <li><code>SELECT</code>: Start der Abfrage</li>
+            <li><code>*</code>: Platzhalter für alle Spalten</li>
+            <li><code>FROM Personal</code>: Datenquelle ist die Tabelle <code>Personal</code></li>
+        </ul>
+        <p><strong>Hinweis:</strong> Das Sternchen <code>*</code> kann bei größeren Tabellen unübersichtlich sein. In der Praxis wird oft eine konkrete Spaltenauswahl bevorzugt.</p>
+
+        <h2>Projektion: Nur bestimmte Spalten anzeigen</h2>
+        <p>Die <strong>Projektion</strong> (engl. projection) ist ein Begriff aus der relationalen Algebra. Sie beschreibt die Auswahl bestimmter Spalten. Beispiel:</p>
+        <pre><code>SELECT Name, Ort FROM Personal;</code></pre>
+        <p>Diese Abfrage gibt nur die Werte in den Spalten <code>Name</code> und <code>Ort</code> aller Zeilen zurück.</p>
+        <p>Die Reihenfolge der Spalten im SELECT-Befehl beeinflusst die Ausgabe, ist aber unabhängig von der tatsächlichen Reihenfolge in der Datenbank.</p>
+
+        <h2>Zusätzliche Hinweise zur SELECT-Nutzung</h2>
+        <ul>
+            <li>SQL ist nicht case-sensitive: <code>select</code> = <code>SELECT</code></li>
+            <li>Semikolon <code>;</code> ist das Abschlusszeichen (besonders bei mehreren Befehlen nötig)</li>
+            <li>Spaltennamen können in Anführungszeichen gesetzt werden, wenn sie Sonderzeichen enthalten</li>
+        </ul>
+    </div>
+
+    <div>
+        <h3>Aufgabe 1</h3>
+        <p>Wie lautet der SQL-Befehl, um ALLE Spalten und Zeilen aus der Tabelle Personal anzuzeigen?</p>
+        <textarea id="answer1" rows="3" placeholder="Deine SQL-Antwort hier..."></textarea>
+        <button class="btn" onclick="checkAnswer1()">Antwort prüfen</button>
+        <div class="feedback" id="feedback1"></div>
+
+        <h3>Aufgabe 2</h3>
+        <p>Wie gibst du nur Namen und Orte der Mitarbeiter aus?</p>
+        <textarea id="answer2" rows="3" placeholder="Deine SQL-Antwort hier..."></textarea>
+        <button class="btn" onclick="checkAnswer2()">Antwort prüfen</button>
+        <div class="feedback" id="feedback2"></div>
+
+        <button id="completeLessonBtn" class="btn hidden" onclick="completeLesson()">✅ Lektion abschließen</button>
+
+        <!-- ✅ Richtig platzierter Button -->
+        <a href="dashboard.html" class="btn" style="background-color:#374151; box-shadow:none;">← Zurück zum Dashboard</a>
+    </div>
 </div>
+
+<script>
+    const normalize = (s) => s.trim().toLowerCase().replaceAll(';', '').replace(/\s+/g, ' ');
+
+    function checkAnswer1() {
+      const input = normalize(document.getElementById('answer1').value);
+      const expected = "select * from personal";
+      const feedback = document.getElementById('feedback1');
+
+      if (input === expected) {
+        feedback.textContent = '✅ Richtig! Sehr gut gemacht.';
+        feedback.style.color = '#00f2ff';
+        checkUnlock();
+      } else {
+        feedback.textContent = '❌ Leider nicht korrekt. Denk an * und FROM Personal.';
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkAnswer2() {
+      const input = normalize(document.getElementById('answer2').value);
+      const expected = "select name, ort from personal";
+      const feedback = document.getElementById('feedback2');
+
+      if (input === expected) {
+        feedback.textContent = '✅ Richtig! Sehr gut gemacht.';
+        feedback.style.color = '#00f2ff';
+        checkUnlock();
+      } else {
+        feedback.textContent = '❌ Nicht ganz. Nutze SELECT Name, Ort FROM Personal.';
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkUnlock() {
+      const a1 = normalize(document.getElementById('answer1').value);
+      const a2 = normalize(document.getElementById('answer2').value);
+      if (a1 === 'select * from personal' && a2 === 'select name, ort from personal') {
+        document.getElementById('completeLessonBtn').classList.remove('hidden');
+      }
+    }
+
+    async function completeLesson() {
+      const token = localStorage.getItem("token");
+
+      try {
+        const res = await fetch("http://localhost:3001/api/progress", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ lessonId: 1, percent: 100 })
+        });
+
+        if (res.ok) {
+          alert("✅ Lektion abgeschlossen! Du hast XP erhalten.");
+          window.location.href = "dashboard.html";
+        } else {
+          alert("❌ Fehler beim Speichern. Bitte erneut versuchen.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("❌ Netzwerkfehler.");
+      }
+    }
+</script>
 </body>
 </html>

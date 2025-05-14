@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lektion 8 – ORDER BY und LIMIT</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+          background: linear-gradient(135deg, #0b0e1a, #11142d);
+          color: #f0f0f0;
+          font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+        }
+        .lesson-container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 4rem auto;
+          background: rgba(20, 24, 40, 0.97);
+          padding: 2.5rem 3rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        h1, h2, h3 {
+          color: #00f2ff;
+        }
+        p, li {
+          line-height: 1.6;
+        }
+        pre, code {
+          background-color: #1f223a;
+          padding: 0.6rem 1rem;
+          border-radius: 0.5rem;
+          display: block;
+          overflow-x: auto;
+        }
+        textarea {
+          width: 100%;
+          padding: 1rem;
+          font-family: monospace;
+          font-size: 1rem;
+          border-radius: 0.5rem;
+          background-color: #1a1e33;
+          color: white;
+          border: none;
+          margin-top: 1rem;
+        }
+        .btn {
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background-color: #8b5cf6;
+          color: white;
+          border: none;
+          border-radius: 1rem;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+        }
+        .btn:hover {
+          background-color: #a78bfa;
+          transform: scale(1.03);
+        }
+        .feedback {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="lesson-container">
+    <h1>Lektion 8: Daten sortieren und begrenzen – ORDER BY & LIMIT</h1>
+
+    <h2>ORDER BY – Ergebnisse sortieren</h2>
+    <p>Mit <code>ORDER BY</code> kannst du Daten auf- oder absteigend sortieren. Die Sortierung erfolgt standardmäßig aufsteigend (<code>ASC</code>), kann aber mit <code>DESC</code> auch absteigend erfolgen.</p>
+
+    <pre><code>SELECT * FROM Artikel ORDER BY Preis ASC;
+SELECT * FROM Artikel ORDER BY Preis DESC;</code></pre>
+
+    <p>Auch eine mehrfache Sortierung ist möglich:</p>
+    <pre><code>SELECT * FROM Kunde ORDER BY Ort ASC, Name DESC;</code></pre>
+
+    <h2>LIMIT – Ergebnismenge begrenzen</h2>
+    <p>Mit <code>LIMIT</code> kannst du festlegen, wie viele Zeilen zurückgegeben werden sollen. Besonders praktisch in Verbindung mit <code>ORDER BY</code>, z. B. um nur die teuersten 3 Artikel zu sehen:</p>
+
+    <pre><code>SELECT * FROM Artikel ORDER BY Preis DESC LIMIT 3;</code></pre>
+
+    <h2>Beispiele für Sortierkombinationen</h2>
+    <table style="width:100%; border-collapse: collapse; margin: 2rem 0;">
+        <thead>
+        <tr>
+            <th style="background-color:#1a1e33; color:#00f2ff; padding: 0.75rem 1rem; text-align: left;">Sortierregel</th>
+            <th style="background-color:#1a1e33; color:#00f2ff; padding: 0.75rem 1rem; text-align: left;">SQL-Beispiel</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;">Nur nach einer Spalte (aufsteigend)</td>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;"><code>ORDER BY Preis ASC</code></td>
+        </tr>
+        <tr>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;">Nur nach einer Spalte (absteigend)</td>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;"><code>ORDER BY Preis DESC</code></td>
+        </tr>
+        <tr>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;">Nach zwei Spalten, beide aufsteigend</td>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;"><code>ORDER BY Ort ASC, Name ASC</code></td>
+        </tr>
+        <tr>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;">Nach Ort (aufsteigend), dann Name (absteigend)</td>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;"><code>ORDER BY Ort ASC, Name DESC</code></td>
+        </tr>
+        <tr>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;">Nach Datum, dann Preis</td>
+            <td style="background-color:#181b2d; padding: 0.75rem 1rem;"><code>ORDER BY Bestelldatum DESC, Preis ASC</code></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Wichtig zu beachten</h2>
+    <ul>
+        <li><code>ORDER BY</code> kommt immer nach <code>WHERE</code></li>
+        <li><code>LIMIT</code> steht am Ende der Abfrage</li>
+    </ul>
+
+    <h3>Aufgabe 1</h3>
+    <p>Gib alle Artikel sortiert nach Preis aufsteigend aus.</p>
+    <textarea id="a1"></textarea>
+    <button class="btn" onclick="checkA1()">Antwort prüfen</button>
+    <div class="feedback" id="f1"></div>
+
+    <h3>Aufgabe 2</h3>
+    <p>Zeige die drei teuersten Artikel (absteigend sortiert).</p>
+    <textarea id="a2"></textarea>
+    <button class="btn" onclick="checkA2()">Antwort prüfen</button>
+    <div class="feedback" id="f2"></div>
+
+    <h3>Aufgabe 3</h3>
+    <p>Sortiere alle Kunden zuerst nach Ort (aufsteigend) und dann nach Name (absteigend).</p>
+    <textarea id="a3"></textarea>
+    <button class="btn" onclick="checkA3()">Antwort prüfen</button>
+    <div class="feedback" id="f3"></div>
+
+    <a href="dashboard.html" class="btn btn-secondary">← Zurück zum Dashboard</a>
+</div>
+
+<script>
+    const normalize = s => s.trim().toLowerCase().replaceAll(';', '').replace(/\s+/g, ' ');
+
+    function checkA1() {
+      const input = normalize(document.getElementById('a1').value);
+      const f = document.getElementById('f1');
+      if (input.includes('order by') && input.includes('preis') && !input.includes('desc')) {
+        f.textContent = '✅ Richtig! Die Sortierung nach Preis aufsteigend wurde korrekt formuliert.';
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = '❌ Überprüfe deine ORDER BY-Klausel. Denk an ASC.';
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkA2() {
+      const input = normalize(document.getElementById('a2').value);
+      const f = document.getElementById('f2');
+      if (input.includes('limit 3') && input.includes('order by') && input.includes('desc')) {
+        f.textContent = '✅ Perfekt! LIMIT und DESC wurden korrekt verwendet.';
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = '❌ Tipp: Sortiere mit DESC und begrenze mit LIMIT 3.';
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkA3() {
+      const input = normalize(document.getElementById('a3').value);
+      const f = document.getElementById('f3');
+      if (input.includes('order by ort') && input.includes('name desc')) {
+        f.textContent = '✅ Genau! Erst nach Ort (ASC), dann Name (DESC) sortiert.';
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = '❌ Achte auf beide Sortierkriterien: Ort ASC, Name DESC.';
+        f.style.color = '#ff6b6b';
+      }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lektion 12 – Daten ändern und löschen (UPDATE & DELETE)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+          background: linear-gradient(135deg, #0b0e1a, #11142d);
+          color: #f0f0f0;
+          font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+        }
+        .lesson-container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 4rem auto;
+          background: rgba(20, 24, 40, 0.97);
+          padding: 2.5rem 3rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        h1, h2, h3 {
+          color: #00f2ff;
+        }
+        p, li {
+          line-height: 1.6;
+        }
+        pre, code {
+          background-color: #1f223a;
+          padding: 0.6rem 1rem;
+          border-radius: 0.5rem;
+          display: block;
+          overflow-x: auto;
+        }
+        textarea {
+          width: 100%;
+          padding: 1rem;
+          font-family: monospace;
+          font-size: 1rem;
+          border-radius: 0.5rem;
+          background-color: #1a1e33;
+          color: white;
+          border: none;
+          margin-top: 1rem;
+        }
+        .btn {
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background-color: #8b5cf6;
+          color: white;
+          border: none;
+          border-radius: 1rem;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+        }
+        .btn:hover {
+          background-color: #a78bfa;
+          transform: scale(1.03);
+        }
+        .feedback {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="lesson-container">
+    <h1>Lektion 12: Daten ändern und löschen (UPDATE & DELETE)</h1>
+
+    <h2>Was ist UPDATE?</h2>
+    <p>Mit <code>UPDATE</code> kannst du vorhandene Daten in einer Tabelle ändern. Wichtig ist die <code>WHERE</code>-Klausel, damit nicht alle Datensätze verändert werden.</p>
+    <pre><code>UPDATE Kunde
+SET Ort = 'Hamburg'
+WHERE Name = 'Bernd';</code></pre>
+
+    <h2>Was ist DELETE?</h2>
+    <p><code>DELETE</code> entfernt komplette Zeilen aus einer Tabelle. Auch hier ist <code>WHERE</code> sehr wichtig, um gezielt zu löschen:</p>
+    <pre><code>DELETE FROM Bestellung
+WHERE Betrag < 100;</code></pre>
+
+    <h2>Beispieltabelle: Kunde</h2>
+    <pre><code>+----+--------+--------+
+| ID | Name   | Ort    |
++----+--------+--------+
+| 1  | Anna   | Köln   |
+| 2  | Bernd  | Berlin |
+| 3  | Clara  | Köln   |
+| 4  | David  | Köln   |
++----+--------+--------+</code></pre>
+
+    <h3>Aufgabe 1</h3>
+    <p>Ändere den Ort von „Clara“ auf „München“.</p>
+    <textarea id="a1"></textarea>
+    <button class="btn" onclick="checkA1()">Antwort prüfen</button>
+    <div class="feedback" id="f1"></div>
+
+    <h3>Aufgabe 2</h3>
+    <p>Lösche alle Kunden mit Ort „Köln“.</p>
+    <textarea id="a2"></textarea>
+    <button class="btn" onclick="checkA2()">Antwort prüfen</button>
+    <div class="feedback" id="f2"></div>
+
+    <a href="dashboard.html" class="btn btn-secondary">← Zurück zum Dashboard</a>
+</div>
+
+<script>
+    const normalize = s => s.trim().toLowerCase().replaceAll(';', '').replace(/\s+/g, ' ');
+
+    function checkA1() {
+      const input = normalize(document.getElementById('a1').value);
+      const f = document.getElementById('f1');
+      if (input.includes('update') && input.includes('set') && input.includes("clara") && input.includes("münchen")) {
+        f.textContent = '✅ Korrekt! Du hast Clara erfolgreich umgezogen.';
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = '❌ Hinweis: UPDATE Kunde SET Ort = "München" WHERE Name = "Clara"';
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkA2() {
+      const input = normalize(document.getElementById('a2').value);
+      const f = document.getElementById('f2');
+      if (input.includes('delete') && input.includes('where') && input.includes('köln')) {
+        f.textContent = '✅ Korrekt! Du hast gezielt gelöscht.';
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = '❌ Hinweis: DELETE FROM Kunde WHERE Ort = "Köln"';
+        f.style.color = '#ff6b6b';
+      }
+    }
+</script>
+</body>
+</html>

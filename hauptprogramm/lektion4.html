@@ -3,15 +3,323 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lektion 1 – SELECT</title>
+    <title>Lektion 4 – Normalisierung</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+          background: linear-gradient(135deg, #0b0e1a, #11142d);
+          color: #f0f0f0;
+          font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+        }
+        .lesson-container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 4rem auto;
+          background: rgba(20, 24, 40, 0.97);
+          padding: 2.5rem 3rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        h1, h2, h3 {
+          color: #00f2ff;
+        }
+        p, li {
+          line-height: 1.6;
+        }
+        pre, code {
+          background-color: #1f223a;
+          padding: 0.6rem 1rem;
+          border-radius: 0.5rem;
+          display: block;
+          overflow-x: auto;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 2rem;
+        }
+        th, td {
+          border: 1px solid #2d334d;
+          padding: 0.75rem 1rem;
+          text-align: left;
+        }
+        th {
+          background-color: #1a1e33;
+          color: #00f2ff;
+        }
+        td {
+          background-color: #181b2d;
+        }
+        textarea {
+          width: 100%;
+          padding: 1rem;
+          font-family: monospace;
+          font-size: 1rem;
+          border-radius: 0.5rem;
+          background-color: #1a1e33;
+          color: white;
+          border: none;
+          margin-top: 1rem;
+        }
+        .btn {
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background-color: #8b5cf6;
+          color: white;
+          border: none;
+          border-radius: 1rem;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+        }
+        .btn:hover {
+          background-color: #a78bfa;
+          transform: scale(1.03);
+        }
+        .btn-secondary {
+          display: inline-block;
+          background-color: #2d2f45;
+          color: #e0e0e0;
+          padding: 0.6rem 1.2rem;
+          border-radius: 0.6rem;
+          text-decoration: none;
+          font-weight: 500;
+          margin-top: 1rem;
+        }
+        .feedback {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+        @media (min-width: 992px) {
+          .lesson-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+          }
+          .lesson-container > *:first-child {
+            grid-column: 1 / -1;
+          }
+        }
+    </style>
 </head>
 <body>
-<div class="main-content">
-    <h1>Lektion 1: SELECT</h1>
-    <p>Hier kommt später der Inhalt zu <code>SELECT</code> hin.</p>
+<div class="lesson-container">
+    <h1>Lektion 4: Normalisierung – saubere Datenstruktur</h1>
 
-    <a href="dashboard.html" class="btn-glow">Zurück zum Dashboard</a>
+    <div>
+        <h2>Warum normalisieren?</h2>
+        <p>Redundanzen und Anomalien können bei schlecht entworfenen Tabellen zu inkonsistenten oder fehlerhaften Daten führen. Normalisierung ist ein Prozess zur strukturellen Verbesserung von Relationen.</p>
+
+        <h2>Ziele der Normalisierung</h2>
+        <ul>
+            <li>Vermeidung von Datenredundanz</li>
+            <li>Schutz vor Einfüge-, Änderungs- und Löschanomalien</li>
+            <li>Logisch getrennte Sachverhalte trennen</li>
+        </ul>
+
+        <h2>Beispieltabelle (unnormalisiert)</h2>
+        <pre><code>Bestellung(BestNr, Kunde, Ort, Artikel, Preis)
++--------+--------+---------+----------+--------+
+| 1      | Maier  | Berlin  | Maus     | 20,00  |
+| 1      | Maier  | Berlin  | Tastatur | 45,00  |
+| 2      | Schulz | Köln    | Monitor  | 150,00 |
++--------+--------+---------+----------+--------+</code></pre>
+        <p>Hier wiederholen sich <code>Kunde</code> und <code>Ort</code> unnötig → Redundanz</p>
+
+        <h2>1. Normalform (1NF)</h2>
+        <p>Alle Attributwerte müssen <strong>atomar</strong> sein. Keine Listen, Gruppen oder zusammengesetzten Werte.</p>
+
+        <h2>2. Normalform (2NF)</h2>
+        <p>Alle Nicht-Schlüsselattribute müssen <strong>voll funktional abhängig</strong> vom gesamten Primärschlüssel sein.</p>
+
+        <h2>3. Normalform (3NF)</h2>
+        <p>Keine <strong>transitiven Abhängigkeiten</strong> zwischen Nicht-Schlüsselattributen.</p>
+
+        <h3>Nach der Normalisierung:</h3>
+        <pre><code>Kunde(KdNr, Name, Ort)
+Bestellung(BestNr, KdNr)
+Artikel(BestNr, Bezeichnung, Preis)</code></pre>
+
+        <h2>🔁 SQL vs. Normalisierung – Vergleich</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>SQL-Anwendung</th>
+                <th>Normalisierungsziel</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>CREATE TABLE ...</code></td>
+                <td>Struktur definieren: Spalten & Datentypen</td>
+            </tr>
+            <tr>
+                <td><code>PRIMARY KEY (...)</code></td>
+                <td>Einzigartigkeit sicherstellen (1NF–2NF)</td>
+            </tr>
+            <tr>
+                <td><code>FOREIGN KEY (...)</code></td>
+                <td>Tabellenbeziehung abbilden (3NF)</td>
+            </tr>
+            <tr>
+                <td><code>SELECT JOIN ...</code></td>
+                <td>Normalisierte Tabellen wieder zusammensetzen</td>
+            </tr>
+            <tr>
+                <td><code>INSERT INTO ...</code></td>
+                <td>Nur relevante Daten in Teiltabellen einfügen</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <h3>Aufgabe 1</h3>
+        <p>Was ist eine transitive Abhängigkeit?</p>
+        <textarea id="a1"></textarea>
+        <button class="btn" onclick="checkA1()">Antwort prüfen</button>
+        <div class="feedback" id="f1"></div>
+
+        <h3>Aufgabe 2</h3>
+        <p>Welche Probleme entstehen durch Redundanz in Tabellen?</p>
+        <textarea id="a2"></textarea>
+        <button class="btn" onclick="checkA2()">Antwort prüfen</button>
+        <div class="feedback" id="f2"></div>
+
+        <h3>Aufgabe 3</h3>
+        <p>Welche der folgenden Tabellen befinden sich in 1NF?</p>
+        <ul>
+            <li><input type="checkbox" id="c1" /> <code>Kunde(Name, Wohnorte)</code></li>
+            <li><input type="checkbox" id="c2" /> <code>Bestellung(Nr, Artikel, Preis)</code></li>
+            <li><input type="checkbox" id="c3" /> <code>Artikel(Name, {Kategorien})</code></li>
+        </ul>
+        <button class="btn" onclick="checkA3()">Antwort prüfen</button>
+        <div class="feedback" id="f3"></div>
+
+        <h3>Aufgabe 4: Zuordnungs-Quiz</h3>
+        <p>Ordne die SQL-Anweisung dem passenden Normalisierungsziel zu:</p>
+        <ul style="list-style-type: none; padding-left: 0;">
+            <li>🟪 <strong>CREATE TABLE</strong> → <span id="match1">__________</span></li>
+            <li>🟪 <strong>PRIMARY KEY</strong> → <span id="match2">__________</span></li>
+            <li>🟪 <strong>FOREIGN KEY</strong> → <span id="match3">__________</span></li>
+        </ul>
+        <p><strong>Mögliche Ziele:</strong> A) Tabellenstruktur festlegen · B) Beziehungen modellieren · C) Eindeutigkeit sichern</p>
+        <button class="btn" onclick="checkMatching()">Antwort prüfen</button>
+        <div class="feedback" id="f4"></div>
+
+        <a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
+    </div>
 </div>
+
+<script>
+    function normalize(s) {
+      return s.trim().toLowerCase();
+    }
+
+    function checkA1() {
+      const input = normalize(document.getElementById("a1").value);
+      const f = document.getElementById("f1");
+      if (input.includes("abhängig") && input.includes("nicht-schlüssel")) {
+        f.textContent = "✅ Richtig! Transitive Abhängigkeit betrifft Nicht-Schlüsselattribute.";
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = "❌ Nicht ganz. Überlege, was überflüssige Abhängigkeiten sind.";
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkA2() {
+      const input = normalize(document.getElementById("a2").value);
+      const f = document.getElementById("f2");
+      if (input.includes("doppel") || input.includes("mehrfach") || input.includes("widerspruch")) {
+        f.textContent = "✅ Ja! Redundanz erzeugt Widersprüche und unnötige Wiederholungen.";
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = "❌ Denk an Wiederholungen und fehlerhafte Updates.";
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkA3() {
+      const f = document.getElementById("f3");
+      const correct = !document.getElementById("c1").checked && document.getElementById("c2").checked && !document.getElementById("c3").checked;
+      if (correct) {
+        f.textContent = "✅ Korrekt! Nur Bestellung ist atomar strukturiert.";
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = "❌ Achtung: Prüfe, ob Attributwerte Listen enthalten.";
+        f.style.color = '#ff6b6b';
+      }
+    }
+  function checkMatching() {
+    const m1 = document.getElementById("match1").textContent.trim().toUpperCase();
+    const m2 = document.getElementById("match2").textContent.trim().toUpperCase();
+    const m3 = document.getElementById("match3").textContent.trim().toUpperCase();
+    const f = document.getElementById("f4");
+    if (m1 === "A" && m2 === "C" && m3 === "B") {
+      f.textContent = "✅ Alles richtig zugeordnet!";
+      f.style.color = '#00f2ff';
+    } else {
+      f.textContent = "❌ Nicht korrekt. A = CREATE, B = FOREIGN KEY, C = PRIMARY KEY.";
+      f.style.color = '#ff6b6b';
+    }
+  }
+</script>
+</body>
+</html>
+
+
+<a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
+    </div>
+</div>
+
+<script>
+    function normalize(s) {
+      return s.trim().toLowerCase();
+    }
+
+    function checkA1() {
+      const input = normalize(document.getElementById("a1").value);
+      const f = document.getElementById("f1");
+      if (input.includes("abhängig") && input.includes("nicht-schlüssel")) {
+        f.textContent = "✅ Richtig! Transitive Abhängigkeit betrifft Nicht-Schlüsselattribute.";
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = "❌ Nicht ganz. Überlege, was überflüssige Abhängigkeiten sind.";
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkA2() {
+      const input = normalize(document.getElementById("a2").value);
+      const f = document.getElementById("f2");
+      if (input.includes("doppel") || input.includes("mehrfach") || input.includes("widerspruch")) {
+        f.textContent = "✅ Ja! Redundanz erzeugt Widersprüche und unnötige Wiederholungen.";
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = "❌ Denk an Wiederholungen und fehlerhafte Updates.";
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkA3() {
+      const f = document.getElementById("f3");
+      const correct = !document.getElementById("c1").checked && document.getElementById("c2").checked && !document.getElementById("c3").checked;
+      if (correct) {
+        f.textContent = "✅ Korrekt! Nur Bestellung ist atomar strukturiert.";
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = "❌ Achtung: Prüfe, ob Attributwerte Listen enthalten.";
+        f.style.color = '#ff6b6b';
+      }
+    }
+</script>
 </body>
 </html>

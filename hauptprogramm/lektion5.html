@@ -3,15 +3,172 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lektion 1 – SELECT</title>
+    <title>Lektion 5 – ER-Modellierung</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+          background: linear-gradient(135deg, #0b0e1a, #11142d);
+          color: #f0f0f0;
+          font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+        }
+        .lesson-container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 4rem auto;
+          background: rgba(20, 24, 40, 0.97);
+          padding: 2.5rem 3rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        h1, h2, h3 {
+          color: #00f2ff;
+        }
+        p, li {
+          line-height: 1.6;
+        }
+        pre, code {
+          background-color: #1f223a;
+          padding: 0.6rem 1rem;
+          border-radius: 0.5rem;
+          display: block;
+          overflow-x: auto;
+        }
+        textarea {
+          width: 100%;
+          padding: 1rem;
+          font-family: monospace;
+          font-size: 1rem;
+          border-radius: 0.5rem;
+          background-color: #1a1e33;
+          color: white;
+          border: none;
+          margin-top: 1rem;
+        }
+        .btn {
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background-color: #8b5cf6;
+          color: white;
+          border: none;
+          border-radius: 1rem;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+        }
+        .btn:hover {
+          background-color: #a78bfa;
+          transform: scale(1.03);
+        }
+        .btn-secondary {
+          display: inline-block;
+          background-color: #2d2f45;
+          color: #e0e0e0;
+          padding: 0.6rem 1.2rem;
+          border-radius: 0.6rem;
+          text-decoration: none;
+          font-weight: 500;
+          margin-top: 1rem;
+        }
+        .feedback {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<div class="main-content">
-    <h1>Lektion 1: SELECT</h1>
-    <p>Hier kommt später der Inhalt zu <code>SELECT</code> hin.</p>
+<div class="lesson-container">
+    <h1>Lektion 5: Entity-Relationship-Modellierung (ER-Modell)</h1>
 
-    <a href="dashboard.html" class="btn-glow">Zurück zum Dashboard</a>
+    <div>
+        <h2>Was ist ein ER-Modell?</h2>
+        <p>Das Entity-Relationship-Modell (kurz ER-Modell) ist ein konzeptuelles Datenmodell, das zur Planung und Visualisierung von Datenbankstrukturen dient. Es hilft Entwickler:innen, logisch zu denken: Welche Objekte (Entitäten) gibt es? Welche Eigenschaften (Attribute) haben diese? Und wie stehen sie in Beziehung zueinander?</p>
+        <p>Das Modell stammt von Peter Chen (1976) und dient oft als erster Schritt in der Datenbankentwicklung, noch bevor konkrete Tabellen und SQL-Befehle formuliert werden.</p>
+
+        <h2>Grundbegriffe ausführlich erklärt</h2>
+        <ul>
+            <li><strong>Entitätstyp:</strong> Eine Klasse von realen oder abstrakten Dingen (z. B. <em>Kunde</em>, <em>Artikel</em>, <em>Bestellung</em>). Jede Entität hat eindeutige Merkmale (Schlüssel).</li>
+            <li><strong>Attribut:</strong> Eine Eigenschaft einer Entität. Beispiele: <em>Name</em> eines Kunden, <em>Preis</em> eines Artikels. Es gibt auch zusammengesetzte, mehrwertige und abgeleitete Attribute.</li>
+            <li><strong>Beziehungstyp:</strong> Eine logische Verknüpfung zwischen zwei oder mehreren Entitäten. Beispiel: <em>Bestellt</em> verbindet <em>Kunde</em> mit <em>Artikel</em>.</li>
+            <li><strong>Kardinalität:</strong> Gibt an, wie viele Entitäten auf jeder Seite einer Beziehung beteiligt sein können:
+                <ul>
+                    <li>1:1 – genau eine Entität ist beteiligt</li>
+                    <li>1:n – eine Entität ist mit mehreren anderen verknüpft</li>
+                    <li>n:m – viele Entitäten auf beiden Seiten (führt meist zu Zwischentabellen)</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>Beispielmodell: Online-Shop</h2>
+        <p>In einem Online-Shop bestellen Kunden Produkte. Dieses Szenario lässt sich folgendermaßen modellieren:</p>
+        <pre><code>Entität: Kunde (Kundennr, Name, Ort)
+Entität: Produkt (ArtikelNr, Bezeichnung, Preis)
+Entität: Bestellung (BestellNr, Datum)
+Beziehung: enthält – verbindet Bestellung und Produkt
+Beziehung: aufgegebenVon – verbindet Bestellung und Kunde</code></pre>
+        <p>Somit erkennt man: Eine Bestellung gehört zu genau einem Kunden, kann aber viele Produkte enthalten.</p>
+        <p>Die Kardinalitäten wären:</p>
+        <ul>
+            <li><strong>Kunde ⟶ Bestellung:</strong> 1:n</li>
+            <li><strong>Bestellung ⟶ Produkt:</strong> n:m</li>
+        </ul>
+    </div>
+
+    <div>
+        <h3>Aufgabe 1</h3>
+        <p>Welche der folgenden Begriffe gehören zu einem ER-Modell?</p>
+        <ul>
+            <li><input type="checkbox" id="e1"> Entität</li>
+            <li><input type="checkbox" id="e2"> Primärschlüssel</li>
+            <li><input type="checkbox" id="e3"> Beziehung</li>
+            <li><input type="checkbox" id="e4"> Attribut</li>
+        </ul>
+        <button class="btn" onclick="checkER1()">Antwort prüfen</button>
+        <div class="feedback" id="f1"></div>
+
+        <h3>Aufgabe 2</h3>
+        <p>Was beschreibt die Kardinalität 1:n zwischen <code>Kunde</code> und <code>Bestellung</code>?</p>
+        <textarea id="er2"></textarea>
+        <button class="btn" onclick="checkER2()">Antwort prüfen</button>
+        <div class="feedback" id="f2"></div>
+
+        <a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
+    </div>
 </div>
+
+<script>
+    function checkER1() {
+      const e1 = document.getElementById("e1").checked;
+      const e2 = document.getElementById("e2").checked;
+      const e3 = document.getElementById("e3").checked;
+      const e4 = document.getElementById("e4").checked;
+      const f = document.getElementById("f1");
+      if (e1 && !e2 && e3 && e4) {
+        f.textContent = "✅ Richtig! Entität, Beziehung und Attribut sind Bestandteile des ER-Modells.";
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = "❌ Nicht ganz. Tipp: Primärschlüssel gehört eher zu Relationen.";
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkER2() {
+      const input = document.getElementById("er2").value.trim().toLowerCase();
+      const f = document.getElementById("f2");
+      if (input.includes("kunde") && input.includes("mehrere") && input.includes("bestellung")) {
+        f.textContent = "✅ Ja! Ein Kunde kann mehrere Bestellungen tätigen.";
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = "❌ Nicht ganz. Überlege, was 1:n bedeutet.";
+        f.style.color = '#ff6b6b';
+      }
+    }
+</script>
 </body>
 </html>

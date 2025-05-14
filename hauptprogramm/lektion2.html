@@ -3,15 +3,246 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lektion 1 – SELECT</title>
+    <title>Lektion 2 – Das Relationenmodell</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+          background: linear-gradient(135deg, #0b0e1a, #11142d);
+          color: #f0f0f0;
+          font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+        }
+        .lesson-container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 4rem auto;
+          background: rgba(20, 24, 40, 0.97);
+          padding: 2.5rem 3rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        h1, h2, h3 {
+          color: #00f2ff;
+        }
+        p, li {
+          line-height: 1.6;
+        }
+        pre, code {
+          background-color: #1f223a;
+          padding: 0.6rem 1rem;
+          border-radius: 0.5rem;
+          display: block;
+          overflow-x: auto;
+        }
+        textarea {
+          width: 100%;
+          padding: 1rem;
+          font-family: monospace;
+          font-size: 1rem;
+          border-radius: 0.5rem;
+          background-color: #1a1e33;
+          color: white;
+          border: none;
+          margin-top: 1rem;
+        }
+        .btn {
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background-color: #8b5cf6;
+          color: white;
+          border: none;
+          border-radius: 1rem;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+        }
+        .btn:hover {
+          background-color: #a78bfa;
+          transform: scale(1.03);
+        }
+        .btn-secondary {
+          display: inline-block;
+          background-color: #2d2f45;
+          color: #e0e0e0;
+          padding: 0.6rem 1.2rem;
+          border-radius: 0.6rem;
+          text-decoration: none;
+          font-weight: 500;
+          margin-top: 1rem;
+        }
+        .feedback {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+        .hidden {
+          display: none;
+        }
+        @media (min-width: 992px) {
+          .lesson-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+          }
+          .lesson-container > *:first-child {
+            grid-column: 1 / -1;
+          }
+          .feedback, .btn {
+            grid-column: 1 / -1;
+          }
+        }
+    </style>
 </head>
 <body>
-<div class="main-content">
-    <h1>Lektion 1: SELECT</h1>
-    <p>Hier kommt später der Inhalt zu <code>SELECT</code> hin.</p>
+<div class="lesson-container">
+    <h1>Lektion 2: Das Relationenmodell – Struktur und Integrität</h1>
 
-    <a href="dashboard.html" class="btn-glow">Zurück zum Dashboard</a>
+    <div>
+        <h2>Was ist eine Relation?</h2>
+        <p>Eine Relation ist die abstrakte Bezeichnung für eine Tabelle in einer relationalen Datenbank. Sie besteht aus:</p>
+        <ul>
+            <li><strong>Attributen</strong>: Spaltenbezeichnungen (z. B. Name, Gehalt)</li>
+            <li><strong>Tupeln</strong>: Zeilen der Tabelle – einzelne Datensätze</li>
+        </ul>
+        <p>Die Werte eines Attributs entstammen einem sogenannten <strong>Domänen- oder Wertebereich</strong>. Jeder Attributwert in einer Relation muss <em>atomar</em> sein, also unteilbar. Mehrwertige oder strukturierte Werte sind in relationalen Tabellen nicht erlaubt.</p>
+
+        <h2>Relationenschema & Beispiel</h2>
+        <p>Ein Relationenschema legt die Struktur einer Tabelle fest. Beispiel:</p>
+        <pre><code>Lieferant(LNr, Name, Ort)
+Artikel(ANr, Bezeichnung, Preis)</code></pre>
+        <p>Dazu passende Beispielrelationen:</p>
+        <pre><code>Lieferant
++------+----------+-----------+
+| LNr  | Name     | Ort       |
++------+----------+-----------+
+| 101  | Müller   | Hamburg   |
+| 102  | Schulz   | Berlin    |
++------+----------+-----------+</code></pre>
+
+        <h2>Kardinalität & Grad</h2>
+        <ul>
+            <li><strong>Kardinalität</strong>: Anzahl der Tupel (Zeilen)</li>
+            <li><strong>Grad</strong>: Anzahl der Attribute (Spalten)</li>
+        </ul>
+
+        <h2>Schlüsselkonzepte</h2>
+        <ul>
+            <li><strong>Primärschlüssel</strong>: Identifiziert ein Tupel eindeutig</li>
+            <li><strong>Kandidaten-/Alternativschlüssel</strong>: Weitere mögliche eindeutige Schlüssel</li>
+            <li><strong>Superschlüssel</strong>: Beliebige Kombination zur eindeutigen Identifikation</li>
+        </ul>
+
+        <h2>Fremdschlüssel & Integrität</h2>
+        <p>Ein Fremdschlüssel verweist auf einen Primärschlüssel einer anderen Tabelle.</p>
+        <pre><code>Bestellung(BNr, LNr, ANr)
+Lieferant(LNr, Name, Ort)</code></pre>
+        <p>Hier ist <code>Bestellung.LNr</code> ein Fremdschlüssel und verweist auf <code>Lieferant.LNr</code>.</p>
+
+        <h3>Integritätsregeln</h3>
+        <ul>
+            <li><strong>Entitätsintegrität</strong>: Primärschlüssel darf nicht NULL sein</li>
+            <li><strong>Referenzielle Integrität</strong>: Fremdschlüssel muss gültigen Wert besitzen</li>
+        </ul>
+
+        <h2>Zusatz: Relationale Algebra (Teaser für Lektion 3)</h2>
+        <p>In der relationalen Algebra beschreibt man Operationen auf Relationen, z. B.:</p>
+        <ul>
+            <li><strong>Projektion</strong> (π): Auswahl von Spalten</li>
+            <li><strong>Selektion</strong> (σ): Auswahl von Zeilen</li>
+            <li><strong>Vereinigung</strong> (∪), <strong>Schnitt</strong> (∩), <strong>Differenz</strong> (−)</li>
+        </ul>
+    </div>
+
+    <div>
+        <h3>Aufgabe 1</h3>
+        <p>Was bezeichnet man als <strong>Kardinalität</strong> einer Relation?</p>
+        <textarea id="answer1"></textarea>
+        <button class="btn" onclick="checkAnswer1()">Antwort prüfen</button>
+        <div class="feedback" id="feedback1"></div>
+
+        <h3>Aufgabe 2</h3>
+        <p>Welche Regel sorgt dafür, dass ein Fremdschlüssel gültig ist?</p>
+        <textarea id="answer2"></textarea>
+        <button class="btn" onclick="checkAnswer2()">Antwort prüfen</button>
+        <div class="feedback" id="feedback2"></div>
+
+        <h3>Aufgabe 3</h3>
+        <p>Was ist ein Superschlüssel? Gib ein Beispiel aus einer Kundentabelle.</p>
+        <textarea id="answer3"></textarea>
+        <button class="btn" onclick="checkAnswer3()">Antwort prüfen</button>
+        <div class="feedback" id="feedback3"></div>
+
+        <h3>Aufgabe 4</h3>
+        <p>Multiple Choice: Welche Aussagen über Primärschlüssel sind korrekt?</p>
+        <ul>
+            <li><input type="checkbox" id="mc1"> Ein Primärschlüssel darf NULL-Werte enthalten</li>
+            <li><input type="checkbox" id="mc2"> Jeder Primärschlüssel ist auch ein Superschlüssel</li>
+            <li><input type="checkbox" id="mc3"> Es kann mehrere Primärschlüssel in einer Relation geben</li>
+        </ul>
+        <button class="btn" onclick="checkMC()">Antwort prüfen</button>
+        <div class="feedback" id="feedback4"></div>
+
+        <a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
+    </div>
 </div>
+
+<script>
+    const normalize = s => s.trim().toLowerCase();
+
+    function checkAnswer1() {
+      const input = normalize(document.getElementById("answer1").value);
+      const feedback = document.getElementById("feedback1");
+      if (input.includes("anzahl") && input.includes("tupel")) {
+        feedback.textContent = "✅ Richtig! Die Kardinalität beschreibt die Anzahl der Tupel.";
+        feedback.style.color = '#00f2ff';
+      } else {
+        feedback.textContent = "❌ Nicht ganz. Es geht um die Anzahl der Zeilen (Tupel).";
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkAnswer2() {
+      const input = normalize(document.getElementById("answer2").value);
+      const feedback = document.getElementById("feedback2");
+      if (input.includes("referenzielle integrit")) {
+        feedback.textContent = "✅ Genau! Die referenzielle Integrität schützt Fremdschlüssel.";
+        feedback.style.color = '#00f2ff';
+      } else {
+        feedback.textContent = "❌ Nicht korrekt. Tipp: Es ist eine Integritätsregel.";
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkAnswer3() {
+      const input = normalize(document.getElementById("answer3").value);
+      const feedback = document.getElementById("feedback3");
+      if (input.includes("mehrere") && input.includes("eindeutig")) {
+        feedback.textContent = "✅ Sehr gut! Superschlüssel sind Kombinationen zur eindeutigen Identifikation.";
+        feedback.style.color = '#00f2ff';
+      } else {
+        feedback.textContent = "❌ Nicht ganz. Ein Superschlüssel identifiziert eindeutig – oft mit mehreren Attributen.";
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkMC() {
+      const correct = document.getElementById("mc2").checked &&
+                      !document.getElementById("mc1").checked &&
+                      !document.getElementById("mc3").checked;
+      const feedback = document.getElementById("feedback4");
+      if (correct) {
+        feedback.textContent = "✅ Richtig! Nur Aussage 2 ist korrekt.";
+        feedback.style.color = '#00f2ff';
+      } else {
+        feedback.textContent = "❌ Leider falsch. Nur Aussage 2 ist korrekt.";
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+</script>
 </body>
 </html>

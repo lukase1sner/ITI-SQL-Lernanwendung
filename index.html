@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+    <!-- Zeichensatz und responsive Design -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO & Social Media Vorschau -->
     <meta name="description" content="Lerne SQL auf unterhaltsame Weise – mit interaktiven Lektionen und KI-Bot. Ideal für Anfänger." />
     <meta property="og:title" content="SQLMate – Lerne SQL spielerisch" />
     <meta property="og:description" content="Starte deine SQL-Reise mit interaktiven Aufgaben, KI-Unterstützung und Spaß!" />
+
+    <!-- Titel im Browser-Tab -->
     <title>SQLMate – Lerne SQL spielerisch</title>
+
+    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+
+    <!-- AOS (Animate On Scroll) CSS -->
     <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+
+    <!-- Eingebettetes CSS -->
     <style>
+        /* Grundlegende Resets */
         * {
           box-sizing: border-box;
           margin: 0;
@@ -27,6 +39,7 @@
           overflow: hidden;
         }
 
+        /* Partikelhintergrund */
         #particles-js {
           position: fixed;
           top: 0;
@@ -36,11 +49,13 @@
           z-index: 0;
         }
 
+        /* Z-Index über Partikeln */
         .nav, .main, .footer {
           position: relative;
           z-index: 1;
         }
 
+        /* Navigationsleiste */
         .nav {
           display: flex;
           justify-content: space-between;
@@ -65,6 +80,7 @@
           font-size: 1.5rem;
         }
 
+        /* Hauptbereich */
         .main {
           flex: 1;
           display: flex;
@@ -87,6 +103,7 @@
           margin-bottom: 2rem;
         }
 
+        /* Feature-Boxen */
         .features {
           display: flex;
           gap: 2rem;
@@ -126,6 +143,7 @@
           font-size: 0.85rem;
         }
 
+        /* Call-to-Action Buttons */
         .buttons {
           display: flex;
           gap: 1rem;
@@ -165,6 +183,7 @@
           color: #fff;
         }
 
+        /* Footer-Bereich */
         .footer {
           text-align: center;
           padding: 1rem;
@@ -183,6 +202,7 @@
           text-decoration: underline;
         }
 
+        /* Mobile-Optimierung */
         @media (max-width: 600px) {
           .main h1 {
             font-size: 2rem;
@@ -195,7 +215,11 @@
     </style>
 </head>
 <body>
+
+<!-- Partikel-Animation im Hintergrund -->
 <div id="particles-js"></div>
+
+<!-- Navigation -->
 <nav class="nav">
     <div class="logo">SQLMate</div>
     <div>
@@ -204,10 +228,12 @@
     </div>
 </nav>
 
+<!-- Hauptinhalt -->
 <main class="main">
     <h1>Willkommen bei SQLMate.</h1>
     <p>Lerne SQL spielerisch und interaktiv mit sofortigem Feedback und KI-Unterstützung.</p>
 
+    <!-- Feature-Sektion -->
     <div class="features">
         <div class="feature" data-aos="fade-up">
             <img src="https://www.svgrepo.com/show/518991/rocketbook.svg" alt="XP sammeln" />
@@ -226,22 +252,30 @@
         </div>
     </div>
 
+    <!-- CTA-Buttons -->
     <div class="buttons">
         <a href="signupFrontend/signup.html" class="btn">Jetzt kostenlos starten</a>
         <a href="loginFrontend/login.html" class="btn">Login</a>
     </div>
-
-
 </main>
 
+<!-- Footer mit Impressum etc. -->
 <footer class="footer">
-    <p>&copy; 2025 SQLMate. <a href="impressum.html">Impressum</a> | <a href="datenschutz.html">Datenschutz</a> | <a href="mailto:kontakt@sqlmate.de">Kontakt</a></p>
+    <p>&copy; 2025 SQLMate.
+        <a href="impressum.html">Impressum</a> |
+        <a href="datenschutz.html">Datenschutz</a> |
+        <a href="mailto:kontakt@sqlmate.de">Kontakt</a>
+    </p>
 </footer>
 
+<!-- JavaScript: Partikel & AOS-Animation -->
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script>
+    // AOS (Scrollanimationen) initialisieren
     AOS.init();
+
+    // Partikelanimation konfigurieren
     particlesJS("particles-js", {
       particles: {
         number: { value: 80, density: { enable: true, value_area: 800 } },
@@ -254,7 +288,7 @@
           distance: 150,
           color: "#00f2ff",
           opacity: 0.4,
-          width: 1,
+          width: 1
         },
         move: { enable: true, speed: 2 }
       },
@@ -262,7 +296,7 @@
         detect_on: "canvas",
         events: {
           onhover: { enable: true, mode: "repulse" },
-          onclick: { enable: true, mode: "push" },
+          onclick: { enable: true, mode: "push" }
         },
         modes: {
           repulse: { distance: 100 },

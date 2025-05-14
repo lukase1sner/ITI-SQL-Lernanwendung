@@ -3,15 +3,228 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lektion 1 – SELECT</title>
+    <title>Lektion 3 – Relationale Algebra</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+          background: linear-gradient(135deg, #0b0e1a, #11142d);
+          color: #f0f0f0;
+          font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+        }
+        .lesson-container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 4rem auto;
+          background: rgba(20, 24, 40, 0.97);
+          padding: 2.5rem 3rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        h1, h2, h3 {
+          color: #00f2ff;
+        }
+        p, li {
+          line-height: 1.6;
+        }
+        pre, code {
+          background-color: #1f223a;
+          padding: 0.6rem 1rem;
+          border-radius: 0.5rem;
+          display: block;
+          overflow-x: auto;
+        }
+        .table-img {
+          width: 100%;
+          max-width: 480px;
+          margin: 1rem 0;
+          border-radius: 0.5rem;
+          border: 1px solid #2a2f50;
+        }
+        textarea {
+          width: 100%;
+          padding: 1rem;
+          font-family: monospace;
+          font-size: 1rem;
+          border-radius: 0.5rem;
+          background-color: #1a1e33;
+          color: white;
+          border: none;
+          margin-top: 1rem;
+        }
+        .btn {
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background-color: #8b5cf6;
+          color: white;
+          border: none;
+          border-radius: 1rem;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+        }
+        .btn:hover {
+          background-color: #a78bfa;
+          transform: scale(1.03);
+        }
+        .btn-secondary {
+          display: inline-block;
+          background-color: #2d2f45;
+          color: #e0e0e0;
+          padding: 0.6rem 1.2rem;
+          border-radius: 0.6rem;
+          text-decoration: none;
+          font-weight: 500;
+          margin-top: 1rem;
+        }
+        .feedback {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+        .hidden {
+          display: none;
+        }
+        @media (min-width: 992px) {
+          .lesson-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+          }
+          .lesson-container > *:first-child {
+            grid-column: 1 / -1;
+          }
+        }
+    </style>
 </head>
 <body>
-<div class="main-content">
-    <h1>Lektion 1: SELECT</h1>
-    <p>Hier kommt später der Inhalt zu <code>SELECT</code> hin.</p>
+<div class="lesson-container">
+    <h1>Lektion 3: Relationale Algebra – Operationen auf Tabellen</h1>
 
-    <a href="dashboard.html" class="btn-glow">Zurück zum Dashboard</a>
+    <div>
+        <h2>Was ist relationale Algebra?</h2>
+        <p>Die relationale Algebra ist ein fundamentales Konzept aus der theoretischen Informatik und Datenbanklehre. Sie bildet die Basis für die Formulierung von Anfragen in relationalen Datenbanksystemen. Alle SQL-Abfragen lassen sich auch in äquivalente algebraische Ausdrücke überführen.</p>
+
+        <h2>Grundoperationen mit Symbolen</h2>
+        <ul>
+            <li><strong>σ (Selektion)</strong>: Filtert Zeilen anhand einer Bedingung<br><code>σ Ort = 'Berlin' (Kunde)</code></li>
+            <li><strong>π (Projektion)</strong>: Gibt bestimmte Spalten zurück<br><code>π Name, Ort (Kunde)</code></li>
+            <li><strong>∪ (Vereinigung)</strong>: Kombination von zwei Relationen mit gleicher Struktur<br><code>Kunden_Nord ∪ Kunden_Süd</code></li>
+            <li><strong>− (Differenz)</strong>: Zeilen in A, aber nicht in B<br><code>A − B</code></li>
+            <li><strong>× (Kartesisches Produkt)</strong>: Kombination jeder Zeile aus zwei Tabellen</li>
+        </ul>
+
+        <h2>Erweiterte Operationen</h2>
+        <ul>
+            <li><strong>⨝ (Join)</strong>: Verknüpft Tabellen über gemeinsame Attribute<br><code>Kunde ⨝ Bestellung</code></li>
+            <li><strong>ρ (Umbenennung)</strong>: Benennt eine Relation oder Spalte um</li>
+        </ul>
+
+        <h3>Tabellenbeispiel: Kunde</h3>
+        <pre><code>Kunde(KNr, Name, Ort)
++------+----------+--------+
+| 101  | Meier    | Berlin |
+| 102  | Schulz   | Köln   |
+| 103  | Becker   | Berlin |
++------+----------+--------+</code></pre>
+
+        <h3>Tabellenbeispiel: Bestellung</h3>
+        <pre><code>Bestellung(BNr, KNr, Artikel)
++------+-------+------------+
+| 1    | 101   | Maus       |
+| 2    | 103   | Tastatur   |
+| 3    | 101   | Monitor    |
++------+-------+------------+</code></pre>
+
+        <h3>Beispielausdruck</h3>
+        <code>π Artikel (σ Ort = 'Berlin' (Kunde ⨝ Bestellung))</code>
+        <p><em>Gibt alle Artikel zurück, die von Kunden aus Berlin bestellt wurden.</em></p>
+    </div>
+
+    <div>
+        <h3>Aufgabe 1</h3>
+        <p>Wie lautet der Ausdruck, um alle <strong>Artikel von Kunde 101</strong> zu ermitteln?</p>
+        <textarea id="answer1"></textarea>
+        <button class="btn" onclick="checkAnswer1()">Antwort prüfen</button>
+        <div class="feedback" id="feedback1"></div>
+
+        <h3>Aufgabe 2</h3>
+        <p>Was bewirkt die <strong>Projektion (π)</strong> in der relationalen Algebra?</p>
+        <textarea id="answer2"></textarea>
+        <button class="btn" onclick="checkAnswer2()">Antwort prüfen</button>
+        <div class="feedback" id="feedback2"></div>
+
+        <h3>Aufgabe 3</h3>
+        <p>Was liefert der Ausdruck <code>π Artikel (σ KNr = 101 (Bestellung))</code>?</p>
+        <textarea id="answer3"></textarea>
+        <button class="btn" onclick="checkAnswer3()">Antwort prüfen</button>
+        <div class="feedback" id="feedback3"></div>
+
+        <h3>Aufgabe 4</h3>
+        <p>Erkläre den Ausdruck: <code>π Name (σ Artikel = 'Maus' (Kunde ⨝ Bestellung))</code></p>
+        <textarea id="answer4"></textarea>
+        <button class="btn" onclick="checkAnswer4()">Antwort prüfen</button>
+        <div class="feedback" id="feedback4"></div>
+
+        <a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
+    </div>
 </div>
+
+<script>
+    const normalize = s => s.trim().toLowerCase();
+
+    function checkAnswer1() {
+      const input = normalize(document.getElementById("answer1").value);
+      const feedback = document.getElementById("feedback1");
+      if (input.includes("π") && input.includes("artikel") && input.includes("σ") && input.includes("knr = 101")) {
+        feedback.textContent = "✅ Richtig! Du kombinierst Selektion und Projektion korrekt.";
+        feedback.style.color = '#00f2ff';
+      } else {
+        feedback.textContent = "❌ Nicht ganz. Denke an: σ KNr = 101 und dann π Artikel.";
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkAnswer2() {
+      const input = normalize(document.getElementById("answer2").value);
+      const feedback = document.getElementById("feedback2");
+      if (input.includes("spalte") || input.includes("spalten")) {
+        feedback.textContent = "✅ Genau! Die Projektion wählt bestimmte Spalten aus.";
+        feedback.style.color = '#00f2ff';
+      } else {
+        feedback.textContent = "❌ Nicht korrekt. Projektion betrifft die Auswahl von Spalten.";
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkAnswer3() {
+      const input = normalize(document.getElementById("answer3").value);
+      const feedback = document.getElementById("feedback3");
+      if (input.includes("artikel") && input.includes("kunde") && input.includes("101")) {
+        feedback.textContent = "✅ Richtig! Die gesuchten Artikel von Kunde 101.";
+        feedback.style.color = '#00f2ff';
+      } else {
+        feedback.textContent = "❌ Nicht ganz. Überlege, was die Bedingung KNr = 101 filtert.";
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkAnswer4() {
+      const input = normalize(document.getElementById("answer4").value);
+      const feedback = document.getElementById("feedback4");
+      if (input.includes("kunden") && input.includes("maus") && input.includes("name")) {
+        feedback.textContent = "✅ Korrekt! Es werden die Namen aller Kunden ausgegeben, die eine Maus bestellt haben.";
+        feedback.style.color = '#00f2ff';
+      } else {
+        feedback.textContent = "❌ Nicht ganz. Gesucht sind Kundennamen zu Artikel 'Maus'.";
+        feedback.style.color = '#ff6b6b';
+      }
+    }
+</script>
 </body>
 </html>

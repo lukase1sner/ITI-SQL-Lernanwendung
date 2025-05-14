@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lektion 10 – Tabellen verknüpfen mit JOIN</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+          background: linear-gradient(135deg, #0b0e1a, #11142d);
+          color: #f0f0f0;
+          font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+        }
+        .lesson-container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 4rem auto;
+          background: rgba(20, 24, 40, 0.97);
+          padding: 2.5rem 3rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        h1, h2, h3 {
+          color: #00f2ff;
+        }
+        p, li {
+          line-height: 1.6;
+        }
+        pre, code {
+          background-color: #1f223a;
+          padding: 0.6rem 1rem;
+          border-radius: 0.5rem;
+          display: block;
+          overflow-x: auto;
+        }
+        textarea {
+          width: 100%;
+          padding: 1rem;
+          font-family: monospace;
+          font-size: 1rem;
+          border-radius: 0.5rem;
+          background-color: #1a1e33;
+          color: white;
+          border: none;
+          margin-top: 1rem;
+        }
+        .btn {
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background-color: #8b5cf6;
+          color: white;
+          border: none;
+          border-radius: 1rem;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 0 15px #8b5cf670;
+          transition: all 0.3s ease;
+        }
+        .btn:hover {
+          background-color: #a78bfa;
+          transform: scale(1.03);
+        }
+        .feedback {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="lesson-container">
+    <h1>Lektion 10: Tabellen verknüpfen mit JOIN</h1>
+
+    <h2>Was ist ein JOIN?</h2>
+    <p>Ein JOIN verbindet zwei Tabellen logisch miteinander. Dabei entsteht eine neue Ergebnistabelle, in der die Daten kombiniert angezeigt werden.</p>
+
+    <h2>Beispiel: Kunden & Bestellungen</h2>
+    <pre><code>SELECT *
+FROM Kunde
+JOIN Bestellung ON Kunde.ID = Bestellung.KdNr;</code></pre>
+    <p>Diese Abfrage kombiniert alle Datensätze aus <code>Kunde</code> und <code>Bestellung</code>, bei denen die Kundennummern übereinstimmen.</p>
+
+    <h3>JOIN-Arten</h3>
+    <ul>
+        <li><strong>INNER JOIN</strong> – nur Datensätze mit Übereinstimmungen</li>
+        <li><strong>LEFT JOIN</strong> – alle Datensätze der linken Tabelle, auch wenn es rechts keine gibt</li>
+        <li><strong>RIGHT JOIN</strong> – umgekehrt zum LEFT JOIN</li>
+        <li><strong>FULL JOIN</strong> – alle Datensätze beider Tabellen</li>
+    </ul>
+
+    <h2>Vertiefung: LEFT JOIN</h2>
+    <p>Der <strong>LEFT JOIN</strong> (auch: LEFT OUTER JOIN) zeigt alle Zeilen der linken Tabelle – selbst wenn in der rechten Tabelle keine passenden Werte existieren. Das ist nützlich, um z. B. alle Kunden anzuzeigen, auch solche ohne Bestellung.</p>
+
+    <pre><code>SELECT Kunde.Name, Bestellung.Betrag
+FROM Kunde
+LEFT JOIN Bestellung ON Kunde.ID = Bestellung.KdNr;</code></pre>
+
+    <p>Das Ergebnis zeigt:</p>
+    <ul>
+        <li>Kunden mit passenden Bestellungen – <code>Betrag</code> ist gefüllt</li>
+        <li>Kunden ohne Bestellung – <code>Betrag</code> ist <code>NULL</code></li>
+    </ul>
+
+    <p><strong>Beispiel:</strong> Wenn "Frank" kein Eintrag in der Tabelle <code>Bestellung</code> hat, wird er trotzdem mit <code>Betrag = NULL</code> aufgeführt.</p>
+
+    <h2>Beispiel-Datensätze</h2>
+    <pre><code>-- Kunde --
+ID | Name  | Ort
+---+-------+--------
+1  | Anna  | Köln
+2  | Bernd | Berlin
+4  | David | Köln
+
+-- Bestellung --
+BstID | KdNr | Betrag
+------+------|--------
+101   | 1    | 250.00
+102   | 2    | 125.00
+104   | 4    | 300.00
+</code></pre>
+
+    <h3>Aufgabe 1</h3>
+    <p>Führe einen JOIN zwischen Kunde und Bestellung durch.</p>
+    <textarea id="a1"></textarea>
+    <button class="btn" onclick="checkA1()">Antwort prüfen</button>
+    <div class="feedback" id="f1"></div>
+
+    <h3>Aufgabe 2</h3>
+    <p>Zeige nur die Namen der Kunden mit Bestellbetrag.</p>
+    <textarea id="a2"></textarea>
+    <button class="btn" onclick="checkA2()">Antwort prüfen</button>
+    <div class="feedback" id="f2"></div>
+
+    <a href="dashboard.html" class="btn btn-secondary">← Zurück zum Dashboard</a>
+</div>
+
+<script>
+    const normalize = s => s.trim().toLowerCase().replaceAll(';', '').replace(/\s+/g, ' ');
+
+    function checkA1() {
+      const input = normalize(document.getElementById('a1').value);
+      const f = document.getElementById('f1');
+      if (input.includes('join') && input.includes('kunde') && input.includes('bestellung') && input.includes('on')) {
+        f.textContent = '✅ Richtig! JOIN korrekt verwendet.';
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = '❌ Hinweis: JOIN Kunde und Bestellung ON Kunde.ID = Bestellung.KdNr';
+        f.style.color = '#ff6b6b';
+      }
+    }
+
+    function checkA2() {
+      const input = normalize(document.getElementById('a2').value);
+      const f = document.getElementById('f2');
+      if (input.includes('select') && input.includes('name') && input.includes('betrag') && input.includes('join')) {
+        f.textContent = '✅ Korrekt! Nur die benötigten Spalten gewählt.';
+        f.style.color = '#00f2ff';
+      } else {
+        f.textContent = '❌ Denk an: SELECT Name, Betrag FROM Kunde JOIN Bestellung ON ...';
+        f.style.color = '#ff6b6b';
+      }
+    }
+</script>
+</body>
+</html>
