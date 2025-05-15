@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lektion 13 – Datenbank aufsetzen</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #0b0e1a, #11142d);
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .lesson-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 4rem auto;
+      background: rgba(20, 24, 40, 0.97);
+      padding: 2.5rem 3rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+    }
+    h1, h2, h3 {
+      color: #00f2ff;
+    }
+    p, li {
+      line-height: 1.6;
+    }
+    pre, code {
+      background-color: #1f223a;
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+      display: block;
+      overflow-x: auto;
+    }
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      background-color: #1a1e33;
+      color: white;
+      border: none;
+      margin-top: 1rem;
+    }
+    .btn {
+      margin-top: 1rem;
+      padding: 0.8rem 1.5rem;
+      background-color: #8b5cf6;
+      color: white;
+      border: none;
+      border-radius: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 15px #8b5cf670;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #a78bfa;
+      transform: scale(1.03);
+    }
+    .feedback {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="lesson-container">
+  <h1>Lektion 13: Datenbank aufsetzen</h1>
+
+  <h2>Einführung</h2>
+  <p>Bevor man SQL-Befehle nutzen kann, muss eine **Datenbank eingerichtet** werden. In dieser Lektion lernst du, wie man eine neue Datenbank erstellt, eine Tabelle anlegt und erste Daten einfügt.</p>
+
+  <h2>Schritt 1: Datenbank erstellen</h2>
+  <p>Eine neue Datenbank wird mit folgendem Befehl erstellt:</p>
+  <pre><code>CREATE DATABASE Shop;</code></pre>
+
+  <h2>Schritt 2: Datenbank auswählen</h2>
+  <p>Danach musst du die Datenbank aktivieren, damit SQL-Befehle auf sie wirken:</p>
+  <pre><code>USE Shop;</code></pre>
+
+  <h2>Schritt 3: Tabelle erstellen</h2>
+  <p>Jetzt kannst du z. B. eine Tabelle <code>Produkte</code> anlegen:</p>
+  <pre><code>CREATE TABLE Produkte (
+  ID INT PRIMARY KEY,
+  Name VARCHAR(100),
+  Preis DECIMAL(10,2)
+);</code></pre>
+
+  <h2>Schritt 4: Daten einfügen</h2>
+  <pre><code>INSERT INTO Produkte (ID, Name, Preis)
+VALUES (1, 'Tastatur', 29.99);</code></pre>
+
+  <h2>Beispiel-Datenbankstruktur</h2>
+  <pre><code>+----+-----------+--------+
+| ID | Name      | Preis  |
++----+-----------+--------+
+| 1  | Tastatur  | 29.99  |
++----+-----------+--------+</code></pre>
+
+  <h3>🧠 Aufgabe 1</h3>
+  <p>Erstelle eine Datenbank mit dem Namen <code>Buchladen</code>.</p>
+  <textarea id="a1"></textarea>
+  <button class="btn" onclick="checkA1()">Antwort prüfen</button>
+  <div class="feedback" id="f1"></div>
+
+  <h3>🧠 Aufgabe 2</h3>
+  <p>Lege eine Tabelle <code>Buecher</code> mit den Spalten <code>ID</code> (INT), <code>Titel</code> (VARCHAR) und <code>Autor</code> (VARCHAR) an.</p>
+  <textarea id="a2"></textarea>
+  <button class="btn" onclick="checkA2()">Antwort prüfen</button>
+  <div class="feedback" id="f2"></div>
+
+  <a href="dashboard.html" class="btn btn-secondary">← Zurück zum Dashboard</a>
+</div>
+
+<script>
+  const normalize = s => s.trim().toLowerCase().replaceAll(';', '').replace(/\s+/g, ' ');
+
+  function checkA1() {
+    const input = normalize(document.getElementById('a1').value);
+    const f = document.getElementById('f1');
+    if (input.includes('create database') && input.includes('buchladen')) {
+      f.textContent = '✅ Super! Die Datenbank "Buchladen" wurde erstellt.';
+      f.style.color = '#00f2ff';
+    } else {
+      f.textContent = '❌ Hinweis: CREATE DATABASE Buchladen;';
+      f.style.color = '#ff6b6b';
+    }
+  }
+
+  function checkA2() {
+    const input = normalize(document.getElementById('a2').value);
+    const f = document.getElementById('f2');
+    if (input.includes('create table') && input.includes('buecher') &&
+        input.includes('id int') && input.includes('titel') && input.includes('autor')) {
+      f.textContent = '✅ Richtig! Tabelle Buecher wurde korrekt definiert.';
+      f.style.color = '#00f2ff';
+    } else {
+      f.textContent = '❌ Beispiel: CREATE TABLE Buecher (ID INT, Titel VARCHAR(100), Autor VARCHAR(100));';
+      f.style.color = '#ff6b6b';
+    }
+  }
+</script>
+</body>
+</html>
