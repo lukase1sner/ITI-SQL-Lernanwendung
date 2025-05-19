@@ -149,11 +149,12 @@ Beziehung: aufgegebenVon – verbindet Bestellung und Kunde</code></pre>
       const e3 = document.getElementById("e3").checked;
       const e4 = document.getElementById("e4").checked;
       const f = document.getElementById("f1");
-      if (e1 && !e2 && e3 && e4) {
+      if (e1) {
         f.textContent = "✅ Richtig! Entität, Beziehung und Attribut sind Bestandteile des ER-Modells.";
         f.style.color = '#00f2ff';
       } else {
-        f.textContent = "❌ Nicht ganz. Tipp: Primärschlüssel gehört eher zu Relationen.";
+        f.textContent = "❌ Nicht ganz. Tipp: Achte auf den Namen ER.";
+        
         f.style.color = '#ff6b6b';
       }
     }
