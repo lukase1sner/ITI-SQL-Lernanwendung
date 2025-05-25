@@ -4,150 +4,158 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lektion 13 – Datenbank aufsetzen</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      background: linear-gradient(135deg, #0b0e1a, #11142d);
-      color: #f0f0f0;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-    }
-    .lesson-container {
-      width: 90%;
-      max-width: 1200px;
-      margin: 4rem auto;
-      background: rgba(20, 24, 40, 0.97);
-      padding: 2.5rem 3rem;
-      border-radius: 1.5rem;
-      box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
-    }
-    h1, h2, h3 {
-      color: #00f2ff;
-    }
-    p, li {
-      line-height: 1.6;
-    }
-    pre, code {
-      background-color: #1f223a;
-      padding: 0.6rem 1rem;
-      border-radius: 0.5rem;
-      display: block;
-      overflow-x: auto;
-    }
-    textarea {
-      width: 100%;
-      padding: 1rem;
-      font-family: monospace;
-      font-size: 1rem;
-      border-radius: 0.5rem;
-      background-color: #1a1e33;
-      color: white;
-      border: none;
-      margin-top: 1rem;
-    }
-    .btn {
-      margin-top: 1rem;
-      padding: 0.8rem 1.5rem;
-      background-color: #8b5cf6;
-      color: white;
-      border: none;
-      border-radius: 1rem;
-      cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 0 15px #8b5cf670;
-      transition: all 0.3s ease;
-    }
-    .btn:hover {
-      background-color: #a78bfa;
-      transform: scale(1.03);
-    }
-    .feedback {
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="lektion13.css" />
+
+  <!-- CodeMirror + Confetti -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material-darker.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/sql/sql.min.js"></script>
 </head>
 <body>
-<div class="lesson-container">
-  <h1>Lektion 13: Datenbank aufsetzen</h1>
+  <div class="container">
+    <header>
+      <h1>Lektion 13: Datenbank aufsetzen</h1>
+    </header>
 
-  <h2>Einführung</h2>
-  <p>Bevor man SQL-Befehle nutzen kann, muss eine **Datenbank eingerichtet** werden. In dieser Lektion lernst du, wie man eine neue Datenbank erstellt, eine Tabelle anlegt und erste Daten einfügt.</p>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+    </div>
 
-  <h2>Schritt 1: Datenbank erstellen</h2>
-  <p>Eine neue Datenbank wird mit folgendem Befehl erstellt:</p>
-  <pre><code>CREATE DATABASE Shop;</code></pre>
+    <div class="tab-buttons">
+      <button id="btn-einleitung" onclick="showTab('einleitung')">📘 Einführung</button>
+      <button id="btn-datenbank" onclick="showTab('datenbank')">📂 Datenbank erstellen</button>
+      <button id="btn-tabelle" onclick="showTab('tabelle')">📑 Tabelle anlegen</button>
+      <button id="btn-einfuegen" onclick="showTab('einfuegen')">➕ Daten einfügen</button>
+      <button id="btn-abfragen" onclick="showTab('abfragen')">🔍 Daten gezielt abfragen</button>
+      <button id="btn-aktualisieren" onclick="showTab('aktualisieren')">🛠️ Daten aktualisieren</button>
+      <button id="btn-loeschen" onclick="showTab('loeschen')">🗑️ Daten löschen</button>
+      <button id="btn-quiz" onclick="showTab('quiz')">🎓 Quiz</button>
+    </div>
 
-  <h2>Schritt 2: Datenbank auswählen</h2>
-  <p>Danach musst du die Datenbank aktivieren, damit SQL-Befehle auf sie wirken:</p>
-  <pre><code>USE Shop;</code></pre>
+    <!-- 📘 Einführung -->
+    <div id="einleitung" class="tab-content">
+      <h2>Einführung: Eine Datenbank Schritt für Schritt aufsetzen</h2>
+      <p>In dieser Lektion lernst du Schritt für Schritt, wie du eine SQL-Datenbank aufsetzt und grundlegende Befehle anwendest:</p>
+      <ul>
+        <li>Datenbank erstellen</li>
+        <li>Tabellen anlegen</li>
+        <li>Daten einfügen</li>
+        <li>Daten gezielt abfragen</li>
+        <li>Daten aktualisieren</li>
+        <li>Daten löschen</li>
+      </ul>
+      <h3>Kurzes Video zum Einstieg:</h3>
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/9LQ9rGoGfYQ" frameborder="0" allowfullscreen></iframe>
+    </div>
 
-  <h2>Schritt 3: Tabelle erstellen</h2>
-  <p>Jetzt kannst du z. B. eine Tabelle <code>Produkte</code> anlegen:</p>
-  <pre><code>CREATE TABLE Produkte (
+    <!-- 📂 Datenbank erstellen -->
+    <div id="datenbank" class="tab-content" style="display: none;">
+      <h2>📂 Datenbank erstellen</h2>
+      <p>Mit dem Befehl <code>CREATE DATABASE</code> legst du eine neue Datenbank an.</p>
+      <h3>Beispiel:</h3>
+      <pre><code>CREATE DATABASE Werkstatt;</code></pre>
+      <h3>✏️ Aufgabe:</h3>
+      <p>Erstelle eine Datenbank mit dem Namen <code>Autohaus</code>.</p>
+      <div id="editorA1" class="editor-box"></div>
+      <button onclick="checkA1()">Antwort prüfen</button>
+      <div class="feedback" id="f1"></div>
+    </div>
+
+    <!-- 📑 Tabelle anlegen -->
+    <div id="tabelle" class="tab-content" style="display: none;">
+      <h2>📑 Tabelle anlegen</h2>
+      <p>Mit dem Befehl <code>CREATE TABLE</code> legst du Tabellen in deiner Datenbank an.</p>
+
+      <div class="beispiel-box">
+        <h3>Beispiel:</h3>
+        <p>Diese Tabelle speichert Kundendaten:</p>
+        <pre><code>CREATE TABLE Kunden (
   ID INT PRIMARY KEY,
-  Name VARCHAR(100),
-  Preis DECIMAL(10,2)
+  Vorname VARCHAR(50),
+  Nachname VARCHAR(50),
+  Email VARCHAR(100)
 );</code></pre>
+      </div>
 
-  <h2>Schritt 4: Daten einfügen</h2>
-  <pre><code>INSERT INTO Produkte (ID, Name, Preis)
-VALUES (1, 'Tastatur', 29.99);</code></pre>
+      <div class="aufgaben-box">
+        <h3>✏️ Aufgabe:</h3>
+        <p>Erstelle eine Tabelle <code>Fahrzeuge</code> mit folgenden Spalten:</p>
+        <ul>
+          <li><code>ID</code> (INT)</li>
+          <li><code>Marke</code> (VARCHAR(50))</li>
+          <li><code>Modell</code> (VARCHAR(50))</li>
+          <li><code>Preis</code> (INT)</li>
+        </ul>
 
-  <h2>Beispiel-Datenbankstruktur</h2>
-  <pre><code>+----+-----------+--------+
-| ID | Name      | Preis  |
-+----+-----------+--------+
-| 1  | Tastatur  | 29.99  |
-+----+-----------+--------+</code></pre>
+        <div id="editorA2" class="editor-box"></div>
+        <button onclick="checkA2()">Antwort prüfen</button>
+        <div class="feedback" id="f2"></div>
+      </div>
+    </div>
 
-  <h3>🧠 Aufgabe 1</h3>
-  <p>Erstelle eine Datenbank mit dem Namen <code>Buchladen</code>.</p>
-  <textarea id="a1"></textarea>
-  <button class="btn" onclick="checkA1()">Antwort prüfen</button>
-  <div class="feedback" id="f1"></div>
+    <!-- ➕ Daten einfügen -->
+    <div id="einfuegen" class="tab-content" style="display: none;">
+      <h2>➕ Daten einfügen</h2>
+      <p>Mit dem Befehl <code>INSERT INTO</code> kannst du neue Datensätze in eine Tabelle einfügen.</p>
 
-  <h3>🧠 Aufgabe 2</h3>
-  <p>Lege eine Tabelle <code>Buecher</code> mit den Spalten <code>ID</code> (INT), <code>Titel</code> (VARCHAR) und <code>Autor</code> (VARCHAR) an.</p>
-  <textarea id="a2"></textarea>
-  <button class="btn" onclick="checkA2()">Antwort prüfen</button>
-  <div class="feedback" id="f2"></div>
+      <div class="beispiel-box">
+        <h3>Beispiel:</h3>
+        <p>Füge einen Kunden zur Tabelle <code>Kunden</code> hinzu:</p>
+        <pre><code>INSERT INTO Kunden (ID, Vorname, Nachname, Email)
+VALUES (1, 'Max', 'Muster', 'max@example.com');</code></pre>
+      </div>
 
-  <a href="dashboard.html" class="btn btn-secondary">← Zurück zum Dashboard</a>
-</div>
+      <div class="aufgaben-box">
+        <h3>✏️ Aufgabe:</h3>
+        <p>Füge folgendes Fahrzeug in die Tabelle <code>Fahrzeuge</code> ein:</p>
+        <ul>
+          <li><strong>ID:</strong> 1</li>
+          <li><strong>Marke:</strong> 'Audi'</li>
+          <li><strong>Modell:</strong> 'A3'</li>
+          <li><strong>Preis:</strong> 23990</li>
+        </ul>
 
-<script>
-  const normalize = s => s.trim().toLowerCase().replaceAll(';', '').replace(/\s+/g, ' ');
+        <div id="editorA3" class="editor-box"></div>
+        <button onclick="checkA3()">Antwort prüfen</button>
+        <div class="feedback" id="f3"></div>
+      </div>
+    </div>
 
-  function checkA1() {
-    const input = normalize(document.getElementById('a1').value);
-    const f = document.getElementById('f1');
-    if (input.includes('create database') && input.includes('buchladen')) {
-      f.textContent = '✅ Super! Die Datenbank "Buchladen" wurde erstellt.';
-      f.style.color = '#00f2ff';
-    } else {
-      f.textContent = '❌ Hinweis: CREATE DATABASE Buchladen;';
-      f.style.color = '#ff6b6b';
-    }
-  }
+    <!-- 🔍 Daten gezielt abfragen -->
+    <div id="abfragen" class="tab-content" style="display: none;">
+      <h2>🔍 Daten gezielt abfragen</h2>
+      <p>Mit dem Befehl <code>SELECT</code> kannst du Daten aus einer Tabelle auslesen.</p>
 
-  function checkA2() {
-    const input = normalize(document.getElementById('a2').value);
-    const f = document.getElementById('f2');
-    if (input.includes('create table') && input.includes('buecher') &&
-        input.includes('id int') && input.includes('titel') && input.includes('autor')) {
-      f.textContent = '✅ Richtig! Tabelle Buecher wurde korrekt definiert.';
-      f.style.color = '#00f2ff';
-    } else {
-      f.textContent = '❌ Beispiel: CREATE TABLE Buecher (ID INT, Titel VARCHAR(100), Autor VARCHAR(100));';
-      f.style.color = '#ff6b6b';
-    }
-  }
-</script>
+      <div class="beispiel-box">
+        <h3>Beispiel:</h3>
+        <p>Alle Fahrzeuge anzeigen:</p>
+        <pre><code>SELECT * FROM Fahrzeuge;</code></pre>
+        <p>Nur Marke und Modell anzeigen:</p>
+        <pre><code>SELECT Marke, Modell FROM Fahrzeuge;</code></pre>
+      </div>
+
+      <div class="aufgaben-box">
+        <h3>✏️ Aufgabe:</h3>
+        <p>Zeige alle Daten vom Fahrzeug mit der <strong>ID 1</strong> an.</p>
+
+        <div id="editorA4" class="editor-box"></div>
+        <button onclick="checkA4()">Antwort prüfen</button>
+        <div class="feedback" id="f4"></div>
+      </div>
+    </div>
+
+    <!-- Platzhalter für weitere Schritte -->
+    <div id="aktualisieren" class="tab-content" style="display: none;"><h2>🛠️ Daten aktualisieren</h2></div>
+    <div id="loeschen" class="tab-content" style="display: none;"><h2>🗑️ Daten löschen</h2></div>
+    <div id="quiz" class="tab-content" style="display: none;"><h2>🎓 Quiz</h2></div>
+
+    <footer style="text-align: center;">
+      <a href="dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="lektion13.js"></script>
 </body>
 </html>

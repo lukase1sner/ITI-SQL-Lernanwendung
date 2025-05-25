@@ -1,0 +1,145 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0b0e1a, #11142d);
+    color: #f0f0f0;
+  }
+  
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  h1, h2 {
+    color: #00f2ff;
+  }
+  
+  .tab-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
+  }
+  
+  .tab-buttons button {
+    background: #1a1e33;
+    border: 2px solid #00f2ff;
+    color: #00f2ff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap;
+    min-width: 160px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .tab-buttons button.active {
+    background-color: #00f2ff;
+    color: #11142d;
+    transform: scale(1.05);
+  }
+  
+  .tab-content {
+    background: #1c1f35;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  pre, code {
+    background: #1f223a;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    display: block;
+  }
+  
+  .editor-box .CodeMirror {
+    height: auto !important;
+    min-height: 80px;
+    max-height: 150px;
+    font-size: 0.95rem;
+  }
+  
+  button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    background: #a78bfa;
+  }
+  
+  .feedback {
+    margin-top: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .progress-container {
+    background: #1f223a;
+    border-radius: 5px;
+    height: 10px;
+    margin-bottom: 2rem;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    background: #00f2ff;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+  
+  /* Beispiel- und Aufgabenboxen */
+  .beispiel-box, .aufgaben-box {
+    background-color: #2a2d47;
+    padding: 1.2rem 1.5rem;
+    border-radius: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .beispiel-box pre,
+  .aufgaben-box pre {
+    background: #1f223a;
+    margin-top: 0.8rem;
+  }
+  
+  .aufgaben-box ul {
+    margin-top: 0.8rem;
+    margin-bottom: 1rem;
+    padding-left: 1.2rem;
+  }
+  
+  .aufgaben-box ul li {
+    margin-bottom: 0.4rem;
+  }
+  
+  /* Zurück-zum-Dashboard-Button */
+  .btn-dashboard {
+    display: inline-block;
+    background-color: #8b5cf6;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 2rem;
+  }
+  
+  .btn-dashboard:hover {
+    background-color: #a78bfa;
+    transform: scale(1.05);
+  }
+  
