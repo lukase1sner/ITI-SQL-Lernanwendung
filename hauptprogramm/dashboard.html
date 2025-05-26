@@ -11,7 +11,15 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <style>
+  <style> 
+  .sidebar img {
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+.sidebar img:hover {
+  transform: scale(1.1);
+}
+
     .card:hover {
       transform: scale(1.02);
       box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
@@ -73,7 +81,11 @@
 <body>
 <!-- Sidebar -->
 <div class="sidebar">
-  <h2>SQLMate</h2>
+  <div class="d-flex align-items-center gap-2 ps-3 pt-3">
+    <img src="sqlmate-bot.png" alt="Bot" style="height: 40px; width: auto;" />
+    <h2 class="mb-0" style="color: #00f2ff;">SQLMate</h2>
+  </div>
+  
   <a href="#dashboard"><i data-lucide="compass"></i> Dashboard</a>
   <a href="#chatbot"><i data-lucide="bot"></i> Chatbot lernen</a>
   <a href="#fortschritt"><i data-lucide="bar-chart-3"></i> Fortschritt</a>
