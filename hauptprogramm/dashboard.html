@@ -12,16 +12,25 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* Basis-Layout & Hintergrund */
     html, body {
       font-family: 'Inter', sans-serif;
       background: #0b0e1a;
       color: #fff;
-      position: relative;
-      overflow-x: hidden;
+      height: 100%;
       min-height: 100vh;
+      margin: 0;
+      padding: 0;
     }
-  
+
+    body {
+      min-height: 100vh;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
     #particles-js {
       position: fixed;
       top: 0;
@@ -30,59 +39,92 @@
       height: 100%;
       z-index: 0;
     }
-  
+
     .dashboard-wrapper {
       display: flex;
-      min-height: 100vh;
+      flex: 1 0 auto;
+      min-height: calc(100vh - 64px); /* Footer-Höhe unten abziehen */
     }
-  
+
     .main-content,
     .sidebar,
     .dashboard-header,
-    .card,
-    .footer {
+    .card {
       position: relative;
       z-index: 1;
     }
-  
+
     .main-content {
       flex-grow: 1;
       padding: 2rem;
+      display: flex;
+      flex-direction: column;
     }
-  
+
     /* Sidebar */
     .sidebar {
       width: 250px;
       background: rgba(255, 255, 255, 0.02);
-      padding: 1rem;
+      padding: 1rem 0 1rem 1rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
     }
-  
-    .sidebar img {
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-left: 1rem;
+      padding-top: 1rem;
+    }
+    .sidebar-logo img {
+      height: 36px;
+      width: auto;
       border-radius: 10px;
       transition: transform 0.3s ease;
     }
-  
-    .sidebar img:hover {
+    .sidebar-logo img:hover {
       transform: scale(1.1);
     }
-  
-    .sidebar i {
-      filter: brightness(1.3);
+    .sidebar-logo h2 {
+      margin-bottom: 0;
+      color: #00f2ff;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
-  
-    .sidebar a {
+
+    /* Navigation nach unten verschieben */
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 3rem; /* <-- hier Abstand nach unten */
+    }
+
+    .sidebar-nav a {
       display: flex;
       align-items: center;
       color: #fff;
-      padding: 0.5rem;
+      padding: 0.6rem 1.5rem 0.6rem 1.2rem;
+      font-size: 1.1rem;
       text-decoration: none;
-    }
-  
-    .sidebar a:hover {
-      background: rgba(0, 242, 255, 0.1);
+      transition: background 0.2s, color 0.2s;
       border-radius: 0.5rem;
+      gap: 0.75rem;
     }
-  
+
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: rgba(0, 242, 255, 0.10);
+      color: #00f2ff;
+    }
+
+    .sidebar-nav i {
+      font-size: 1.2rem;
+      min-width: 20px;
+    }
+
     /* Karten & Hover-Effekte */
     .card {
       background-color: rgba(255, 255, 255, 0.04);
@@ -91,13 +133,11 @@
       margin-bottom: 1rem;
       backdrop-filter: blur(8px);
     }
-  
     .card:hover {
       transform: scale(1.02);
       box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
       transition: all 0.3s ease;
     }
-  
     .btn-glow {
       background-color: #8b5cf6;
       color: white;
@@ -108,89 +148,62 @@
       box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
       transition: all 0.3s ease;
     }
-  
     .btn-glow:hover {
       transform: scale(1.05);
     }
-  
-    /* Fortschrittsbalken */
-    .progress {
-      background: #1a1e33;
-      border-radius: 8px;
-      overflow: hidden;
-      height: 8px;
-    }
-  
-    .progress-bar {
-      background: #00f2ff;
-      transition: width 0.6s ease;
-    }
-  
-    /* Lektionen ein-/ausklappen */
-    #lessonsContainer {
-      overflow: hidden;
-      transition: max-height 0.5s ease, opacity 0.5s ease;
-    }
-  
-    #lessonsContainer.collapsed {
-      max-height: 0;
-      opacity: 0;
-      padding: 0;
-      margin: 0;
-    }
-  
-    #lessonsContainer.expanded {
-      max-height: 2000px;
-      opacity: 1;
-    }
-  
-    /* Diagramm */
-    canvas {
-      margin-top: 1rem;
-      max-width: 50%;
-      height: 300px !important;
-    }
-  
-    /* Neuer Footer im Stil der Startseite */
+
+    .progress { background: #1a1e33; border-radius: 8px; overflow: hidden; height: 8px; }
+    .progress-bar { background: #00f2ff; transition: width 0.6s ease; }
+
+    #lessonsContainer { overflow: hidden; transition: max-height 0.5s ease, opacity 0.5s ease; }
+    #lessonsContainer.collapsed { max-height: 0; opacity: 0; padding: 0; margin: 0; }
+    #lessonsContainer.expanded { max-height: 2000px; opacity: 1; }
+
+    canvas { margin-top: 1rem; max-width: 50%; height: 300px !important; }
+
     .footer {
+      width: 100%;
       background: rgba(255, 255, 255, 0.02);
       color: #ccc;
       padding: 1.5rem 1rem;
       font-size: 0.9rem;
-      margin-top: 2rem;
       text-align: center;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      flex-shrink: 0;
+      height: 64px;
+      box-sizing: border-box;
+      margin: 0;
     }
-  
-    .footer a {
-      color: #aaa;
-      text-decoration: none;
-      margin: 0 0.5rem;
-    }
-  
-    .footer a:hover {
-      text-decoration: underline;
+    .footer a { color: #aaa; text-decoration: none; margin: 0 0.5rem; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .dashboard-wrapper { flex-direction: column; min-height: calc(100vh - 100px); }
+      .sidebar { min-height: auto; width: 100%; }
+      .footer { font-size: 0.8rem; padding: 1rem 0.5rem; height: auto; }
+      .sidebar-nav { margin-top: 2rem; }
     }
   </style>
-   
-  
 </head>
 
 <body>
   <div id="particles-js"></div>
-
   <div class="dashboard-wrapper d-flex">
     <!-- Sidebar -->
     <div class="sidebar">
-      <div class="d-flex align-items-center gap-2 ps-3 pt-3">
-        <img src="sqlmate-bot.png" alt="Bot" style="height: 40px; width: auto;" />
-        <h2 class="mb-0" style="color: #00f2ff;">SQLMate</h2>
+      <div class="sidebar-logo">
+        <img src="sqlmate-bot.png" alt="Bot" />
+        <h2>SQLMate</h2>
       </div>
-      <a href="#dashboard"><i data-lucide="compass"></i> Dashboard</a>
-      <a href="#chatbot"><i data-lucide="bot"></i> Chatbot lernen</a>
-      <a href="#fortschritt"><i data-lucide="bar-chart-3"></i> Fortschritt</a>
-      <a href="#account"><i data-lucide="user-cog"></i> Profil</a>
-      <a href="../index.html"><i data-lucide="log-out"></i> Logout</a>
+      <div class="sidebar-nav">
+        <a href="#dashboard"><i data-lucide="compass"></i> Dashboard</a>
+        <a href="#chatbot"><i data-lucide="bot"></i> Chatbot lernen</a>
+        <a href="#fortschritt"><i data-lucide="bar-chart-3"></i> Fortschritt</a>
+        <a href="#account"><i data-lucide="user-cog"></i> Profil</a>
+        <a href="../index.html"><i data-lucide="log-out"></i> Logout</a>
+      </div>
     </div>
 
     <!-- Hauptinhalt -->
@@ -358,17 +371,15 @@
       </div>
     </div> <!-- Ende .main-content -->
   </div> <!-- Ende .dashboard-wrapper -->
+
   <!-- 🧠 Icons laden -->
   <script>
     lucide.createIcons();
   </script>
-
-  <!-- Lektionen ein-/ausklappen -->
   <script>
     const toggleBtn = document.getElementById("toggleLessons");
     const container = document.getElementById("lessonsContainer");
     let expanded = false;
-
     toggleBtn.addEventListener("click", function () {
       expanded = !expanded;
       container.classList.toggle("collapsed", !expanded);
@@ -376,8 +387,6 @@
       toggleBtn.textContent = expanded ? "▼" : "▶";
     });
   </script>
-
-  <!-- XP-Verlauf (Chart.js) -->
   <script>
     const ctx = document.getElementById('xpChart').getContext('2d');
     new Chart(ctx, {
@@ -418,8 +427,6 @@
       }
     });
   </script>
-
-  <!-- Fortschritt pro Lektion laden -->
   <script>
     async function ladeFortschritt() {
       try {
@@ -427,10 +434,8 @@
         const res = await fetch('http://localhost:3001/progress', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-
         if (!res.ok) throw new Error('Fehler beim Abrufen');
         const daten = await res.json();
-
         daten.forEach(({ lesson_id, percent }) => {
           const bar = document.querySelector(`#progress-bar-${lesson_id}`);
           const text = document.querySelector(`#progress-text-${lesson_id}`);
@@ -441,14 +446,9 @@
         console.error('Fehler beim Laden des Fortschritts:', err);
       }
     }
-
     document.addEventListener('DOMContentLoaded', ladeFortschritt);
   </script>
-
-  <!-- XP & Level laden -->
   <script src="dashboard.js"></script>
-
-  <!-- Partikel-Hintergrund -->
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script>
     particlesJS("particles-js", {
@@ -481,16 +481,12 @@
       retina_detect: true
     });
   </script>
+  <footer class="footer text-center">
+    <p class="mb-0">&copy; 2025 SQLMate.
+      <a href="impressum.html">Impressum</a> |
+      <a href="datenschutz.html">Datenschutz</a> |
+      <a href="mailto:kontakt@sqlmate.de">Kontakt</a>
+    </p>
+  </footer>
 </body>
-
-
-<footer class="footer text-center">
-  <p class="mb-0">&copy; 2025 SQLMate.
-    <a href="impressum.html">Impressum</a> |
-    <a href="datenschutz.html">Datenschutz</a> |
-    <a href="mailto:kontakt@sqlmate.de">Kontakt</a>
-  </p>
-</footer>
-
-
 </html>

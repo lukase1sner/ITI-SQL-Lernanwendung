@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduMate – Dein SQL-Tutor</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://codemirror.net/lib/codemirror.css" />
+  <link rel="stylesheet" href="https://codemirror.net/theme/dracula.css" />
+
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #0d0f1a, #1a1c2e);
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .chat-container {
+      max-width: 1300px;
+      margin: 60px auto;
+      padding: 30px;
+      background-color: #141627;
+      border-radius: 1.2rem;
+      box-shadow: 0 0 30px #00000055;
+      display: flex;
+      gap: 2rem;
+    }
+
+    .chat-sidebar {
+      min-width: 250px;
+      max-width: 300px;
+      text-align: center;
+    }
+
+    .btn-dashboard {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #8b5cf6;
+      color: white;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 0.7rem;
+      text-decoration: none;
+      font-size: 0.95rem;
+      box-shadow: 0 0 12px #8b5cf690;
+      z-index: 999;
+    }
+
+    .level-box {
+      margin-top: 100px;
+      background: #1f2235;
+      padding: 1.2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 10px #00000033;
+    }
+
+    .level-box h3 {
+      margin: 0;
+      color: #f8c94a;
+      font-size: 1.3rem;
+    }
+
+    .level-box span {
+      color: #00f2ff;
+      font-size: 1.05rem;
+    }
+
+    .chat-main {
+      flex: 1;
+    }
+
+    .chat-title {
+      font-size: 2rem;
+      color: #00f2ff;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+    }
+
+    .chat-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .bubble {
+      background-color: #1a1c2e;
+      padding: 1rem 1.4rem;
+      border-radius: 1.1rem;
+      border: 1px solid #313452;
+      font-size: 1.1rem;
+      max-width: 700px;
+      word-break: break-word;
+    }
+
+    .bubble.bot {
+      border-left: 4px solid #00f2ff;
+    }
+
+    .bubble.user {
+      border-left: 4px solid #8b5cf6;
+      margin-left: auto;
+    }
+
+    #editor {
+      margin-top: 2rem;
+    }
+
+    .btn-send {
+      background-color: #00f2ff;
+      color: #000;
+      font-weight: bold;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.6rem;
+      margin-top: 1rem;
+      transition: 0.2s;
+    }
+
+    .btn-send:hover {
+      background-color: #00d9e2;
+    }
+
+    .feedback-box {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 0.8rem;
+      font-size: 1rem;
+    }
+
+    .correct {
+      background-color: #143c3a;
+      border-left: 5px solid #00f2ff;
+    }
+
+    .incorrect {
+      background-color: #402222;
+      border-left: 5px solid #ff4d4f;
+    }
+
+    .progress-section {
+      margin-top: 2.5rem;
+    }
+
+    .skill-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .progress {
+      height: 10px;
+      background-color: #2d3048;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #00f2ff, #8b5cf6);
+    }
+
+    @media (max-width: 900px) {
+      .chat-container {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .chat-sidebar {
+        order: 2;
+      }
+
+      .chat-main {
+        order: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="/dashboard.html" class="btn-dashboard">← Dashboard</a>
+
+  <div class="chat-container">
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+      <div class="level-box">
+        <h3>LEVEL 4</h3>
+        <span>APPRENTICE</span>
+      </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-main">
+      <div class="chat-title">SQLMate – Dein smarter SQL-Tutor</div>
+
+      <!-- Chatverlauf -->
+      <div id="chat-log">
+        <div class="chat-row">
+          <div class="bubble bot">Willkommen! 👋 Wie lautet der SQL-Befehl, um alle Kunden anzuzeigen?</div>
+        </div>
+      </div>
+
+      <!-- CodeMirror -->
+      <textarea id="editor">// Gib deinen SQL-Befehl hier ein...</textarea>
+      <button id="send-btn" class="btn-send">Senden</button>
+
+      <div id="feedback" class="feedback-box d-none"></div>
+
+      <!-- Fortschritt -->
+      <div class="progress-section">
+        <div class="skill-label"><span>SELECT</span><span>80%</span></div>
+        <div class="progress"><div class="progress-bar" style="width: 80%"></div></div>
+
+        <div class="skill-label mt-3"><span>JOIN</span><span>60%</span></div>
+        <div class="progress"><div class="progress-bar" style="width: 60%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://codemirror.net/lib/codemirror.js"></script>
+  <script src="https://codemirror.net/mode/sql/sql.js"></script>
+  <script>
+    const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+      mode: "text/x-sql",
+      theme: "dracula",
+      lineNumbers: true,
+      lineWrapping: true
+    });
+
+    const chatLog = document.getElementById("chat-log");
+    const feedbackBox = document.getElementById("feedback");
+    const sendBtn = document.getElementById("send-btn");
+
+    sendBtn.addEventListener("click", () => {
+      const userText = editor.getValue().trim();
+      if (!userText) return;
+
+      const userBubble = document.createElement("div");
+      userBubble.className = "chat-row";
+      userBubble.innerHTML = `<div class="bubble user">${userText}</div>`;
+      chatLog.appendChild(userBubble);
+
+      if (userText.toLowerCase().includes("select * from kunden")) {
+        feedbackBox.className = "feedback-box correct";
+        feedbackBox.innerHTML = "✅ Korrekt! Du hast alle Kunden angezeigt.";
+      } else {
+        feedbackBox.className = "feedback-box incorrect";
+        feedbackBox.innerHTML = "❌ Fast. Versuch es mit <code>SELECT * FROM Kunden;</code>";
+      }
+      feedbackBox.classList.remove("d-none");
+      chatLog.scrollTop = chatLog.scrollHeight;
+    });
+  </script>
+</body>
+</html>
