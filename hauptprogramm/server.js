@@ -1,100 +1,109 @@
-// --------------------- Imports & Initialisierung ---------------------
-
-// Express.js für Webserver-Funktionalität
+// --------------------- Imports & Setup ---------------------
 import express from 'express';
-
-// CORS erlaubt Cross-Origin-Requests (z. B. von Frontend auf anderem Port)
 import cors from 'cors';
-
-// Body-Parser liest JSON-Daten aus HTTP-POST-Anfragen
 import bodyParser from 'body-parser';
-
-// node-fetch zum Durchführen von HTTP-Anfragen (hier: OpenAI API)
-import fetch from 'node-fetch';
-
-// dotenv lädt Umgebungsvariablen aus einer .env-Datei
 import dotenv from 'dotenv';
-
-// path & fileURLToPath für Dateipfade (z. B. dashboard.html finden)
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// .env-Datei laden (z. B. OPENAI_API_KEY)
 dotenv.config();
-
-// Express-App erzeugen
 const app = express();
 const PORT = 3003;
 
-// __dirname in ES Modules (da 'require' nicht verfügbar ist)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // --------------------- Middleware ---------------------
-
-// Erlaubt Anfragen aus anderen Quellen (Frontend-Host, z. B. localhost:3000)
 app.use(cors());
-
-// Wandelt eingehende JSON-Daten automatisch in JS-Objekte um
 app.use(bodyParser.json());
+app.use(express.static(__dirname));
 
-// --------------------- Routing ---------------------
+// --------------------- DB-Verbindung aufbauen ---------------------
+let db;
+const initDB = async () => {
+  db = await open({
+    filename: path.join(__dirname, 'database.sqlite'),
+    driver: sqlite3.Database
+  });
 
-// Startseite (Dashboard-HTML) bei GET-Anfrage auf Root-URL ausliefern
+  console.log('✅ Mit SQLite-Datenbank verbunden.');
+
+  // Tabellen erstellen (falls nicht vorhanden)
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE,
+      password TEXT
+    );
+  `);
+
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS progress (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      lesson_id INTEGER,
+      percent INTEGER,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+  `);
+};
+
+// --------------------- Routen ---------------------
+
+// Startseite (optional)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-// Dient der Auslieferung statischer Dateien (HTML, CSS, JS)
-app.use(express.static(__dirname));
-
-// --------------------- OpenAI GPT-4o API Route ---------------------
-
-// API-Key aus Umgebungsvariablen
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-// POST-Anfrage: User sendet eine Nachricht, GPT generiert eine Antwort
-app.post('/api/gpt', async (req, res) => {
-  const { message, topic } = req.body;
-
-  // Nachricht verwenden, wenn vorhanden, sonst Standard-Text
-  const prompt = message || `Bitte stelle mir eine Quizfrage zu SQL: ${topic}`;
-
+// Registrierung
+app.post('/api/auth/register', async (req, res) => {
+  const { email, password } = req.body;
   try {
-    // Anfrage an OpenAI-API senden
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o', // Modell „gpt-4o“ verwenden
-        messages: [
-          { role: 'system', content: 'Du bist ein SQL-Tutor.' },     // Systemrolle: definiert Verhalten
-          { role: 'user', content: prompt }                           // Nutzereingabe
-        ]
-      })
-    });
+    const result = await db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, password]);
+    res.json({ message: 'Registrierung erfolgreich', userId: result.lastID });
+  } catch (err) {
+    console.error('❌ Fehler bei Registrierung:', err);
+    res.status(500).json({ error: 'Registrierung fehlgeschlagen' });
+  }
+});
 
-    const data = await response.json(); // Antwort von OpenAI lesen
+// Login
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await db.get('SELECT * FROM users WHERE email = ?', [email]);
+    if (!user) {
+      return res.status(401).json({ error: 'Benutzer nicht gefunden' });
+    }
+    if (user.password !== password) {
+      return res.status(401).json({ error: 'Falsches Passwort' });
+    }
+    res.json({ message: 'Login erfolgreich', userId: user.id });
+  } catch (err) {
+    console.error('❌ Fehler beim Login:', err);
+    res.status(500).json({ error: 'Login fehlgeschlagen' });
+  }
+});
 
-    // GPT-Antwort extrahieren (falls vorhanden)
-    const reply = data?.choices?.[0]?.message?.content?.trim();
-
-    // Antwort an Client zurücksenden
-    res.json({ reply: reply || '⚠️ Keine Antwort erhalten.' });
-
-  } catch (error) {
-    // Bei Fehlern: Log und Fehlermeldung senden
-    console.error(error);
-    res.status(500).json({ reply: '❌ Fehler bei der Anfrage an OpenAI.' });
+// Fortschritt abrufen
+app.get('/api/progress', async (req, res) => {
+  try {
+    const rows = await db.all('SELECT * FROM progress');
+    res.json(rows);
+  } catch (err) {
+    console.error('❌ Fehler beim Laden des Fortschritts:', err);
+    res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 
 // --------------------- Server starten ---------------------
+const startServer = async () => {
+  await initDB();
+  app.listen(PORT, () => {
+    console.log(`✅ Server läuft unter http://localhost:${PORT}`);
+  });
+};
 
-// Server hört auf definierter Portnummer
-app.listen(PORT, () => {
-  console.log(`✅ Server läuft unter http://localhost:${PORT}`);
-});
+startServer();

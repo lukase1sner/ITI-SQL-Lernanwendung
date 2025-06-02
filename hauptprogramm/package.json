@@ -14,7 +14,9 @@
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "node-fetch": "^3.3.2",
-    "rasa-webchat": "^1.0.0"
+    "rasa-webchat": "^1.0.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "keywords": [],
   "author": "",
