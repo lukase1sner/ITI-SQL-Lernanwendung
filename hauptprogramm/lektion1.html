@@ -99,9 +99,7 @@
     <button data-index="5">🔬 ACID</button>
 </div>
 
-<div class="lesson-content" id="lessonContent">
-    <!-- Dynamisch befüllt -->
-</div>
+<div class="lesson-content" id="lessonContent"></div>
 
 <script>
     const lessons = [
@@ -128,64 +126,143 @@
           "🏢 Skalierung: Sobald mehrere Geschäftsbereiche oder Filialen hinzukommen, braucht es auch Kunden-, Personal- und Verkaufsdatenbanken – mit Benutzerrechten und parallelem Zugriff.",
           "✅ Fazit: Datenbanken lösen viele technische und organisatorische Probleme der Datenhaltung – sie sind das Rückgrat moderner Anwendungen."
         ],
-        video: "https://www.youtube.com/embed/O9T6d1ZcHgo"
-      },
-      {
-        title: "Anforderungen: Warum braucht man eine Datenbank?",
-        description: "Hier erfährst du, welche Probleme ohne Datenbank entstehen und welche Anforderungen eine Datenbanklösung erfüllen muss:",
-        list: [
-          "Vermeidung von doppelten Daten",
-          "Zentrale Verwaltung statt Excel-Chaos",
-          "Datensicherheit und Zugriffskontrolle",
-          "Einfacher Datenzugriff durch viele Nutzer gleichzeitig"
-        ],
-        video: "https://www.youtube.com/embed/PnnOXFZJiDo"
-      },
-      {
-        title: "DBA: Aufgaben eines Datenbankadministrators",
-        description: "In dieser Lektion lernst du die Rolle eines DBAs kennen – also der Person, die für die Datenbank verantwortlich ist:",
-        list: [
-          "Installation und Wartung des DBMS",
-          "Backup und Wiederherstellung",
-          "Rechteverwaltung und Sicherheit",
-          "Performance-Optimierung"
-        ],
         video: "https://www.youtube.com/embed/k0GfZyol66M"
       },
       {
-        title: "Modelle: Wie Daten in Datenbanken organisiert sind",
-        description: "Daten müssen gut strukturiert sein – in dieser Lektion geht es um die verschiedenen Datenbankmodelle:",
+        title: "Anforderungen an eine Datenbank – Was sie leisten muss",
+        description: "Datenbanken sollen nicht nur Daten speichern, sondern auch viele Herausforderungen lösen. Diese Lektion zeigt dir die wichtigsten Anforderungen an moderne Datenbanksysteme.",
         list: [
-          "Relationales Modell (Tabellen mit Beziehungen)",
-          "Hierarchisches Modell",
-          "Netzwerkmodell",
-          "NoSQL-Ansätze (z.B. dokumentenbasiert)"
+          "🔗 Daten sollen logisch zusammengehören und strukturiert gespeichert werden.",
+          "🌐 Daten können verteilt gespeichert sein (auch über mehrere Server oder Cloud) – das DBMS verwaltet das transparent.",
+          "🧹 Möglichst wenig Redundanz – also keine mehrfach gespeicherten Daten ohne Notwendigkeit.",
+          "📦 Redundanzen, die notwendig sind (z. B. Lagerbestand), müssen automatisch mit aktualisiert werden.",
+          "⚡ Abfragen und Änderungen müssen schnell erfolgen (unter 2 Sekunden Antwortzeit).",
+          "🔒 Zugriff auf Daten erfolgt über eine logische Schnittstelle – der Nutzer sieht nicht, wo die Daten physisch liegen.",
+          "📊 Das DBMS organisiert die Daten intern optimal und kann bei Bedarf neu strukturieren – ohne Auswirkung auf Programme.",
+          "🔐 Schutz auf Feldebene (nicht nur Datei): Nur berechtigte Personen sehen z. B. Gehaltsdaten.",
+          "🔑 Rollen, Passwörter und Sichten (z. B. nur Teilzugriff auf Daten) sind Pflicht.",
+          "🧠 Integrität: Daten müssen korrekt, widerspruchsfrei und plausibel sein (400h/Woche = Fehler).",
+          "🤝 Gleichzeitiger Zugriff (Concurrency): mehrere Nutzer dürfen gleichzeitig arbeiten, ohne Konflikte.",
+          "🧾 Jede Änderung muss protokolliert werden (Audit-Funktion) – z. B. bei Verdacht auf Manipulation.",
+          "🧯 Ausfallsicherheit: Schutz gegen Datenverlust bei Systemfehler, Brand usw.",
+          "📈 Kontrolle und Monitoring: Anzahl Nutzer, Auslastung, Netzwerke – alles muss messbar sein.",
+          "✅ Fazit: Eine Datenbank ist ein komplexes, sicheres, intelligentes System – mehr als nur Speicher."
         ],
-        video: "https://www.youtube.com/embed/qcPJtik203M"
+        video: "https://www.youtube.com/embed/O9T6d1ZcHgo"
       },
       {
-        title: "Transaktionen: Daten sicher bearbeiten",
-        description: "Eine Transaktion ist mehr als nur ein einzelner Befehl. Du lernst, wie Daten sicher verändert werden – ohne Chaos:",
-        list: [
-          "Was ist eine Transaktion?",
-          "Mehrere Schritte als Einheit ausführen",
-          "Rollback und Commit",
-          "Beispiel: Geldüberweisung zwischen zwei Konten"
-        ],
-        video: "https://www.youtube.com/embed/Z5PciTwU6ro"
-      },
+  title: "DBA: Aufgaben und Rolle des Datenbank-Administrators",
+  description: "Hier erfährst du, warum ein Datenbank-Administrator (DBA) für eine moderne Datenbank so wichtig ist und was zu seinen Aufgaben gehört.",
+  list: [
+    "🛠️ Der DBA richtet die Datenbank ein (Tabellen, Indizes, interne Strukturen, Partitionierung, Verteilung der Daten).",
+    "🔍 Er kontrolliert und verwaltet die Datenbank im laufenden Betrieb: Benutzerverwaltung, Zugriffsrechte, Überwachung, Fehlerbehandlung.",
+    "🔑 Nur der DBA hat alle Rechte auf die Datenbank (Vollzugriff).",
+    "👤 Normale Benutzer können Daten abfragen und ändern, aber nicht die Datenbankstruktur verändern.",
+    "📑 Der DBA teilt die Rechte zu: Wer darf was? (z. B. Abfragen, Ändern, Löschen, Struktur anlegen)",
+    "🔒 Aufgaben- und Rollentrennung ist wichtig für Sicherheit und Übersichtlichkeit.",
+    "📋 Die Datenbankschnittstelle ist in drei Teile unterteilt:",
+    "  • DDL (Data Description Language): Struktur-Befehle wie CREATE TABLE, DROP TABLE, CREATE VIEW, GRANT. Wird vom DBA genutzt.",
+    "  • Kontrollsprache (oft Teil der DDL): Rechteverwaltung und Zugriffskontrolle.",
+    "  • DML (Data Manipulation Language): Daten abfragen/verändern (SELECT, INSERT, UPDATE, DELETE). Wird von normalen Benutzern genutzt.",
+    "⚡ Der DBA reagiert auf Performance-Probleme, hilft Anwendern und optimiert bei Bedarf das System.",
+    "🎯 Fazit: Der DBA ist der technische Kopf hinter der Datenbank und sorgt für reibungslosen, sicheren und leistungsfähigen Betrieb."
+  ],
+  video: "https://www.youtube.com/embed/BmDhbELOu60"
+},
+
+     {
+  title: "Modelle: Die wichtigsten Datenbankmodelle im Überblick",
+  description: "Lerne die vier klassischen Datenbankmodelle und moderne Entwicklungen wie NoSQL kennen. Verstehe ihre Struktur, Vor- und Nachteile sowie typische Einsatzgebiete.",
+  list: [
+    "📚 **Relationale Datenbanken**: Das wohl bekannteste Modell. Alle Daten werden in Tabellen („Relationen“) organisiert. Tabellen können über Beziehungen (z. B. Fremdschlüssel) miteinander verbunden sein. Die Struktur ist mathematisch fundiert (relationale Algebra) und flexibel: Neue Tabellen können leicht hinzugefügt oder entfernt werden.",
+    "  - **Vorteile:** Einfach zu ändern, leicht programmierbar und verwaltbar, sehr weit verbreitet. Die meisten modernen Datenbanken (z. B. Oracle, MySQL, PostgreSQL, MS SQL Server) sind relational.",
+    "  - **Nachteile:** Komplexe Abfragen benötigen oft Daten aus mehreren Tabellen, was viele Ein-/Ausgaben und hohe Rechnerleistung erfordert. Teilweise kommt es zu Redundanzen.",
+    "",
+    "🧩 **Objektorientierte Datenbanken**: Hier werden Daten als Objekte gespeichert, ähnlich wie in objektorientierter Programmierung (mit Klassen, Vererbung und Kapselung). Ein Objekt kann z. B. eine Person, eine Adresse oder eine Rechnung sein.",
+    "  - Objektorientierte Ansätze machen es einfach, komplexe reale Strukturen direkt abzubilden – besonders für technische oder multimediale Anwendungen.",
+    "  - In der Praxis gibt es oft **objektrelationale Datenbanken**, die relationale Tabellen um objektorientierte Elemente erweitern. Bekannte Vertreter: Oracle, DB2, PostgreSQL.",
+    "  - **Vorteile:** Realitätstreue Abbildung, universell einsetzbar, oft (teilweise) aufwärtskompatibel zu relationalen DBs.",
+    "  - **Nachteile:** Komplexerer Aufbau, mehr Aufwand für Entwurf und Pflege, tendenziell höhere Rechneranforderungen.",
+    "",
+    "🌳 **Hierarchische Datenbanken**: Eines der ältesten Modelle (seit den 1960ern). Die Datenstruktur entspricht einem Baum: Es gibt eine Wurzel, von der alle anderen Knoten abzweigen. Der Zugriff erfolgt immer von der Wurzel zum gewünschten Blatt.",
+    "  - **Vorteile:** Extrem kurze Zugriffszeiten und minimale Redundanz, da die Struktur sehr direkt ist.",
+    "  - **Nachteile:** Sehr unflexibel: Änderungen an der Struktur sind aufwendig oder kaum möglich. Komplexe Programmierung.",
+    "  - Typischer Vertreter: IMS von IBM.",
+    "",
+    "🌐 **Netzwerkartige Datenbanken**: Entstanden als flexiblere Alternative zu hierarchischen DBs. Hier können Datenpunkte beliebig über ein Netz miteinander verbunden sein – nicht nur wie in einem Baum.",
+    "  - **Vorteile:** Mehr Flexibilität bei der Strukturierung der Daten, kurze Zugriffszeiten, geringe Redundanz.",
+    "  - **Nachteile:** Die Programmierung ist noch komplexer und Änderungen an der Struktur sind trotzdem aufwendig.",
+    "  - Bekannte Vertreter: IDMS (Computer Associates), UDS (Fujitsu).",
+    "",
+    "🚀 **Moderne Entwicklungen – NoSQL und mehr**: Für riesige Datenmengen (wie sie z. B. im Internet bei Google, Amazon, Facebook entstehen) reichen klassische Modelle oft nicht aus. Hier sind neue Konzepte entstanden, die unter dem Begriff **NoSQL** oder „Not Only SQL“ zusammengefasst werden.",
+    "  - NoSQL-Systeme verzichten meist auf das strenge Tabellen-/Relationenschema und bieten damit mehr Flexibilität, Skalierbarkeit und Performance.",
+    "  - Konsistenz wird zugunsten von Geschwindigkeit teilweise aufgeweicht (z. B. eventual consistency).",
+    "",
+    "  **NoSQL-Typen im Überblick:**",
+    "  • **Key/Value- und dokumentenbasierte Modelle:** Sehr flexibel, keine feste Struktur, für unterschiedlichste Dokumente geeignet. Beispiele: MongoDB, CouchDB, Berkley-DB.",
+    "  • **Spaltenorientierte Modelle:** Speichern Daten nicht zeilenweise, sondern spaltenweise. Das ermöglicht schnelle Abfragen auf einzelne Eigenschaften. Beispiele: Google BigTable, HBase, Cassandra.",
+    "  • **Graphdatenbanken:** Speichern Daten als Knoten und Kanten eines Graphen, optimal für komplexe Beziehungen (z. B. soziale Netzwerke, Routenfindung). Beispiele: Neo4j, Sones.",
+    "",
+    "✅ **Fazit:** Das relationale Modell dominiert klassische Datenbanksysteme, aber je nach Anwendung gewinnen NoSQL-Lösungen an Bedeutung – vor allem für große, heterogene oder hochvernetzte Datenmengen."
+  ],
+  video: "https://www.youtube.com/embed/Z5PciTwU6ro"
+},
+
       {
-        title: "ACID: Das Rückgrat jeder stabilen Datenbank",
-        description: "ACID ist ein wichtiges Konzept, das sicherstellt, dass Datenbanken zuverlässig arbeiten – auch bei Fehlern:",
-        list: [
-          "Atomicity (Unteilbarkeit)",
-          "Consistency (Konsistenz)",
-          "Isolation (Trennung gleichzeitiger Transaktionen)",
-          "Durability (Dauerhaftigkeit nach Commit)"
-        ],
-        video: "https://www.youtube.com/embed/BmDhbELOu60"
-      }
-    ];
+  title: "Transaktionen: Was ist das und warum sind sie so wichtig?",
+  description: "Erfahre, warum Transaktionen das Herzstück sicherer Datenbankanwendungen sind – und was sie von einfachen Abfragen unterscheidet.",
+  list: [
+    "🟢 In einer Datenbank gibt es drei Arten von Zugriffen:",
+    "  • **Abfrage (Query):** Nur Lesen der Daten, keine Änderung (z. B. SELECT-Befehl in SQL).",
+    "  • **Mutation:** Verändern, Löschen oder Einfügen von Daten (z. B. UPDATE, DELETE, INSERT in SQL).",
+    "  • **Transaktion:** Eine Zusammenfassung mehrerer Abfragen und/oder Mutationen zu einer einzigen, konsistenzwahrenden Operation.",
+    "",
+    "💡 **Was ist eine Transaktion?**",
+    "  • Eine Transaktion besteht oft aus mehreren Einzelschritten.",
+    "  • Sie stellt sicher, dass die Datenbank immer konsistent bleibt – auch wenn zwischendurch Fehler auftreten.",
+    "",
+    "🧾 **Beispiel:** Überweisung innerhalb einer Bank:",
+    "  1. Vom Konto A wird Geld abgebucht.",
+    "  2. Dem Konto B wird Geld gutgeschrieben.",
+    "  → Nur wenn beide Aktionen zusammen erfolgreich sind, bleibt die Datenbank konsistent.",
+    "",
+    "⚠️ **Warum reicht eine Mutation nicht?**",
+    "  • Wenn nur das Abbuchen klappt, aber das Gutschreiben nicht, entsteht eine falsche Gesamtsumme – die Datenbank wäre inkonsistent.",
+    "",
+    "🔒 **Eigenschaften von Transaktionen:**",
+    "  • Eine Transaktion ist **atomar**: Sie wird ganz oder gar nicht ausgeführt.",
+    "  • Sie sorgt dafür, dass die Datenbank immer widerspruchsfrei bleibt (Konsistenz).",
+    "  • Besonders wichtig bei gleichzeitigen Zugriffen und Systemfehlern.",
+    "",
+    "💡 **Kommerzielle Datenbanken verlangen für alle Änderungen Transaktionen – das garantiert Datensicherheit.**"
+  ],
+  video: "https://www.youtube.com/embed/qcPJtik203M"
+},
+
+    {
+  title: "ACID: Das Rückgrat jeder stabilen Datenbank",
+  description: "ACID steht für die vier wichtigsten Prinzipien, damit Transaktionen in Datenbanken sicher und zuverlässig ablaufen. Ohne ACID gäbe es keine Datensicherheit bei Mehrbenutzerbetrieb!",
+  list: [
+    "🔹 **ACID** ist ein Konsistenzmodell für Transaktionen in Datenbanken. Die vier Buchstaben stehen für:",
+    "  • **A** – Atomarität: Eine Transaktion wird entweder ganz oder gar nicht ausgeführt. Es gibt keine halben Änderungen.",
+    "  • **C** – Konsistenz: Nach einer Transaktion ist die Datenbank weiterhin widerspruchsfrei. Alle Geschäftsregeln bleiben erhalten.",
+    "  • **I** – Isolation: Transaktionen laufen unabhängig voneinander ab. Es sieht so aus, als hätte jede Transaktion das System für sich alleine.",
+    "  • **D** – Dauerhaftigkeit (Durability): Ist eine Transaktion einmal abgeschlossen (COMMIT), bleiben die Daten dauerhaft erhalten – auch nach Stromausfall oder Absturz.",
+    "",
+    "✅ In SQL gibt es zwei wichtige Befehle im Zusammenhang mit ACID:",
+    "  • **COMMIT:** Bestätigt alle Änderungen einer Transaktion – sie sind jetzt dauerhaft gespeichert.",
+    "  • **ROLLBACK:** Macht alle Änderungen einer Transaktion rückgängig, falls etwas schiefgeht.",
+    "",
+    "💡 **Warum ist ACID so wichtig?**",
+    "  • Schützt die Datenbank bei Fehlern, Systemausfällen oder gleichzeitigen Zugriffen mehrerer Benutzer.",
+    "  • Sorgt dafür, dass große Unternehmen, Banken und Versicherungen ihre Daten korrekt und sicher verwalten können.",
+    "",
+    "🚦 **Fazit:** ACID ist kein bloßes Schlagwort, sondern ein Muss für jede professionelle Datenbankanwendung."
+  ],
+  video: "https://www.youtube.com/embed/PnnOXFZJiDo"
+},
+];
+
 
     const buttons = document.querySelectorAll(".tab-buttons button");
     const lessonBox = document.getElementById("lessonContent");
