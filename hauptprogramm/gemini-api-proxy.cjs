@@ -1,4 +1,3 @@
-// hauptprogramm/gemini-api-proxy.cjs
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
@@ -10,77 +9,159 @@ app.use(express.json());
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
 
-// Aufgaben generieren lassen (5 pro Thema)
+// Aufgaben generieren
 app.get("/api/gemini/aufgaben", async (req, res) => {
   const topic = req.query.topic || "SELECT";
   const prompt = `
-    Erstelle 5 verschiedene, verständliche SQL-Aufgaben zum Thema "${topic}" für Anfänger.
-    Für jede Aufgabe:
-    - Formuliere eine Aufgabenstellung (1 Satz). Nenne dabei den genauen Tabellennamen.
-    - Gib eine passende Beispieltabelle (max. 6 Spalten, max. 8 Zeilen) im Markdown-Tabellenformat an.
-    - Schreibe die korrekte SQL-Lösung (nur ein Query, keine Erklärung).
-    Gib NUR ein JSON-Array wie dieses aus:
-    [{"frage":"...","tabelle":"...","loesung":"..."}]
-    Gib KEINE weiteren Kommentare oder Einleitung!
-  `;
+Erstelle 5 einfache SQL-Aufgaben zum Thema "${topic}" für Anfänger.
+
+Jede Aufgabe soll enthalten:
+- Eine klare Aufgabenbeschreibung (ein Satz)
+- Eine passende Tabelle im Markdown-Format (max. 6 Spalten, 8 Zeilen)
+- Eine korrekte SQL-Lösung (nur ein SQL-Befehl)
+
+Antwortformat: JSON-Array wie
+[
+  {
+    "frage": "...",
+    "tabelle": "...",
+    "loesung": "..."
+  }
+]
+
+Keine Einleitung, nur JSON!
+  `.trim();
+
   try {
     const response = await axios.post(GEMINI_URL, {
       contents: [{ parts: [{ text: prompt }] }]
     });
-    // Extrahiere JSON aus LLM-Text
-    let text = response.data.candidates[0].content.parts[0].text;
-    let match = text.match(/\[.*\]/s);
-    if (!match) return res.status(500).json({ error: "Kein Aufgaben-JSON erkannt!" });
+
+    const text = response.data.candidates[0].content.parts[0].text;
+    const match = text.match(/\[.*\]/s);
+    if (!match) return res.status(500).json({ error: "Kein JSON erkannt" });
+
     let aufgaben = JSON.parse(match[0]);
-    // Jede Tabelle als HTML hinzufügen für's Frontend
     aufgaben = aufgaben.map(obj => ({
       ...obj,
       tabelle_html: markdownTableToHTML(obj.tabelle)
     }));
+
     res.json(aufgaben);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Gemini-API Aufgaben-Fehler" });
+  } catch (err) {
+    console.error("Fehler beim Laden von Aufgaben:", err.message);
+    res.status(500).json({ error: "Fehler bei der Aufgabenabfrage" });
   }
 });
 
-// Userantwort mit Gemini bewerten lassen
+// Antwort bewerten
 app.post("/api/gemini/verify", async (req, res) => {
-  const { frage, tabelle, loesung, userAntwort, topic } = req.body;
+  const { frage, tabelle, loesung, userAntwort } = req.body;
+
   const prompt = `
-    Aufgabe: ${frage}
-    Tabelle: ${tabelle}
-    Musterlösung: ${loesung}
-    Nutzerantwort: ${userAntwort}
-    Bewerte: Ist die Nutzerantwort korrekt? Antworte zuerst mit "Richtig" oder "Falsch".
-    Erkläre die Lösung dann Schritt für Schritt auf Deutsch, auch wenn sie falsch ist.
-    Gib KEINE weiteren Hinweise oder Begrüßungen!
-  `;
+Aufgabe: ${frage}
+Tabelle: ${tabelle}
+Musterlösung: ${loesung}
+Nutzerantwort: ${userAntwort}
+
+Beurteile die Antwort: Gib "Richtig" oder "Falsch" zuerst.
+Danach eine schrittweise Erklärung auf Deutsch.
+Keine Begrüßung, kein Smalltalk.
+  `.trim();
+
   try {
     const response = await axios.post(GEMINI_URL, {
       contents: [{ parts: [{ text: prompt }] }]
     });
-    let text = response.data.candidates[0].content.parts[0].text;
-    let korrekt = /richtig/i.test(text.split('\n')[0]);
+
+    const text = response.data.candidates[0].content.parts[0].text;
+    const korrekt = /^richtig/i.test(text.trim());
+
     let ergebnis_html = null;
     if (korrekt && tabelle) {
       try {
         const tableObj = parseMarkdownTable(tabelle);
         ergebnis_html = filterRows(tableObj, userAntwort);
-      } catch (err) {
+      } catch (e) {
         ergebnis_html = "<div>Ergebnis konnte nicht erstellt werden.</div>";
       }
     }
+
     res.json({ korrekt, feedback: text.replace(/\n/g, "<br>"), ergebnis_html });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Gemini-API Feedback-Fehler" });
+
+  } catch (err) {
+    console.error("Fehler bei verify:", err.message);
+    res.status(500).json({ error: "Verifikation fehlgeschlagen" });
   }
 });
 
-// --- Hilfsfunktionen für Tabellen & Mini-SQL ---
+// Tipps generieren
+app.post("/api/gemini/tipps", async (req, res) => {
+  const { frage, loesung, userAntwort, tabelle } = req.body;
+
+  const prompt = `
+Der Nutzer hat eine SQL-Aufgabe falsch beantwortet. Du bist ein Tutor.
+
+Deine Aufgabe:
+- Analysiere den Fehler in der Antwort
+- Gib mehrere aufeinander aufbauende Tipps
+- Tipps sollen SQL-Syntax, Verständnis, Struktur, Logik erklären
+- Nutze alle verfügbaren Informationen
+- Formuliere in gutem, einfachem Deutsch
+
+Aufgabe:
+${frage}
+
+Tabelle:
+${tabelle}
+
+Musterlösung:
+${loesung}
+
+Falsche Nutzerantwort:
+${userAntwort}
+
+Format: JSON-Array wie
+[
+  "Tipp 1...",
+  "Tipp 2...",
+  ...
+]
+
+Kein anderer Text. Nur JSON-Array!
+  `.trim();
+
+  try {
+    const response = await axios.post(GEMINI_URL, {
+      contents: [{ parts: [{ text: prompt }] }]
+    });
+
+    const text = response.data.candidates[0].content.parts[0].text;
+    const match = text.match(/\[.*\]/s);
+
+    let tipps = [];
+    if (match) {
+      try {
+        tipps = JSON.parse(match[0]);
+      } catch (err) {
+        console.warn("⚠️ Tipp-JSON Fehler:", err.message);
+      }
+    }
+
+    if (!Array.isArray(tipps) || tipps.length === 0) {
+      return res.status(500).json({ error: "Keine Tipps generiert." });
+    }
+
+    res.json({ tipps });
+
+  } catch (err) {
+    console.error("❌ Tippfehler:", err.message);
+    res.status(500).json({ error: "Gemini-Tippanfrage fehlgeschlagen." });
+  }
+});
+
+// --- Hilfsfunktionen ---
 function parseMarkdownTable(md) {
-  // Gibt ein Array von Objekten zurück
   if (!md) return { header: [], rows: [] };
   const lines = md.trim().split('\n').filter(l => l.trim());
   const header = lines[0].split('|').map(x => x.trim()).filter(Boolean);
@@ -95,7 +176,6 @@ function parseMarkdownTable(md) {
 }
 
 function filterRows(tableObj, sql) {
-  // Unterstützt nur einfache SELECT ... FROM ... [WHERE ...]
   sql = sql.trim();
   let selectMatch = sql.match(/select (.+) from (\w+)(?: where (.+))?/i);
   if (!selectMatch) return '';
@@ -105,13 +185,14 @@ function filterRows(tableObj, sql) {
 
   let filteredRows = tableObj.rows;
   if (filter) {
-    // Ganz einfacher WHERE-Parser: spalte op wert (nur ein Ausdruck)
     let whereMatch = filter.match(/(\w+)\s*([<>=]+)\s*['"]?([\w\s\däöüß]+)['"]?/i);
     if (whereMatch) {
       let [_, col, op, val] = whereMatch;
-      col = col[0].toUpperCase() + col.slice(1); // Für unsere Tabellen meist uppercase-first
       filteredRows = filteredRows.filter(row => {
-        let cell = row[col];
+        const rowKeys = Object.keys(row);
+        const realKey = rowKeys.find(k => k.toLowerCase() === col.toLowerCase());
+        if (!realKey) return false;
+        let cell = row[realKey];
         let numCell = parseFloat(cell);
         let numVal = parseFloat(val);
         if (!isNaN(numCell) && !isNaN(numVal)) {
@@ -119,24 +200,21 @@ function filterRows(tableObj, sql) {
             case '=': return numCell == numVal;
             case '>': return numCell > numVal;
             case '<': return numCell < numVal;
-            default: return false;
           }
         }
-        // Fallback für Strings
-        switch (op) {
-          case '=': return cell == val;
-          default: return false;
-        }
+        return op === '=' && cell === val;
       });
     }
   }
-  // Ergebnis als HTML-Tabelle
+
   let html = '<table class="table table-dark table-bordered" style="background:#232540; color:#fff; border-radius:1rem; overflow:hidden;">';
-  html += '<thead><tr>' + cols.map(c=>`<th>${c[0].toUpperCase()+c.slice(1)}</th>`).join('') + '</tr></thead>';
-  html += '<tbody>';
-  for (let row of filteredRows) {
-    html += '<tr>' + cols.map(c=>`<td>${row[c[0].toUpperCase()+c.slice(1)] || ''}</td>`).join('') + '</tr>';
-  }
+  html += '<thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+  filteredRows.forEach(row => {
+    html += '<tr>' + cols.map(c => {
+      const realKey = Object.keys(row).find(k => k.toLowerCase() === c.toLowerCase());
+      return `<td>${realKey ? row[realKey] : ''}</td>`;
+    }).join('') + '</tr>';
+  });
   html += '</tbody></table>';
   return html;
 }
@@ -146,14 +224,13 @@ function markdownTableToHTML(md) {
   const lines = md.trim().split('\n');
   if (lines.length < 2) return '';
   let html = '<table class="table table-dark table-bordered" style="background:#232540; color:#fff; border-radius:1rem; overflow:hidden;">';
-  html += '<thead><tr>' + lines[0].split('|').filter(Boolean).map(c=>`<th>${c.trim()}</th>`).join('') + '</tr></thead>';
-  html += '<tbody>';
-  for (let i=2; i<lines.length; i++) {
-    html += '<tr>' + lines[i].split('|').filter(Boolean).map(c=>`<td>${c.trim()}</td>`).join('') + '</tr>';
+  html += '<thead><tr>' + lines[0].split('|').filter(Boolean).map(c => `<th>${c.trim()}</th>`).join('') + '</tr></thead><tbody>';
+  for (let i = 2; i < lines.length; i++) {
+    html += '<tr>' + lines[i].split('|').filter(Boolean).map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
   }
   html += '</tbody></table>';
   return html;
 }
 
 const PORT = 4000;
-app.listen(PORT, () => console.log("Gemini-API-Proxy läuft auf Port " + PORT));
+app.listen(PORT, () => console.log("✅ Gemini-API läuft auf http://localhost:" + PORT));

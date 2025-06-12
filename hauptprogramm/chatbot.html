@@ -346,150 +346,215 @@
       </div>
     </div>
   </div>
-  <script>
-    const chatLog = document.getElementById("chat-log");
-    const sendBtn = document.getElementById("send-btn");
-    const userInput = document.getElementById("user-input");
-    const topicSelector = document.getElementById('topicSelector');
-    const avatarPath = "sqlmate-chatbot.png"; // Passe ggf. den Pfad an!
-    let aufgaben = [];
-    let aktuelleAufgabe = 0;
-    let currentTopic = null;
-    let warteAufAntwort = false;
-    // Themenauswahl-Interaktion
-    topicSelector.querySelectorAll('.topic-pill').forEach(pill => {
-      pill.addEventListener('click', async () => {
-        topicSelector.querySelectorAll('.topic-pill').forEach(p => p.classList.remove('selected'));
-        pill.classList.add('selected');
-        currentTopic = pill.getAttribute('data-topic');
-        await starteNeueRunde(currentTopic);
+ <script>
+  const chatLog = document.getElementById("chat-log");
+  const sendBtn = document.getElementById("send-btn");
+  const userInput = document.getElementById("user-input");
+  const topicSelector = document.getElementById('topicSelector');
+  const avatarPath = "sqlmate-chatbot.png";
+
+  let aufgaben = [];
+  let aktuelleAufgabe = 0;
+  let currentTopic = null;
+  let warteAufAntwort = false;
+  let letzteAntwort = "";
+  let aktuellerTippIndex = 0;
+
+  topicSelector.querySelectorAll('.topic-pill').forEach(pill => {
+    pill.addEventListener('click', async () => {
+      topicSelector.querySelectorAll('.topic-pill').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      currentTopic = pill.getAttribute('data-topic');
+      await starteNeueRunde(currentTopic);
+    });
+  });
+
+  async function ladeAufgaben(topic) {
+    try {
+      const res = await fetch('http://localhost:4000/api/gemini/aufgaben?topic=' + encodeURIComponent(topic));
+      return await res.json();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async function starteNeueRunde(topic) {
+    addBotMessage("Lade Aufgaben...");
+    aufgaben = await ladeAufgaben(topic);
+    aktuelleAufgabe = 0;
+    chatLog.innerHTML = '';
+    if (!aufgaben || !aufgaben.length) {
+      addBotMessage("Es konnten keine Aufgaben geladen werden. Überprüfe, ob das Backend läuft.");
+      return;
+    }
+    zeigeAktuelleAufgabe();
+    warteAufAntwort = true;
+  }
+
+  function zeigeAktuelleAufgabe() {
+    const aufgabe = aufgaben[aktuelleAufgabe];
+    addBotMessage(`${aufgabe.frage}${aufgabe.tabelle_html ? `<div class="aufgaben-tabelle">${aufgabe.tabelle_html}</div>` : ""}`);
+    warteAufAntwort = true;
+    aktuellerTippIndex = 0;
+  }
+
+  function addBotMessage(msg) {
+    const row = document.createElement("div");
+    row.className = "chat-row";
+    row.innerHTML = `
+      <img src="${avatarPath}" alt="Bot" class="bot-avatar">
+      <div class="bubble bot">${msg}</div>
+    `;
+    chatLog.appendChild(row);
+    scrollLogToBottom();
+  }
+
+  function addUserMessage(msg) {
+    const row = document.createElement("div");
+    row.className = "chat-row";
+    row.innerHTML = `
+      <div style="flex:1"></div>
+      <div class="bubble user">${msg}</div>
+    `;
+    chatLog.appendChild(row);
+    scrollLogToBottom();
+  }
+
+  function scrollLogToBottom() {
+    setTimeout(() => {
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }, 60);
+  }
+
+  sendBtn.addEventListener("click", handleUserInput);
+  userInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleUserInput();
+  });
+
+  async function handleUserInput() {
+    const input = userInput.value.trim();
+    if (!input || !warteAufAntwort) return;
+
+    letzteAntwort = input;
+    addUserMessage(input);
+    userInput.value = "";
+    warteAufAntwort = false;
+    await checkAntwort(input);
+  }
+
+  async function checkAntwort(antwort) {
+    const aufgabe = aufgaben[aktuelleAufgabe];
+
+    try {
+      const res = await fetch("http://localhost:4000/api/gemini/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          frage: aufgabe.frage,
+          loesung: aufgabe.loesung,
+          userAntwort: antwort,
+          tabelle: aufgabe.tabelle || "",
+          topic: currentTopic
+        })
       });
-    });
-    // Lade Aufgaben
-    async function ladeAufgaben(topic) {
-      try {
-        const res = await fetch('http://localhost:4000/api/gemini/aufgaben?topic=' + encodeURIComponent(topic));
-        return await res.json();
-      } catch (e) {
-        return [];
-      }
-    }
-    // Neue Runde starten
-    async function starteNeueRunde(topic) {
-      addBotMessage("Lade Aufgaben...");
-      aufgaben = await ladeAufgaben(topic);
-      aktuelleAufgabe = 0;
-      chatLog.innerHTML = '';
-      if (!aufgaben || !aufgaben.length) {
-        addBotMessage("Es konnten keine Aufgaben geladen werden. Überprüfe, ob das Backend läuft.");
-        return;
-      }
-      zeigeAktuelleAufgabe();
-      warteAufAntwort = true;
-    }
-    // Aufgabe im Chat anzeigen
-    function zeigeAktuelleAufgabe() {
-      const aufgabe = aufgaben[aktuelleAufgabe];
-      addBotMessage(`${aufgabe.frage}${aufgabe.tabelle_html ? `<div class="aufgaben-tabelle">${aufgabe.tabelle_html}</div>` : ""}`);
-      warteAufAntwort = true;
-    }
-    // Bot-Nachricht in Chat einfügen
-    function addBotMessage(msg) {
-      const row = document.createElement("div");
-      row.className = "chat-row";
-      row.innerHTML = `
-        <img src="${avatarPath}" alt="Bot" class="bot-avatar">
-        <div class="bubble bot">${msg}</div>
-      `;
-      chatLog.appendChild(row);
-      scrollLogToBottom();
-    }
-    // User-Nachricht in Chat einfügen
-    function addUserMessage(msg) {
-      const row = document.createElement("div");
-      row.className = "chat-row";
-      row.innerHTML = `
-        <div style="flex:1"></div>
-        <div class="bubble user">${msg}</div>
-      `;
-      chatLog.appendChild(row);
-      scrollLogToBottom();
-    }
-    // Scrollt zum unteren Rand
-    function scrollLogToBottom() {
-      setTimeout(() => {
-        chatLog.scrollTop = chatLog.scrollHeight;
-      }, 60);
-    }
-    // Userantworten
-    sendBtn.addEventListener("click", handleUserInput);
-    userInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleUserInput();
-    });
-    async function handleUserInput() {
-      const input = userInput.value.trim();
-      if (!input || !warteAufAntwort) return;
-      addUserMessage(input);
-      userInput.value = "";
-      warteAufAntwort = false;
-      await checkAntwort(input);
-    }
-    // Antwort prüfen
-    async function checkAntwort(antwort) {
-      const aufgabe = aufgaben[aktuelleAufgabe];
-      // Dummy-Parser! Du ersetzt das später durch echten Check!
-      if (
-        antwort.replace(/\s+/g, " ").trim().toLowerCase() === aufgabe.loesung.replace(/\s+/g, " ").trim().toLowerCase()
-      ) {
-        // Korrekt!
-        addFeedbackMessage("Super, das ist richtig!<br><b>Lösung:</b> " + aufgabe.loesung +
-        (aufgabe.tabelle_html ? "<div class='aufgaben-tabelle'>" + aufgabe.tabelle_html + "</div>" : ""),
-        true
+
+      const data = await res.json();
+
+      if (data.korrekt) {
+        const container = addFeedbackMessage(
+          data.feedback + (data.ergebnis_html || ""),
+          true
         );
-        addNextButton();
+        addNextButton(container);
       } else {
-        // Falsch
-        addFeedbackMessage("Das war leider nicht korrekt.<br>Versuche es nochmal, oder frag nach einem Tipp!", false);
+        addFeedbackMessage(
+          data.feedback +
+          `<br><button class='btn-next' onclick='zeigeTipp()'>Tipp anzeigen</button>`,
+          false
+        );
         warteAufAntwort = true;
       }
+    } catch (err) {
+      console.error("Fehler bei der Antwortbewertung:", err);
+      addBotMessage("Fehler bei der Bewertung der Antwort.");
     }
-    // Feedback ins Chatlog
-    function addFeedbackMessage(msg, korrekt) {
-      const row = document.createElement("div");
-      row.className = "chat-row";
-      row.innerHTML = `
-        <img src="${avatarPath}" alt="Bot" class="bot-avatar">
-        <div class="bubble feedback${korrekt ? "" : " wrong"}">${msg}
-          <div id="next-btn-container"></div>
-        </div>
-      `;
-      chatLog.appendChild(row);
-      scrollLogToBottom();
-    }
-    // "Weiter"-Button einfügen, mittig unter Feedback
-    function addNextButton() {
-      const btnContainer = chatLog.querySelector(".bubble.feedback:last-child #next-btn-container");
-      const btn = document.createElement("button");
-      btn.className = "btn-next";
-      btn.id = "btn-next";
-      btn.textContent = "Weiter zur nächsten Aufgabe";
-      btnContainer.appendChild(btn);
-      btn.onclick = () => {
-        aktuelleAufgabe++;
-        if (aktuelleAufgabe < aufgaben.length) {
-          zeigeAktuelleAufgabe();
-        } else {
-          addBotMessage("Du hast alle Aufgaben in diesem Themenbereich gelöst! 🎉");
-        }
-      };
-      scrollLogToBottom();
-    }
-    // Direkt beim Laden: Willkommensnachricht
-    window.onload = () => {
-      addBotMessage(
-        "<b>Willkommen!</b><br>Wähle ein Thema, um mit einer neuen SQL-Aufgabe zu starten. 🚀"
-      );
+  }
+
+  function addFeedbackMessage(msg, korrekt) {
+    const row = document.createElement("div");
+    row.className = "chat-row";
+    row.innerHTML = `
+      <img src="${avatarPath}" alt="Bot" class="bot-avatar">
+      <div class="bubble feedback${korrekt ? "" : " wrong"}">${msg}
+        <div id="next-btn-container"></div>
+      </div>
+    `;
+    chatLog.appendChild(row);
+    scrollLogToBottom();
+    return row.querySelector("#next-btn-container");
+  }
+
+  function addNextButton(container) {
+    const btn = document.createElement("button");
+    btn.className = "btn-next";
+    btn.id = "btn-next";
+    btn.textContent = "Weiter zur nächsten Aufgabe";
+    container.appendChild(btn);
+    btn.onclick = () => {
+      aktuelleAufgabe++;
+      if (aktuelleAufgabe < aufgaben.length) {
+        zeigeAktuelleAufgabe();
+      } else {
+        addBotMessage("Du hast alle Aufgaben in diesem Themenbereich gelöst! 🎉");
+      }
     };
-  </script>
+    scrollLogToBottom();
+  }
+
+  async function zeigeTipp() {
+    const aufgabe = aufgaben[aktuelleAufgabe];
+    if (!aufgabe) return;
+
+    if (!aufgabe.tipps) {
+      try {
+        const res = await fetch("http://localhost:4000/api/gemini/tipps", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            frage: aufgabe.frage,
+            loesung: aufgabe.loesung,
+            userAntwort: letzteAntwort || "",
+            tabelle: aufgabe.tabelle || ""
+          })
+        });
+
+        const data = await res.json();
+        aufgabe.tipps = Array.isArray(data.tipps) && data.tipps.length > 0
+          ? data.tipps
+          : ["Nutze SELECT", "Verwende FROM", "Achte auf WHERE für Bedingungen"];
+        aktuellerTippIndex = 0;
+      } catch (err) {
+        console.error("Fehler beim Laden der Tipps:", err);
+        aufgabe.tipps = ["Überprüfe deine SQL-Syntax."];
+        aktuellerTippIndex = 0;
+      }
+    }
+
+    if (aktuellerTippIndex < aufgabe.tipps.length) {
+      addBotMessage(`<b>Tipp ${aktuellerTippIndex + 1}:</b> ${aufgabe.tipps[aktuellerTippIndex]}`);
+      aktuellerTippIndex++;
+    } else {
+      addBotMessage("Keine weiteren Tipps verfügbar.");
+    }
+  }
+
+  window.onload = () => {
+    addBotMessage("<b>Willkommen!</b><br>Wähle ein Thema, um mit einer neuen SQL-Aufgabe zu starten. 🚀");
+  };
+</script>
+
+
+
+
 </body>
 </html>
