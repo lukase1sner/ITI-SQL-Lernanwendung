@@ -21,8 +21,8 @@
     }
     .chatbot-frame {
       max-width: 1380px;
-      min-height: 95vh;
-      margin: 32px auto 32px auto;
+      min-height: 98vh;
+      margin: 22px auto 16px auto;
       background: rgba(18, 20, 40, 0.93);
       border-radius: 2.2rem;
       border: 2.5px solid #00f2ff55;
@@ -31,7 +31,7 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      min-height: 86vh;
+      min-height: 93vh;
     }
     .header-row {
       display: flex;
@@ -67,7 +67,7 @@
       display: flex;
       gap: 0.8rem;
       margin-bottom: 2.1rem;
-      flex-wrap: nowrap;   /* WICHTIG: verhindert Zeilenumbruch */
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: flex-start;
       overflow-x: auto;
@@ -124,7 +124,7 @@
       padding-right: 8px;
       scroll-behavior: smooth;
       min-height: 320px;
-      max-height: 62vh;
+      max-height: 73vh;
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
@@ -183,7 +183,7 @@
       margin-bottom: 0.3rem;
       box-shadow: 0 4px 32px 0 #00f2ff22;
       font-size: 1.07rem;
-      padding-bottom: 1.8rem;
+      padding-bottom: 0.2rem;
       position: relative;
     }
     .bubble.feedback.wrong {
@@ -191,8 +191,10 @@
       background: #402222;
       color: #fff;
     }
+    /* Button mittig unter Feedback! */
     .btn-next {
-      margin-top: 1.2rem;
+      display: block;
+      margin: 2.2rem auto 0 auto; /* Abstand oben, mittig, kein Abstand unten */
       font-weight: bold;
       font-size: 1.07rem;
       border: none;
@@ -203,9 +205,9 @@
       box-shadow: 0 0 30px #00f2ff44, 0 0 12px #8b5cf622;
       cursor: pointer;
       transition: background 0.14s, box-shadow 0.13s;
-      position: absolute;
-      bottom: 0.95rem;
-      left: 1.7rem;
+      position: relative;
+      left: 0;
+      right: 0;
       z-index: 3;
     }
     .btn-next:hover {
@@ -309,7 +311,7 @@
       box-shadow: 0 0 20px #8b5cf6bb;
     }
     @media (max-width: 1150px) {
-      .chatbot-frame { max-width: 99vw; padding: 1rem 3vw 0.8rem 3vw; }
+      .chatbot-frame { max-width: 99vw; padding: 1rem 3vw 1.2rem 3vw; }
       .editor-area, .bubble { max-width: 99vw; }
     }
     @media (max-width: 900px) {
@@ -457,22 +459,22 @@
       row.className = "chat-row";
       row.innerHTML = `
         <img src="${avatarPath}" alt="Bot" class="bot-avatar">
-        <div class="bubble feedback${korrekt ? "" : " wrong"}">${msg}</div>
+        <div class="bubble feedback${korrekt ? "" : " wrong"}">${msg}
+          <div id="next-btn-container"></div>
+        </div>
       `;
       chatLog.appendChild(row);
       scrollLogToBottom();
     }
-    // "Weiter"-Button einfügen
+    // "Weiter"-Button einfügen, mittig unter Feedback
     function addNextButton() {
-      const row = document.createElement("div");
-      row.className = "chat-row";
-      row.innerHTML = `
-        <img src="${avatarPath}" alt="Bot" class="bot-avatar" style="opacity:0">
-        <button class="btn-next" id="btn-next">Weiter zur nächsten Aufgabe</button>
-      `;
-      chatLog.appendChild(row);
-      scrollLogToBottom();
-      document.getElementById("btn-next").onclick = () => {
+      const btnContainer = chatLog.querySelector(".bubble.feedback:last-child #next-btn-container");
+      const btn = document.createElement("button");
+      btn.className = "btn-next";
+      btn.id = "btn-next";
+      btn.textContent = "Weiter zur nächsten Aufgabe";
+      btnContainer.appendChild(btn);
+      btn.onclick = () => {
         aktuelleAufgabe++;
         if (aktuelleAufgabe < aufgaben.length) {
           zeigeAktuelleAufgabe();
@@ -480,6 +482,7 @@
           addBotMessage("Du hast alle Aufgaben in diesem Themenbereich gelöst! 🎉");
         }
       };
+      scrollLogToBottom();
     }
     // Direkt beim Laden: Willkommensnachricht
     window.onload = () => {
