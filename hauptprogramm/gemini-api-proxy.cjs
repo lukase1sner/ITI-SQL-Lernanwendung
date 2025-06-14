@@ -13,12 +13,16 @@ const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemi
 app.get("/api/gemini/aufgaben", async (req, res) => {
   const topic = req.query.topic || "SELECT";
   const prompt = `
-Erstelle 5 einfache SQL-Aufgaben zum Thema "${topic}" für Anfänger.
+Erstelle 5 sehr klare, eindeutige SQL-Anfänger-Aufgaben zum Thema "${topic}".
 
-Jede Aufgabe soll enthalten:
-- Eine klare Aufgabenbeschreibung (ein Satz)
-- Eine passende Tabelle im Markdown-Format (max. 6 Spalten, 8 Zeilen)
-- Eine korrekte SQL-Lösung (nur ein SQL-Befehl)
+WICHTIG:
+- Verwende in der Aufgabenstellung und der SQL-Lösung NUR die Spaltennamen, die es wirklich in der Tabelle gibt.
+- Keine Aliasnamen, keine Umbenennung mit AS.
+- Schreibe z.B. "Wähle die Spalte 'Name' aus der Tabelle 'Mitarbeiter' aus."
+- Jede Aufgabe:
+  - Beschreibung
+  - passende Beispiel-Tabelle im Markdown-Format (max. 6 Spalten, 8 Zeilen)
+  - korrekte, möglichst kurze SQL-Lösung (nur ein SQL-Befehl)
 
 Antwortformat: JSON-Array wie
 [
@@ -29,7 +33,7 @@ Antwortformat: JSON-Array wie
   }
 ]
 
-Keine Einleitung, nur JSON!
+KEINE Einleitung, KEIN anderer Text!
   `.trim();
 
   try {
@@ -54,6 +58,51 @@ Keine Einleitung, nur JSON!
   }
 });
 
+// Eine ähnliche Aufgabe generieren
+app.post("/api/gemini/aufgabeSimilar", async (req, res) => {
+  const { frage, tabelle, loesung, topic } = req.body;
+  const prompt = `
+Erstelle eine neue, sehr ähnliche SQL-Aufgabe zum Thema "${topic}" für Anfänger.
+
+Die neue Aufgabe soll:
+- Aufbau und Schwierigkeitsgrad wie die folgende Aufgabe haben.
+- Aber andere Werte in der Tabelle und ggf. eine andere Spalte/anderer Name etc.
+- Verwende in der Aufgabenstellung und der SQL-Lösung NUR die Spaltennamen, die es wirklich in der Tabelle gibt.
+- Keine Aliasnamen, keine Umbenennung mit AS.
+
+Vorlage:
+Frage: ${frage}
+Tabelle:
+${tabelle}
+Lösung: ${loesung}
+
+Neue Aufgabe im Format:
+{
+  "frage": "...",
+  "tabelle": "...",
+  "loesung": "..."
+}
+
+KEINE Einleitung, KEIN anderer Text, nur das JSON-Objekt!
+  `.trim();
+
+  try {
+    const response = await axios.post(GEMINI_URL, {
+      contents: [{ parts: [{ text: prompt }] }]
+    });
+    const text = response.data.candidates[0].content.parts[0].text;
+    const match = text.match(/\{.*\}/s);
+    if (!match) return res.status(500).json({ error: "Kein JSON erkannt" });
+
+    let aufgabe = JSON.parse(match[0]);
+    aufgabe.tabelle_html = markdownTableToHTML(aufgabe.tabelle);
+    res.json(aufgabe);
+  } catch (err) {
+    console.error("Fehler bei ähnlicher Aufgabe:", err.message);
+    res.status(500).json({ error: "Fehler bei ähnlicher Aufgabe" });
+  }
+});
+
 // Antwort bewerten
 app.post("/api/gemini/verify", async (req, res) => {
   const { frage, tabelle, loesung, userAntwort } = req.body;
@@ -65,8 +114,8 @@ Musterlösung: ${loesung}
 Nutzerantwort: ${userAntwort}
 
 Beurteile die Antwort: Gib "Richtig" oder "Falsch" zuerst.
-Danach eine schrittweise Erklärung auf Deutsch.
-Keine Begrüßung, kein Smalltalk.
+Danach eine schrittweise, verständliche Erklärung auf Deutsch, wie die Aufgabe richtig gelöst wird, in mehreren nummerierten Schritten.
+KEINE Begrüßung, KEIN Smalltalk.
   `.trim();
 
   try {
@@ -75,8 +124,7 @@ Keine Begrüßung, kein Smalltalk.
     });
 
     const text = response.data.candidates[0].content.parts[0].text;
-    const korrekt = /^richtig/i.test(text.trim());
-
+    const korrekt = isSqlLoesungEquivalent(userAntwort, loesung);
     let ergebnis_html = null;
     if (korrekt && tabelle) {
       try {
@@ -88,79 +136,61 @@ Keine Begrüßung, kein Smalltalk.
     }
 
     res.json({ korrekt, feedback: text.replace(/\n/g, "<br>"), ergebnis_html });
-
   } catch (err) {
     console.error("Fehler bei verify:", err.message);
     res.status(500).json({ error: "Verifikation fehlgeschlagen" });
   }
 });
 
-// Tipps generieren
-app.post("/api/gemini/tipps", async (req, res) => {
-  const { frage, loesung, userAntwort, tabelle } = req.body;
-
-  const prompt = `
-Der Nutzer hat eine SQL-Aufgabe falsch beantwortet. Du bist ein Tutor.
-
-Deine Aufgabe:
-- Analysiere den Fehler in der Antwort
-- Gib mehrere aufeinander aufbauende Tipps
-- Tipps sollen SQL-Syntax, Verständnis, Struktur, Logik erklären
-- Nutze alle verfügbaren Informationen
-- Formuliere in gutem, einfachem Deutsch
-
-Aufgabe:
-${frage}
-
-Tabelle:
-${tabelle}
-
-Musterlösung:
-${loesung}
-
-Falsche Nutzerantwort:
-${userAntwort}
-
-Format: JSON-Array wie
-[
-  "Tipp 1...",
-  "Tipp 2...",
-  ...
-]
-
-Kein anderer Text. Nur JSON-Array!
-  `.trim();
-
-  try {
-    const response = await axios.post(GEMINI_URL, {
-      contents: [{ parts: [{ text: prompt }] }]
-    });
-
-    const text = response.data.candidates[0].content.parts[0].text;
-    const match = text.match(/\[.*\]/s);
-
-    let tipps = [];
-    if (match) {
-      try {
-        tipps = JSON.parse(match[0]);
-      } catch (err) {
-        console.warn("⚠️ Tipp-JSON Fehler:", err.message);
-      }
-    }
-
-    if (!Array.isArray(tipps) || tipps.length === 0) {
-      return res.status(500).json({ error: "Keine Tipps generiert." });
-    }
-
-    res.json({ tipps });
-
-  } catch (err) {
-    console.error("❌ Tippfehler:", err.message);
-    res.status(500).json({ error: "Gemini-Tippanfrage fehlgeschlagen." });
-  }
-});
-
 // --- Hilfsfunktionen ---
+
+function isSqlLoesungEquivalent(user, solution) {
+  if (!user || !solution) return false;
+  let normalize = s =>
+    s
+      .replace(/;/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+
+  let a = normalize(user);
+  let b = normalize(solution);
+  if (a === b) return true;
+  if (a.replace(/\s+/g, '') === b.replace(/\s+/g, '')) return true;
+
+  // Hauptfall: SELECT <spalte> FROM <tabelle>
+  let regex = /select\s+(.+)\s+from\s+([a-z0-9_]+)/i;
+  let matchA = a.match(regex);
+  let matchB = b.match(regex);
+  if (matchA && matchB) {
+    // Tabellennamen
+    let tabA = matchA[2].trim();
+    let tabB = matchB[2].trim();
+    // Spaltennamen
+    let colsA = matchA[1].split(',').map(x => x.trim());
+    let colsB = matchB[1].split(',').map(x => x.trim());
+
+    // Variante 1: Beide nutzen '*'
+    if (colsA.length === 1 && colsA[0] === '*' && colsB.length === 1 && colsB[0] === '*' && tabA === tabB) {
+      return true;
+    }
+    // Variante 2: Eine Seite '*' die andere alle Spalten (z.B. 'kundenid, name, stadt')
+    if ((colsA.length === 1 && colsA[0] === '*' && tabA === tabB) ||
+        (colsB.length === 1 && colsB[0] === '*' && tabA === tabB)) {
+      return true;
+    }
+    // Variante 3: Beide listen alle Spalten – Reihenfolge egal
+    if (
+      tabA === tabB &&
+      colsA.length === colsB.length &&
+      colsA.every(col => colsB.includes(col))
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function parseMarkdownTable(md) {
   if (!md) return { header: [], rows: [] };
   const lines = md.trim().split('\n').filter(l => l.trim());

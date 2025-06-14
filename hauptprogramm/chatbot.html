@@ -194,7 +194,7 @@
     /* Button mittig unter Feedback! */
     .btn-next {
       display: block;
-      margin: 2.2rem auto 0 auto; /* Abstand oben, mittig, kein Abstand unten */
+      margin: 2.2rem auto 0 auto;
       font-weight: bold;
       font-size: 1.07rem;
       border: none;
@@ -360,6 +360,16 @@
   let letzteAntwort = "";
   let aktuellerTippIndex = 0;
 
+  // Erfolgssprüche
+  const praiseMessages = [
+    "Super, das ist richtig!",
+    "Klasse gelöst!",
+    "Stark, das war korrekt!",
+    "Richtig gut gemacht!",
+    "Das stimmt – weiter so!",
+    "Sehr gut, deine Antwort ist korrekt!"
+  ];
+
   topicSelector.querySelectorAll('.topic-pill').forEach(pill => {
     pill.addEventListener('click', async () => {
       topicSelector.querySelectorAll('.topic-pill').forEach(p => p.classList.remove('selected'));
@@ -461,18 +471,27 @@
       const data = await res.json();
 
       if (data.korrekt) {
+        const praise = praiseMessages[Math.floor(Math.random() * praiseMessages.length)];
+        let solutionHTML = `
+          <div style="margin:1.1rem 0 0.6rem 0;">
+            <b>Lösung:</b>
+            <pre style="background:#191a2f; color:#00f2ff; padding:0.75em 1em; border-radius:0.8em; margin-top:0.4em; font-size:1.09em;">${aufgabe.loesung}</pre>
+          </div>`;
+        let resultHTML = data.ergebnis_html ? `<div style="margin-top:0.7em;">${data.ergebnis_html}</div>` : "";
+
         const container = addFeedbackMessage(
-          data.feedback + (data.ergebnis_html || ""),
+          `<b>${praise}</b><br>${solutionHTML}${resultHTML}`,
           true
         );
         addNextButton(container);
       } else {
-        addFeedbackMessage(
-          data.feedback +
-          `<br><button class='btn-next' onclick='zeigeTipp()'>Tipp anzeigen</button>`,
+        // Schritt-für-Schritt-Erklärung anzeigen, Button „Ähnliche Aufgabe üben“ anbieten
+        const container = addFeedbackMessage(
+          `<div style="color:#ffd600;font-weight:bold;margin-bottom:0.7em;">Das war leider nicht korrekt.</div>
+          <div>${data.feedback}</div>`,
           false
         );
-        warteAufAntwort = true;
+        addRetryButton(container, aufgabe);
       }
     } catch (err) {
       console.error("Fehler bei der Antwortbewertung:", err);
@@ -511,50 +530,36 @@
     scrollLogToBottom();
   }
 
-  async function zeigeTipp() {
-    const aufgabe = aufgaben[aktuelleAufgabe];
-    if (!aufgabe) return;
-
-    if (!aufgabe.tipps) {
-      try {
-        const res = await fetch("http://localhost:4000/api/gemini/tipps", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            frage: aufgabe.frage,
-            loesung: aufgabe.loesung,
-            userAntwort: letzteAntwort || "",
-            tabelle: aufgabe.tabelle || ""
-          })
-        });
-
-        const data = await res.json();
-        aufgabe.tipps = Array.isArray(data.tipps) && data.tipps.length > 0
-          ? data.tipps
-          : ["Nutze SELECT", "Verwende FROM", "Achte auf WHERE für Bedingungen"];
-        aktuellerTippIndex = 0;
-      } catch (err) {
-        console.error("Fehler beim Laden der Tipps:", err);
-        aufgabe.tipps = ["Überprüfe deine SQL-Syntax."];
-        aktuellerTippIndex = 0;
-      }
-    }
-
-    if (aktuellerTippIndex < aufgabe.tipps.length) {
-      addBotMessage(`<b>Tipp ${aktuellerTippIndex + 1}:</b> ${aufgabe.tipps[aktuellerTippIndex]}`);
-      aktuellerTippIndex++;
-    } else {
-      addBotMessage("Keine weiteren Tipps verfügbar.");
-    }
+  function addRetryButton(container, aufgabe) {
+    const btn = document.createElement("button");
+    btn.className = "btn-next";
+    btn.id = "btn-retry";
+    btn.textContent = "Ähnliche Aufgabe üben";
+    container.appendChild(btn);
+    btn.onclick = async () => {
+      // Ähnliche Aufgabe generieren
+      const res = await fetch("http://localhost:4000/api/gemini/aufgabeSimilar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          frage: aufgabe.frage,
+          tabelle: aufgabe.tabelle,
+          loesung: aufgabe.loesung,
+          topic: currentTopic
+        })
+      });
+      const neueAufgabe = await res.json();
+      // Setze als neue aktuelle Aufgabe
+      aufgaben.splice(aktuelleAufgabe, 1, neueAufgabe);
+      zeigeAktuelleAufgabe();
+      warteAufAntwort = true;
+    };
+    scrollLogToBottom();
   }
 
   window.onload = () => {
     addBotMessage("<b>Willkommen!</b><br>Wähle ein Thema, um mit einer neuen SQL-Aufgabe zu starten. 🚀");
   };
 </script>
-
-
-
-
 </body>
 </html>
