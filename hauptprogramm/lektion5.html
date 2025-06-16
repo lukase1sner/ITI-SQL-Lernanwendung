@@ -1,175 +1,1398 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lektion 5 – ER-Modellierung</title>
-    <link rel="stylesheet" href="style.css" />
-    <style>
-        body {
-          background: linear-gradient(135deg, #0b0e1a, #11142d);
-          color: #f0f0f0;
-          font-family: 'Segoe UI', sans-serif;
-          margin: 0;
-          padding: 0;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-          min-height: 100vh;
-        }
-        .lesson-container {
-          width: 90%;
-          max-width: 1200px;
-          margin: 4rem auto;
-          background: rgba(20, 24, 40, 0.97);
-          padding: 2.5rem 3rem;
-          border-radius: 1.5rem;
-          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
-        }
-        h1, h2, h3 {
-          color: #00f2ff;
-        }
-        p, li {
-          line-height: 1.6;
-        }
-        pre, code {
-          background-color: #1f223a;
-          padding: 0.6rem 1rem;
-          border-radius: 0.5rem;
-          display: block;
-          overflow-x: auto;
-        }
-        textarea {
-          width: 100%;
-          padding: 1rem;
-          font-family: monospace;
-          font-size: 1rem;
-          border-radius: 0.5rem;
-          background-color: #1a1e33;
-          color: white;
-          border: none;
-          margin-top: 1rem;
-        }
-        .btn {
-          margin-top: 1rem;
-          padding: 0.8rem 1.5rem;
-          background-color: #8b5cf6;
-          color: white;
-          border: none;
-          border-radius: 1rem;
-          cursor: pointer;
-          font-weight: bold;
-          box-shadow: 0 0 15px #8b5cf670;
-          transition: all 0.3s ease;
-        }
-        .btn:hover {
-          background-color: #a78bfa;
-          transform: scale(1.03);
-        }
-        .btn-secondary {
-          display: inline-block;
-          background-color: #2d2f45;
-          color: #e0e0e0;
-          padding: 0.6rem 1.2rem;
-          border-radius: 0.6rem;
-          text-decoration: none;
-          font-weight: 500;
-          margin-top: 1rem;
-        }
-        .feedback {
-          margin-top: 1rem;
-          font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Kapitel 5: Die Beschreibungssprache SQL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+         margin: 0;
+         font-family: 'Segoe UI', sans-serif;
+         background: linear-gradient(135deg, #0b0e1a, #11142d 80%);
+         color: #f0f0f0;
+         padding: 2rem;
+         text-align: center;
+         min-height: 100vh;
+         position: relative;
+       }
+       body::before, body::after {
+         content: "";
+         position: fixed;
+         border-radius: 50%;
+         filter: blur(100px);
+         z-index: 0;
+         opacity: 0.3;
+       }
+       body::before {
+         width: 340px; height: 340px;
+         background: #00f2ff;
+         top: -100px; left: -120px;
+       }
+       body::after {
+         width: 270px; height: 270px;
+         background: #23d2ff;
+         bottom: -80px; right: -60px;
+       }
+       h1 {
+         color: #00f2ff;
+         margin-bottom: 0.3em;
+         font-size: 2.6rem;
+         letter-spacing: 0.02em;
+         z-index: 2;
+         position: relative;
+       }
+       .welcome-text {
+         font-size: 1.23rem;
+         margin-bottom: 2.2rem;
+         color: #b8c3d3;
+         z-index: 2;
+         position: relative;
+       }
+       .tab-buttons {
+         display: flex;
+         flex-wrap: wrap;
+         justify-content: center;
+         gap: 1.3rem;
+         margin-bottom: 2.3rem;
+         z-index: 2;
+         position: relative;
+       }
+       .tab-buttons button {
+         background: #1a1e33;
+         border: 2.2px solid #00f2ff;
+         color: #00f2ff;
+         padding: 0.95rem 2.1rem;
+         border-radius: 2.2rem;
+         cursor: pointer;
+         font-weight: bold;
+         font-size: 1.13rem;
+         letter-spacing: 0.02em;
+         transition:
+           background 0.25s,
+           color 0.22s,
+           border-color 0.23s,
+           box-shadow 0.28s,
+           transform 0.19s;
+         box-shadow: 0 1px 12px 0 rgba(0,242,255,0.04);
+         display: flex;
+         align-items: center;
+         gap: 0.5em;
+       }
+       .tab-buttons button.active,
+       .tab-buttons button:focus-visible {
+         background: linear-gradient(90deg,#00f2ff 60%,#38f8ff 100%);
+         color: #11142d;
+         border-color: #c6f9ff;
+         transform: scale(1.07);
+         box-shadow: 0 2px 18px 0 #00f2ff40, 0 2px 6px 0 #0002;
+       }
+       .tab-buttons button:hover:not(.active) {
+         box-shadow: 0 0 0 2px #00f2ff70;
+         border-color: #00f2ff;
+         background: #212755;
+         color: #fff;
+       }
+       .lesson-content {
+         background: #1c1f35ea;
+         padding: 2.8rem 2.2rem;
+         border-radius: 1.4rem;
+         max-width: 860px;
+         margin: 2.5rem auto 0 auto;
+         box-shadow: 0 8px 38px 0 #00f2ff18, 0 3px 12px 0 #0003;
+         text-align: left;
+         line-height: 1.8;
+         font-size: 1.09rem;
+         position: relative;
+         border: 1.5px solid rgba(0,242,255,0.11);
+         opacity: 0;
+         transform: translateY(24px) scale(0.99);
+         pointer-events: none;
+         transition:
+           opacity 0.45s cubic-bezier(.42,1.35,.49,1),
+           transform 0.33s cubic-bezier(.42,1.25,.54,1.12);
+         z-index: 2;
+       }
+       .lesson-content.visible {
+         opacity: 1;
+         pointer-events: auto;
+         transform: translateY(0) scale(1);
+       }
+       .lesson-content h2 {
+         color: #00f2ff;
+         font-size: 1.6rem;
+         margin-bottom: 0.7em;
+       }
+       .lesson-content ul {
+         margin-top: 1.5rem;
+         margin-bottom: 2rem;
+         padding-left: 1.5rem;
+         list-style-type: disc;
+       }
+       .lesson-content li {
+         margin-bottom: 0.8rem;
+       }
+       .subsection-buttons {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+         gap: 0.85rem 1.2rem;
+         margin-bottom: 1.8rem;
+         margin-top: 1.8rem;
+       }
+       .subsection-buttons button {
+         background: #181e32;
+         border: 2px solid #00f2ff;
+         color: #00f2ff;
+         padding: 0.70rem 0.2rem;
+         border-radius: 1.4rem;
+         font-size: 1rem;
+         font-weight: 600;
+         transition:
+           background 0.21s,
+           color 0.22s,
+           border-color 0.23s,
+           box-shadow 0.28s,
+           transform 0.19s;
+         box-shadow: 0 1px 8px 0 #00f2ff20;
+         cursor: pointer;
+       }
+       .subsection-buttons button.active,
+       .subsection-buttons button:focus-visible {
+         background: linear-gradient(90deg,#00f2ff 60%,#38f8ff 100%);
+         color: #11142d;
+         border-color: #fff;
+         transform: scale(1.06);
+         box-shadow: 0 2px 18px 0 #00f2ff2c, 0 2px 6px 0 #0001;
+       }
+       .subsection-buttons button:hover:not(.active) {
+         background: #00f2ff22;
+         color: #fff;
+         border-color: #38f8ff;
+         box-shadow: 0 0 0 2px #00f2ff40;
+       }
+       .sub-content {
+         margin-top: 2rem;
+       }
+       .sub-content h3 {
+         color: #00f2ff;
+         font-size: 1.22rem;
+       }
+       /* Responsive für kleine Screens */
+       @media (max-width: 600px) {
+         .lesson-content { padding: 1.2rem 0.7rem; }
+         .tab-buttons { gap: 0.4rem; }
+         .tab-buttons button { padding: 0.5rem 0.9rem; font-size: 0.98rem; }
+       }
+  </style>
 </head>
 <body>
-<div class="lesson-container">
-    <h1>Lektion 5: Entity-Relationship-Modellierung (ER-Modell)</h1>
-
-    <div>
-        <h2>Was ist ein ER-Modell?</h2>
-        <p>Das Entity-Relationship-Modell (kurz ER-Modell) ist ein konzeptuelles Datenmodell, das zur Planung und Visualisierung von Datenbankstrukturen dient. Es hilft Entwickler:innen, logisch zu denken: Welche Objekte (Entitäten) gibt es? Welche Eigenschaften (Attribute) haben diese? Und wie stehen sie in Beziehung zueinander?</p>
-        <p>Das Modell stammt von Peter Chen (1976) und dient oft als erster Schritt in der Datenbankentwicklung, noch bevor konkrete Tabellen und SQL-Befehle formuliert werden.</p>
-
-        <h2>Grundbegriffe ausführlich erklärt</h2>
-        <ul>
-            <li><strong>Entitätstyp:</strong> Eine Klasse von realen oder abstrakten Dingen (z. B. <em>Kunde</em>, <em>Artikel</em>, <em>Bestellung</em>). Jede Entität hat eindeutige Merkmale (Schlüssel).</li>
-            <li><strong>Attribut:</strong> Eine Eigenschaft einer Entität. Beispiele: <em>Name</em> eines Kunden, <em>Preis</em> eines Artikels. Es gibt auch zusammengesetzte, mehrwertige und abgeleitete Attribute.</li>
-            <li><strong>Beziehungstyp:</strong> Eine logische Verknüpfung zwischen zwei oder mehreren Entitäten. Beispiel: <em>Bestellt</em> verbindet <em>Kunde</em> mit <em>Artikel</em>.</li>
-            <li><strong>Kardinalität:</strong> Gibt an, wie viele Entitäten auf jeder Seite einer Beziehung beteiligt sein können:
-                <ul>
-                    <li>1:1 – genau eine Entität ist beteiligt</li>
-                    <li>1:n – eine Entität ist mit mehreren anderen verknüpft</li>
-                    <li>n:m – viele Entitäten auf beiden Seiten (führt meist zu Zwischentabellen)</li>
-                </ul>
-            </li>
-        </ul>
-
-        <h2>Beispielmodell: Online-Shop</h2>
-        <p>In einem Online-Shop bestellen Kunden Produkte. Dieses Szenario lässt sich folgendermaßen modellieren:</p>
-        <pre><code>Entität: Kunde (Kundennr, Name, Ort)
-Entität: Produkt (ArtikelNr, Bezeichnung, Preis)
-Entität: Bestellung (BestellNr, Datum)
-Beziehung: enthält – verbindet Bestellung und Produkt
-Beziehung: aufgegebenVon – verbindet Bestellung und Kunde</code></pre>
-        <p>Somit erkennt man: Eine Bestellung gehört zu genau einem Kunden, kann aber viele Produkte enthalten.</p>
-        <p>Die Kardinalitäten wären:</p>
-        <ul>
-            <li><strong>Kunde ⟶ Bestellung:</strong> 1:n</li>
-            <li><strong>Bestellung ⟶ Produkt:</strong> n:m</li>
-        </ul>
-    </div>
-
-    <div>
-        <h3>Aufgabe 1</h3>
-        <p>Welche der folgenden Begriffe gehören zu einem ER-Modell?</p>
-        <ul>
-            <li><input type="checkbox" id="e1"> Entität</li>
-            <li><input type="checkbox" id="e2"> Primärschlüssel</li>
-            <li><input type="checkbox" id="e3"> Beziehung</li>
-            <li><input type="checkbox" id="e4"> Attribut</li>
-        </ul>
-        <button class="btn" onclick="checkER1()">Antwort prüfen</button>
-        <div class="feedback" id="f1"></div>
-
-        <h3>Aufgabe 2</h3>
-        <p>Was beschreibt die Kardinalität 1:n zwischen <code>Kunde</code> und <code>Bestellung</code>?</p>
-        <textarea id="er2"></textarea>
-        <button class="btn" onclick="checkER2()">Antwort prüfen</button>
-        <div class="feedback" id="f2"></div>
-
-        <a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
-    </div>
+<h1>Kapitel 5: Die Beschreibungssprache SQL</h1>
+<p class="welcome-text">Wähle ein Themengebiet, um zu starten:</p>
+<div class="tab-buttons">
+  <button data-index="0">5.1 Relationen erzeugen</button>
+  <button data-index="1">5.2 Relationen ändern/löschen</button>
+  <button data-index="2">5.3 Temporäre Relationen</button>
+  <button data-index="3">5.4 Sichten (Views)</button>
+  <button data-index="4">5.5 Zusicherungen</button>
+  <button data-index="5">5.6 Gebiete</button>
+  <button data-index="6">5.7 Trigger</button>
+  <button data-index="7">5.8 Sequenzen</button>
+  <button data-index="8">5.9 Zugriffsrechte</button>
+  <button data-index="9">5.10 Zugriffsschutz</button>
+  <button data-index="10">5.11 Integrität</button>
+  <button data-index="11">5.12 Aufbau einer Datenbank</button>
+  <button data-index="12">5.13 Einrichten/Verwalten DB</button>
+  <button data-index="13">5.14 Zusammenfassung</button>
+  <button data-index="14">5.15 Übungsaufgaben</button>
+  <button data-index="15">Literatur</button>
 </div>
+<div class="lesson-content" id="lessonContent"></div>
 
 <script>
-    function checkER1() {
-      const e1 = document.getElementById("e1").checked;
-      const e2 = document.getElementById("e2").checked;
-      const e3 = document.getElementById("e3").checked;
-      const e4 = document.getElementById("e4").checked;
-      const f = document.getElementById("f1");
-      if (e1) {
-        f.textContent = "✅ Richtig! Entität, Beziehung und Attribut sind Bestandteile des ER-Modells.";
-        f.style.color = '#00f2ff';
-      } else {
-        f.textContent = "❌ Nicht ganz. Tipp: Achte auf den Namen ER.";
-        
-        f.style.color = '#ff6b6b';
-      }
-    }
+  // === SECTIONS / CONTENT-STRUKTUR ===
+  const sections = [
+    {
+      title: "5.1 Relationen erzeugen",
+      description: "Wie man neue Relationen (Tabellen) in SQL anlegt.",
+      content: ` <h3>5.1 Relationen erzeugen</h3>
+    <p>
+      Der wichtigste Befehl der Beschreibungssprache ist <b>CREATE TABLE</b>. Damit werden die grundlegenden Basisrelationen (Tabellen) erzeugt.<br>
+      Bereits in Abschnitt 3.2 gab es einfache Beispiele – hier findest du jetzt die vollständige Syntax und alle Optionen!
+    </p>
 
-    function checkER2() {
-      const input = document.getElementById("er2").value.trim().toLowerCase();
-      const f = document.getElementById("f2");
-      if (input.includes("kunde") && input.includes("mehrere") && input.includes("bestellung")) {
-        f.textContent = "✅ Ja! Ein Kunde kann mehrere Bestellungen tätigen.";
-        f.style.color = '#00f2ff';
-      } else {
-        f.textContent = "❌ Nicht ganz. Überlege, was 1:n bedeutet.";
-        f.style.color = '#ff6b6b';
-      }
+    <h4>Syntax: CREATE TABLE</h4>
+    <pre style="background:#121423; border-radius:0.6em; padding:1em 1.5em; color:#00f2ff; font-size:1.03em;">
+CREATE TABLE <i>Tabellenname</i>
+( <i>Spaltenname</i> <i>Datentyp</i> [<i>Spaltenbedingung</i>] [, ...]
+  [<i>Tabellenbedingung</i> [, ...]]
+)
+[ Herstellerspezifische Optionen ]
+    </pre>
+
+    <ul>
+      <li><b>Tabellenname:</b> Name der neuen Relation (Tabelle)</li>
+      <li><b>Spaltenname:</b> Name eines Attributs (z.B. <code>Persnr</code>, <code>Name</code>, ...)</li>
+      <li><b>Datentyp:</b> z.B. <code>INTEGER</code>, <code>VARCHAR(50)</code>, <code>DATE</code> usw.</li>
+      <li><b>Spaltenbedingung (Column Constraint):</b> Zusätzliche Einschränkungen pro Spalte (z.B. <code>NOT NULL</code>, <code>UNIQUE</code>, <code>PRIMARY KEY</code>, ...)</li>
+      <li><b>Tabellenbedingung (Table Constraint):</b> Übergreifende Einschränkungen (z.B. <code>PRIMARY KEY</code> für mehrere Spalten, <code>FOREIGN KEY</code> ...)</li>
+      <li><b>Herstellerspezifische Optionen:</b> Je nach Datenbanksystem (z.B. <code>ENGINE=InnoDB</code> bei MySQL)</li>
+    </ul>
+
+    <div style="background:#1e293b; border-radius:1em; padding:1.1em 1.5em; margin:1.3em 0;">
+      <b style="color:#00f2ff;">Notation:</b><br>
+      <ul style="margin:0.7em 0 0 1.5em;">
+        <li>Reservierte SQL-Wörter <b>GROßSCHREIBEN</b></li>
+        <li>Bezeichner (Tabellen- und Spaltennamen) nach deinen Vorgaben</li>
+        <li>Eckige Klammern <code>[ ... ]</code>: Optional, wird nicht mitgeschrieben</li>
+        <li>Geschweifte Klammern <code>{ ... }</code> mit <b>|</b>: Auswahl – nur eine Variante wählen</li>
+      </ul>
+    </div>
+
+    <h4>Beispiel: Einfache Tabelle anlegen</h4>
+    <pre style="background:#181e32; border-radius:0.6em; padding:0.8em 1.3em; color:#b8c3d3;">
+CREATE TABLE Personal (
+  Persnr     INTEGER      PRIMARY KEY,
+  Name       VARCHAR(30)  NOT NULL,
+  Ort        VARCHAR(30),
+  Gehalt     DECIMAL(7,2)
+);
+    </pre>
+
+    <h4>Hinweis zu Constraints:</h4>
+    <ul>
+      <li><b>Spalten-Constraints</b> werden direkt nach dem Datentyp geschrieben</li>
+      <li><b>Tabellen-Constraints</b> stehen als eigener Eintrag in der Klammer-Liste (meist am Ende)</li>
+    </ul>
+
+    <small style="color:#b8c3d3">
+      Tipp: Mit <code>CREATE TABLE</code> definierst du das <b>Grundgerüst deiner Datenbank</b>.<br>
+      Mehr zu Datentypen, Spalten- und Tabellenbedingungen findest du in den nächsten Unterkapiteln!
+    </small>
+  `,
+      subsections: [
+        { name: "5.1.1 Datentypen", content: `<h3>5.1.1 Datentypen</h3>
+
+<p>
+  In SQL stehen verschiedene <b>Datentypen</b> zur Verfügung, um Zahlen, Zeichenketten, Daten und Uhrzeiten zu speichern.
+  Einige davon können je nach Datenbankhersteller leicht unterschiedlich implementiert sein.
+</p>
+
+<h4>Die wichtigsten Datentypen nach SQL-Standard</h4>
+<table border="1" cellpadding="4" style="margin:1em 0 1.6em 0; border-radius:1em; background:#171f2d;">
+  <thead style="background:#111c29;color:#00f2ff;">
+    <tr>
+      <th style="padding:0.7em 1em;">Datentyp</th>
+      <th style="padding:0.7em 1em;">Bedeutung</th>
+      <th style="padding:0.7em 1em;">Beispiel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>INTEGER</td><td>Ganzzahl</td><td>Persnr INTEGER</td></tr>
+    <tr><td>INT</td><td>Kurzform für INTEGER</td><td>Persnr INT</td></tr>
+    <tr><td>SMALLINT</td><td>Kleine Ganzzahl</td><td>PLZ SMALLINT</td></tr>
+    <tr><td>NUMERIC(x,y)</td><td>x-stellige Zahl, y Nachkommastellen</td><td>Gehalt NUMERIC(7,2)</td></tr>
+    <tr><td>DECIMAL(x,y)</td><td>Wie NUMERIC</td><td>Preis DECIMAL(8,2)</td></tr>
+    <tr><td>FLOAT(x)</td><td>Gleitpunktzahl</td><td>Temperatur FLOAT(5)</td></tr>
+    <tr><td>CHARACTER(n) / CHAR(n)</td><td>Feste Länge n</td><td>Name CHAR(20)</td></tr>
+    <tr><td>VARCHAR(n)</td><td>Variable Länge bis n</td><td>Ort VARCHAR(30)</td></tr>
+    <tr><td>BIT(n)</td><td>Bitleiste fester Länge</td><td>Flag BIT(1)</td></tr>
+    <tr><td>DATE</td><td>Datum (JJJJ-MM-TT)</td><td>Geburtstag DATE</td></tr>
+    <tr><td>TIME</td><td>Uhrzeit</td><td>Beginn TIME</td></tr>
+    <tr><td>DATETIME</td><td>Kombination aus Datum &amp; Uhrzeit</td><td>Login DATETIME</td></tr>
+    <tr><td>REAL / DOUBLE PRECISION</td><td>Fließkommazahl</td><td>Messwert REAL</td></tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>Eigene Datentypen sind per <b>CREATE DOMAIN</b> möglich (siehe nächste Abschnitte).</li>
+  <li>Bei <b>CHAR</b> ohne Zahl ist CHAR(1) gemeint, <b>BIT</b> ohne Zahl heißt BIT(1).</li>
+  <li>FLOAT, REAL, DOUBLE PRECISION sind Datentypen für Gleitkommazahlen, genaue Nachkommastellen können abweichen.</li>
+</ul>
+
+<h4>Herstellerspezifische Besonderheiten</h4>
+<ul>
+  <li><b>Oracle</b>: INTEGER &amp; SMALLINT sind eigentlich NUMBER(38)</li>
+  <li><b>MySQL</b>: kennt <code>BIT</code> nicht</li>
+  <li><b>SQL Server</b>: kennt <code>DOUBLE PRECISION</code> nicht</li>
+</ul>
+
+<div style="background:#1e293b; border-radius:0.9em; padding:1em 1.3em; margin:1em 0;">
+  <b style="color:#00f2ff;">Wichtig:</b>
+  Die Größe von INTEGER/SMALLINT kann je nach System variieren (meist: INTEGER = 4 Byte, SMALLINT = 2 Byte).
+</div>
+
+<h4>Datums- und Zeittypen</h4>
+<ul>
+  <li><b>DATE</b>: Für Datum (Jahr, Monat, Tag) – kann verglichen und gerechnet werden.</li>
+  <li><b>TIME</b>: Für Uhrzeiten.</li>
+  <li><b>DATETIME</b>: Kombination aus Datum und Uhrzeit (z.B. Loginzeiten).</li>
+</ul>
+
+<p>
+  <b>Operationen:</b><br>
+  Du kannst z.B. zwei <b>DATE</b>-Werte subtrahieren (Ergebnis: Anzahl Tage). Mit <b>DATE '2013-12-31'</b> (Oracle/MySQL) kannst du ein Datum direkt angeben.
+</p>
+
+<ul>
+  <li>SQL2 führt die Konstante <code>CURRENT_DATE</code> ein – liefert das aktuelle Tagesdatum (MySQL/Oracle). In SQL Server: <code>GETDATE()</code>.</li>
+  <li>Typumwandlung geht mit <code>CAST('2013-12-24' AS DATE)</code> (funktioniert in Oracle, SQL Server, MySQL).</li>
+  <li>Eigene Umwandlungsfunktionen: Oracle: <code>TO_DATE()</code>, SQL Server: <code>CONVERT()</code>, MySQL: <code>STR_TO_DATE()</code>.</li>
+</ul>
+
+<h4>Unterschied CHAR vs. VARCHAR</h4>
+<ul>
+  <li><b>CHAR(n)</b>: immer exakt n Zeichen (ggf. mit Leerzeichen aufgefüllt).</li>
+  <li><b>VARCHAR(n)</b>: speichert nur die tatsächliche Länge, keine zusätzlichen Leerzeichen am Ende.</li>
+</ul>
+<p>
+  <b>Beachte:</b> Vergleiche mit LIKE und Platzhalterzeichen verhalten sich bei CHAR und VARCHAR manchmal unterschiedlich – <code>TRIM()</code> hilft, überflüssige Leerzeichen zu entfernen!
+</p>
+
+<pre style="background:#181e32; border-radius:0.7em; padding:0.8em 1.3em; color:#b8c3d3;">
+SELECT * FROM Personal WHERE Name LIKE '%e_';
+SELECT * FROM Personal WHERE TRIM(Name) LIKE '%e_';
+</pre>
+<ul>
+  <li>Das erste Beispiel findet bei CHAR eventuell keine passenden Namen wegen Leerzeichen am Ende!</li>
+  <li>Das zweite Beispiel funktioniert für beide Datentypen.</li>
+</ul>
+
+<div style="margin:1.4em 0; background:#223444; border-radius: 0.8em; padding: 1em;">
+  <span style="color:#00f2ff;"><b>Tipp:</b></span> Nutze <code>CAST()</code> und <code>TRIM()</code> für Datentyp- und Zeichenkettenumwandlung in SQL-Abfragen.
+</div>
+` },
+        { name: "5.1.2 Spalten- und Tabellenbedingungen", content: `<h3>5.1.2 Spalten- und Tabellenbedingungen</h3>
+
+<p>
+  <b>Spalten- und Tabellenbedingungen</b> (<i>Constraints</i>) sind essenziell für die <b>Datenintegrität</b> in jeder relationalen Datenbank.
+  Sie sorgen dafür, dass nur zulässige Werte gespeichert werden und wichtige Beziehungen erhalten bleiben.
+</p>
+
+<h4>Spaltenbedingungen (Column Constraints)</h4>
+<ul>
+  <li><b>NOT NULL</b> – Der Wert darf nicht <code>NULL</code> sein (Pflichtfeld)</li>
+  <li><b>PRIMARY KEY</b> – Eindeutiger Identifikator, automatisch NOT NULL</li>
+  <li><b>UNIQUE</b> – Wert muss eindeutig sein (z. B. alternative Schlüssel)</li>
+  <li><b>REFERENCES ...</b> – Fremdschlüssel-Definition (Verweis auf andere Tabelle)</li>
+  <li><b>CHECK (...)</b> – Zulässige Werte festlegen (z. B. Bereich, Muster)</li>
+  <li><b>CONSTRAINT Name ...</b> – Optionale Benennung der Bedingung (praktisch für spätere Änderungen)</li>
+</ul>
+
+<pre style="background:#171f2d;padding:0.7em 1.2em;border-radius:0.8em;">
+Spalte Datentyp [CONSTRAINT Name] [NOT NULL] [PRIMARY KEY | UNIQUE]
+  [REFERENCES Tabelle(Spalte) [ON DELETE ... ON UPDATE ...]]
+  [CHECK(Bedingung)]
+</pre>
+
+<h4>Tabellenbedingungen (Table Constraints)</h4>
+<ul>
+  <li><b>PRIMARY KEY (Spalte, ...)</b> – Für zusammengesetzte Schlüssel</li>
+  <li><b>UNIQUE (Spalte, ...)</b> – Alternative Schlüssel über mehrere Spalten</li>
+  <li><b>FOREIGN KEY (Spalte, ...) REFERENCES ...</b> – Mehrspaltige Fremdschlüssel</li>
+  <li><b>CHECK (...)</b> – Bedingung über mehrere Spalten</li>
+  <li><b>CONSTRAINT Name ...</b> – Optionale Benennung</li>
+</ul>
+
+<pre style="background:#171f2d;padding:0.7em 1.2em;border-radius:0.8em;">
+[CONSTRAINT Name] PRIMARY KEY (Spalte1, Spalte2)
+[CONSTRAINT Name] FOREIGN KEY (Spalte1, ...) REFERENCES Tabelle(Spalte, ...)
+[CONSTRAINT Name] CHECK (Bedingung)
+</pre>
+
+<h4>Beispiel: CREATE TABLE mit Constraints</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1.2em 1.3em; color:#b8c3d3;">
+CREATE TABLE Personal
+(
+  Persnr INT PRIMARY KEY,
+  Name CHAR(25) NOT NULL,
+  Ort CHAR(15),
+  Vorgesetzt INTEGER REFERENCES Personal
+      ON DELETE SET NULL ON UPDATE CASCADE,
+  Gehalt NUMERIC(8,2) CHECK (Gehalt BETWEEN 800 AND 9000),
+  Beurteilung CHAR,
+  CONSTRAINT MinVerdienst
+      CHECK (Gehalt &gt;= COALESCE((6-Beurteilung)*400, 800))
+);
+</pre>
+<ul>
+  <li><b>Primärschlüssel:</b> <code>Persnr</code></li>
+  <li><b>NOT NULL:</b> <code>Name</code> darf nicht leer sein</li>
+  <li><b>Fremdschlüssel:</b> <code>Vorgesetzt</code> verweist auf <code>Personal</code> (Self-Reference)</li>
+  <li><b>ON DELETE SET NULL:</b> Beim Löschen des Chefs wird der Wert auf <code>NULL</code> gesetzt</li>
+  <li><b>ON UPDATE CASCADE:</b> Änderungen am Schlüssel werden übernommen</li>
+  <li><b>CHECK:</b> Gehalt muss zwischen 800 und 9000 liegen</li>
+  <li><b>Tabellen-Constraint:</b> <code>MinVerdienst</code> – komplexe Bedingung für Gehalt abhängig von Beurteilung</li>
+</ul>
+
+<h4>Herstellerspezifische Unterschiede</h4>
+<table border="1" cellpadding="4" style="background:#171f2d;margin:1em 0 1.5em 0;border-radius:1em;">
+  <thead style="background:#111c29;color:#00f2ff;">
+    <tr><th>Abweichung</th><th>Oracle</th><th>SQL Server</th><th>MySQL</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>ON DELETE NO ACTION</b></td>
+      <td>Kann nicht angegeben werden (gilt aber immer)</td>
+      <td>möglich</td>
+      <td>möglich</td>
+    </tr>
+    <tr>
+      <td><b>ON UPDATE ...</b></td>
+      <td>Kann nicht angegeben werden (immer NO ACTION)</td>
+      <td>möglich</td>
+      <td>möglich</td>
+    </tr>
+    <tr>
+      <td><b>Constraint-Namen</b></td>
+      <td>in beiden möglich</td>
+      <td>in beiden möglich</td>
+      <td>nur bei Tabellen-Constraints</td>
+    </tr>
+    <tr>
+      <td><b>Fremdschlüssel</b></td>
+      <td>beides möglich</td>
+      <td>beides möglich</td>
+      <td>nur als Tabellenbedingung erlaubt, Spalten müssen explizit genannt werden</td>
+    </tr>
+    <tr>
+      <td><b>Unterabfragen in CHECK</b></td>
+      <td>nicht erlaubt</td>
+      <td>nicht erlaubt</td>
+      <td>nicht erlaubt</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.3em 0;">
+  <b style="color:#00f2ff;">Praxis-Tipps:</b>
+  <ul>
+    <li>Bei zusammengesetzten Schlüsseln/Fremdschlüsseln immer Tabellenbedingungen nutzen.</li>
+    <li>Benutze <code>CONSTRAINT Name</code> für wichtige Bedingungen – für spätere Änderungen oder Löschungen.</li>
+    <li>Constraints schützen deine Datenbank – besser einmal mehr als einmal zu wenig!</li>
+  </ul>
+</div>
+
+<p>
+  <b>Wichtig:</b> Verletzungen der Bedingungen führen zur Ablehnung der Änderung oder Einfügung durch das Datenbanksystem – mit Fehlermeldung. Ein gutes Anwendungsprogramm sollte diese Fehler immer abfangen!
+</p>
+` }
+      ]
+    },
+    {
+      title: "5.2 Relationen ändern und löschen",
+      description: "Relationen (Tabellen) nachträglich anpassen oder löschen.",
+      content: `<h3>5.2 Relationen ändern und löschen</h3>
+
+<p>
+  Auch nach einem guten Datenbankdesign kann es vorkommen, dass Relationen (Tabellen) angepasst werden müssen – zum Beispiel durch neue Spalten, zusätzliche Constraints oder das Entfernen von Attributen. Dafür bietet SQL die Befehle <b>ALTER TABLE</b> und <b>DROP TABLE</b>.
+</p>
+
+<h4>ALTER TABLE – Tabelle ändern</h4>
+<p>Mit <code>ALTER TABLE</code> kannst du:</p>
+<ul>
+  <li>eine neue Spalte hinzufügen (<b>ADD</b>)</li>
+  <li>eine Spalte löschen (<b>DROP</b>)</li>
+  <li>eine Tabellenbedingung (Constraint) hinzufügen oder entfernen</li>
+</ul>
+
+<pre style="background:#181e32;border-radius:0.7em;padding:1.1em 1.4em; color:#b8c3d3;">
+ALTER TABLE Tabellenname
+  ADD [COLUMN] Spalte Datentyp [Spaltenbedingungen];
+
+ALTER TABLE Tabellenname
+  DROP [COLUMN] Spalte [RESTRICT | CASCADE];
+
+ALTER TABLE Tabellenname
+  ADD Tabellenbedingung;
+
+ALTER TABLE Tabellenname
+  DROP CONSTRAINT Bedingungsname [RESTRICT | CASCADE];
+</pre>
+
+<ul>
+  <li><b>RESTRICT:</b> Löschen wird verhindert, falls z.B. noch Sichten oder Constraints betroffen sind.</li>
+  <li><b>CASCADE:</b> Löscht auch abhängige Objekte oder Constraints automatisch.</li>
+  <li><b>CONSTRAINT-Name:</b> Nur benannte Bedingungen lassen sich gezielt löschen.</li>
+</ul>
+
+<h4>DROP TABLE – Tabelle vollständig löschen</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:0.9em 1.2em;">
+DROP TABLE Tabellenname [RESTRICT | CASCADE];
+</pre>
+<ul>
+  <li><b>DROP TABLE</b> entfernt die gesamte Tabelle samt aller Daten und (in der Regel) abhängigen Constraints!</li>
+  <li><b>RESTRICT</b> verhindert das Löschen, wenn noch andere Objekte darauf verweisen.</li>
+  <li><b>CASCADE</b> entfernt die Tabelle und alle abhängigen Objekte oder Constraints.</li>
+</ul>
+
+<h4>Beispiel: Spalte hinzufügen & löschen</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:0.9em 1.2em;">
+ALTER TABLE Personal
+  ADD Telefonnummer VARCHAR(20);
+
+ALTER TABLE Personal
+  DROP COLUMN Telefonnummer RESTRICT;
+</pre>
+
+<h4>Beispiel: Constraint hinzufügen & löschen</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:0.9em 1.2em;">
+ALTER TABLE Personal
+  ADD CONSTRAINT MindGehalt CHECK (Gehalt &gt;= 800);
+
+ALTER TABLE Personal
+  DROP CONSTRAINT MindGehalt CASCADE;
+</pre>
+
+<h4>Herstellerunterschiede</h4>
+<table border="1" cellpadding="4" style="background:#171f2d;margin:1em 0 1.5em 0;border-radius:1em;">
+  <thead style="background:#111c29;color:#00f2ff;">
+    <tr>
+      <th>Abweichung</th>
+      <th>Oracle</th>
+      <th>SQL Server</th>
+      <th>MySQL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>ADD</b></td>
+      <td>"COLUMN" darf nicht verwendet werden</td>
+      <td>"COLUMN" darf nicht verwendet werden</td>
+      <td>beides möglich</td>
+    </tr>
+    <tr>
+      <td><b>DROP COLUMN</b></td>
+      <td>"COLUMN" muss verwendet werden, "RESTRICT" nicht erlaubt, statt "CASCADE" → "CASCADE CONSTRAINTS"</td>
+      <td>"COLUMN" darf nicht verwendet werden, "RESTRICT/CASCADE" nicht erlaubt</td>
+      <td>Syntax akzeptiert, ignoriert aber "RESTRICT/CASCADE"</td>
+    </tr>
+    <tr>
+      <td><b>DROP CONSTRAINT</b></td>
+      <td>"RESTRICT" nicht erlaubt, Standard: Löschen wird abgewiesen</td>
+      <td>"RESTRICT/CASCADE" nicht erlaubt, Standard: Löschen wird ggf. abgewiesen</td>
+      <td>Eigene Syntax: "DROP INDEX" bzw. "DROP KEY"</td>
+    </tr>
+    <tr>
+      <td><b>DROP TABLE</b></td>
+      <td>Akzeptiert "CASCADE CONSTRAINTS" zum Löschen abhängiger Constraints</td>
+      <td>Ignoriert "RESTRICT/CASCADE"</td>
+      <td>Syntax akzeptiert, "RESTRICT/CASCADE" wird aber ignoriert</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.2em 0;">
+  <b style="color:#00f2ff;">Praxis-Tipp:</b>
+  <ul>
+    <li>Das Löschen von Attributen oder ganzen Tabellen ist im Produktivbetrieb selten nötig und birgt Datenverlust-Risiko.</li>
+    <li>Nutze <b>DROP</b> und <b>CASCADE</b> mit besonderer Vorsicht – vorher immer ein Backup anlegen!</li>
+    <li>Für Test- und Entwicklungszwecke sind diese Befehle aber sehr hilfreich.</li>
+  </ul>
+</div>
+`
+    },
+    {
+      title: "5.3 Temporäre Relationen",
+      description: "Was sind temporäre Relationen (Tabellen)?",
+      content: `<h3>5.3 Temporäre Relationen</h3>
+
+<p>
+  Für Zwischenergebnisse oder spezielle Auswertungen kann es sinnvoll sein, eigene Relationen (Tabellen) nur temporär zu erstellen. Diese <b>temporären Relationen</b> existieren nur für die Dauer einer Session oder einer Transaktion und werden danach automatisch gelöscht. Das reduziert manuellen Aufwand und erhöht die Performance!
+</p>
+
+<h4>Syntax: Temporäre Tabellen</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1.1em 1.4em; color:#b8c3d3;">
+CREATE [LOCAL | GLOBAL] TEMPORARY TABLE Tabellenname
+(
+  Spalte Datentyp [Spaltenbedingung] [, ...]
+  [Tabellenbedingung]
+)
+[ON COMMIT PRESERVE ROWS | ON COMMIT DELETE ROWS];
+</pre>
+<ul>
+  <li><b>LOCAL TEMPORARY</b>: Sichtbar nur für die eigene Session (Standard in MySQL & SQL Server).</li>
+  <li><b>GLOBAL TEMPORARY</b>: Kann von anderen Sessions genutzt werden (nur in Oracle).</li>
+  <li><b>ON COMMIT DELETE ROWS</b>: Inhalt wird am Ende jeder Transaktion gelöscht (Standard).</li>
+  <li><b>ON COMMIT PRESERVE ROWS</b>: Inhalt bleibt bis zum Ende der Session erhalten.</li>
+</ul>
+
+<h4>Beispiel: Temporäre Ergebnistabelle</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:0.9em 1.2em;">
+CREATE TEMPORARY TABLE Zwischenergebnis
+(
+  Persnr INT,
+  Name VARCHAR(40),
+  Umsatz NUMERIC(8,2)
+) ON COMMIT DELETE ROWS;
+</pre>
+<ul>
+  <li>Tabellenname und Inhalt frei wählbar – wie bei <code>CREATE TABLE</code>.</li>
+  <li>Keine dauerhafte Speicherung auf der Festplatte; Daten werden automatisch entfernt!</li>
+</ul>
+
+<h4>Praxis-Hinweise & Unterschiede</h4>
+<table border="1" cellpadding="4" style="background:#171f2d;margin:1em 0 1.5em 0;border-radius:1em;">
+  <thead style="background:#111c29;color:#00f2ff;">
+    <tr>
+      <th>Datenbanksystem</th>
+      <th>Hinweise zur temporären Tabelle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Oracle</b></td>
+      <td>Nur <b>GLOBAL TEMPORARY</b> möglich; Inhalt kann mit <code>ON COMMIT</code> gesteuert werden.</td>
+    </tr>
+    <tr>
+      <td><b>SQL Server</b></td>
+      <td>Temporäre Tabellen beginnen mit <code>#</code> (lokal) oder <code>##</code> (global); <code>ON COMMIT</code> nicht verfügbar.</td>
+    </tr>
+    <tr>
+      <td><b>MySQL</b></td>
+      <td>Nur lokale temporäre Tabellen; <code>LOCAL/GLOBAL</code> und <code>ON COMMIT</code> nicht unterstützt.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.2em 0;">
+  <b style="color:#00f2ff;">Vorteile temporärer Relationen:</b>
+  <ul>
+    <li>Automatische Löschung am Ende der Session oder Transaktion</li>
+    <li>Schneller, weil keine Synchronisation und kein Logging nötig</li>
+    <li>Keine Rückstände in der Produktivdatenbank</li>
+  </ul>
+</div>
+`
+    },
+    {
+      title: "5.4 Sichten (Views)",
+      description: "Was sind Views (Sichten), wie erstellt man sie?",
+      content: `<h3>5.4 Sichten (Views)</h3>
+
+<p>
+  <b>Sichten</b> (engl. <b>Views</b>) sind „virtuelle Relationen“, die aus den Basisrelationen einer Datenbank abgeleitet werden. Sie speichern <u>keine eigenen Daten</u>, sondern nur die Ableitungsregeln, also die zugrundeliegende SELECT-Anweisung.
+</p>
+
+<div style="background:#19213c;padding:1em 1.6em;border-radius:1em;margin:1.4em 0;">
+  <b style="color:#00f2ff;">Wozu braucht man Sichten?</b>
+  <ul>
+    <li><b>Datenschutz:</b> Nur ausgewählte Daten sichtbar machen.</li>
+    <li><b>Übersicht:</b> Nutzer sehen nur relevante Daten.</li>
+    <li><b>Lesbarkeit:</b> Komplexe Tabellen werden benutzerfreundlich dargestellt.</li>
+    <li><b>Zwischenspeicherung:</b> Komplexe SELECTs können wiederverwendet werden.</li>
+  </ul>
+</div>
+
+<h4>Syntax: Sichten anlegen und löschen</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1em 1.3em;">
+CREATE VIEW Sichtname [ ( Spalte [ , ... ] ) ] AS Select-Befehl
+  [ WITH CHECK OPTION ];
+DROP VIEW Sichtname [ RESTRICT | CASCADE ];
+</pre>
+<ul>
+  <li><b>CREATE VIEW</b>: Erzeugt eine neue Sicht anhand eines SELECT-Befehls.</li>
+  <li><b>WITH CHECK OPTION</b>: Schützt vor Änderungen, die Tupel „aus der Sicht entfernen“ würden (siehe unten).</li>
+  <li><b>DROP VIEW</b>: Löscht eine Sicht. <b>RESTRICT</b> verhindert Löschen, falls andere Objekte darauf verweisen; <b>CASCADE</b> löscht auch abhängige Objekte (je nach System unterschiedlich unterstützt).</li>
+</ul>
+
+<h4>Beispiel 1: Datenschutz & Übersicht</h4>
+<p>
+  Nur ausgewählte, nicht-sensible Felder werden für Außenstehende sichtbar gemacht:
+</p>
+<pre style="background:#181e32;border-radius:0.7em;padding:0.9em 1.2em;">
+CREATE VIEW Personal1 AS
+SELECT Persnr, Name, Ort AS Wohnort, Vorgesetzt AS Chef
+FROM Personal;
+</pre>
+<p>
+  Der Nutzer sieht dann z.B. nur <b>Persnr</b>, <b>Name</b>, <b>Wohnort</b> und <b>Chef</b> – sensible Daten bleiben verborgen.
+</p>
+
+<h4>Beispiel 2: Lesbarkeit & Zwischenspeicherung</h4>
+<p>
+  Eine Sicht, die verschiedene Tabellen verknüpft, Namen statt Nummern anzeigt und Summen vorrechnet:
+</p>
+<pre style="background:#181e32;border-radius:0.7em;padding:0.9em 1.2em;">
+CREATE VIEW VAuftrag (AuftrNr, Datum, Kundname, Persname, Summe) AS
+SELECT AuftrNr, Datum, K.Name, P.Name, SUM(Gesamtpreis)
+FROM Auftrag AS A
+  JOIN Kunde AS K ON K.Nr = A.Kundnr
+  JOIN Personal AS P USING (Persnr)
+  JOIN Auftragsposten USING (Auftrnr)
+GROUP BY Auftrnr, Datum, K.Name, P.Name;
+</pre>
+<p>
+  Ab jetzt kannst du zum Beispiel direkt alle Aufträge von Frau Köster abfragen:
+</p>
+<pre style="background:#222c3c;border-radius:0.7em;padding:0.7em 1.1em;">
+SELECT * FROM VAuftrag WHERE Persname LIKE '%Köster%';
+</pre>
+
+<h4>Welche Sichten sind <b>änderbar</b>?</h4>
+<ul>
+  <li>Die Sicht basiert auf genau <b>einer</b> Tabelle</li>
+  <li>Es gibt <b>kein</b> GROUP BY</li>
+  <li>Es gibt <b>kein</b> DISTINCT</li>
+  <li>Die Spaltenliste enthält <b>nur einzelne Spalten</b>, keine Berechnungen</li>
+  <li>Es werden <b>keine Mengenoperatoren</b> (UNION, INTERSECT, EXCEPT) genutzt</li>
+</ul>
+<p>
+  Sind alle Bedingungen erfüllt, können Daten in der Sicht geändert werden – die Änderung wirkt direkt auf die Basistabelle.
+</p>
+<p>
+  <i>Beispiel (änderbar):</i>
+</p>
+<pre style="background:#181e32;border-radius:0.7em;padding:0.7em 1.1em;">
+UPDATE Personal1 SET Wohnort = 'Hannover' WHERE Persnr = 2;
+</pre>
+<p>
+  <i>Beispiel (nicht änderbar):</i> Sichten mit GROUP BY, Funktionen, mehreren Tabellen etc. lassen keine Änderung zu.
+</p>
+
+<h4>Praxis-Tipp: WITH CHECK OPTION</h4>
+<p>
+  Diese Option stellt sicher, dass Änderungen in einer Sicht <b>niemals</b> dazu führen, dass ein Tupel nicht mehr in die Sicht passt (z.B. aus der WHERE-Klausel fällt).
+</p>
+<pre style="background:#181e32;border-radius:0.7em;padding:0.9em 1.2em;">
+CREATE VIEW Jugend AS
+SELECT * FROM Vereinsmitglieder WHERE Alter &lt; 21
+WITH CHECK OPTION;
+</pre>
+<ul>
+  <li>Versuchst du jetzt, das <b>Alter</b> eines Jugendmitglieds auf 21 zu setzen, wird die Änderung verhindert!</li>
+  <li>Das schützt vor versehentlichem Datenverlust durch Änderungen in der Sicht.</li>
+</ul>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.3em 0;">
+  <b style="color:#00f2ff;">Zusammenfassung:</b><br>
+  Sichten sind unverzichtbar für Datenschutz, Komfort und Übersicht. Sie vereinfachen komplexe Abfragen, schützen sensible Daten und können sogar Änderungen an den zugrundeliegenden Tabellen erlauben – sofern sie „einfach genug“ sind.
+</div>
+`
+    },
+    {
+      title: "5.5 Zusicherungen (Assertions)",
+      description: "Was sind Assertions und wie setzt man sie ein?",
+      content: `<h3>5.5 Zusicherungen (Assertions)</h3>
+
+<p>
+  <b>Zusicherungen</b> (engl. <b>Assertions</b>) sind globale Integritätsbedingungen in SQL. Sie garantieren, dass über die gesamte Datenbank hinweg bestimmte Regeln jederzeit eingehalten werden. Während Spalten- und Tabellenbedingungen meist nur einzelne Relationen schützen, können Zusicherungen <u>relationenübergreifende</u> Einschränkungen formulieren.
+</p>
+
+<h4>Motivation und Beispiel</h4>
+<p>
+  Beispiel: Ein Auftragsposten darf nicht teurer sein, als der entsprechende Artikel-Preis in der Artikelliste. Ein <code>CHECK</code> in <b>Auftragsposten</b> prüft das nur beim Ändern dieser Tabelle – aber nicht, wenn der Preis in <b>Artikel</b> geändert wird!
+</p>
+
+<pre style="background:#19213c;border-radius:0.7em;padding:0.9em 1.2em;">
+ALTER TABLE Auftragsposten ADD
+  CONSTRAINT Auftragspreis
+  CHECK (Gesamtpreis &lt;= (SELECT Anzahl * Preis FROM Artikel WHERE ANr = Artnr));
+</pre>
+
+<p>
+  <b>Schwäche:</b> Ändert jemand den Artikelpreis in <b>Artikel</b>, greift diese Bedingung nicht! Es braucht eine datenbankweite Zusicherung:
+</p>
+
+<pre style="background:#19213c;border-radius:0.7em;padding:0.9em 1.2em;">
+CREATE ASSERTION AssertionPreis
+CHECK (NOT EXISTS (
+  SELECT *
+  FROM Auftragsposten INNER JOIN Artikel ON ANr = Artnr
+  WHERE Gesamtpreis &gt; Anzahl * Preis
+));
+</pre>
+<ul>
+  <li>Die <b>Assertion</b> prüft bei jeder Änderung in <b>allen beteiligten Relationen</b>, dass kein Auftragsposten teurer ist als erlaubt.</li>
+</ul>
+
+<h4>Syntax</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1em 1.3em;">
+CREATE ASSERTION Bedingungsname CHECK (Bedingung);
+DROP ASSERTION Bedingungsname;
+</pre>
+<ul>
+  <li><b>CREATE ASSERTION</b>: Legt eine globale Integritätsbedingung an.</li>
+  <li><b>DROP ASSERTION</b>: Entfernt die Zusicherung.</li>
+  <li>Die <code>CHECK</code>-Bedingung ist meist eine <code>NOT EXISTS</code>-Unterabfrage.</li>
+</ul>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.3em 0;">
+  <b style="color:#00f2ff;">Praxis-Warnung:</b><br>
+  Leider <u>unterstützen</u> viele Datenbanksysteme wie Oracle, SQL Server und MySQL <b>keine</b> Assertions.<br>
+  Ebenso sind <b>Unterabfragen</b> in <code>CHECK</code>-Bedingungen meist nicht erlaubt. Die SQL-Norm sieht Assertions vor, aber Hersteller haben das selten umgesetzt.
+</div>
+
+<h4>Alternative Lösungen</h4>
+<ul>
+  <li>
+    <b>Trigger & Prozeduren:</b> Moderne SQL-Systeme unterstützen stattdessen <b>Trigger</b> – kleine Programme, die bei Änderungen automatisch Integritätsregeln prüfen und ggf. abweisen. Mehr dazu im Trigger-Kapitel!
+  </li>
+  <li>
+    <b>Sichten mit WITH CHECK OPTION:</b> Einzelne Anforderungen kann man auch durch eine Sicht mit <code>WITH CHECK OPTION</code> absichern:
+    <pre style="background:#19213c;border-radius:0.7em;padding:0.9em 1.2em;">
+CREATE VIEW VAuftragsposten AS
+SELECT * FROM Auftragsposten
+WHERE Gesamtpreis &lt;= (SELECT Anzahl * Preis FROM Artikel WHERE ANr = Artnr)
+WITH CHECK OPTION;
+    </pre>
+    Änderungen in dieser Sicht sind nur erlaubt, wenn die Bedingung erfüllt ist.
+  </li>
+</ul>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.3em 0;">
+  <b style="color:#00f2ff;">Zusammengefasst:</b><br>
+  Zusicherungen (Assertions) sind mächtige Werkzeuge der SQL-Norm, aber in der Praxis meist <b>nicht direkt nutzbar</b>. Alternative Lösungen sind <b>Trigger</b> und Sichten mit <b>WITH CHECK OPTION</b>.
+</div>
+`
+    },
+    {
+      title: "5.6 Gebiete",
+      description: "Was sind Gebiete in SQL?",
+      content: `<h3>5.6 Gebiete (Domains)</h3>
+
+<p>
+  <b>Gebiete</b> (<i>Domains</i>) sind benutzerdefinierte Datentypen in SQL. Sie erlauben, eigene Wertebereiche für Attribute festzulegen – feiner als mit Standard-Datentypen wie <code>CHAR</code> oder <code>INTEGER</code>. So kann man häufige Einschränkungen an einer Stelle definieren und dann mehrfach nutzen.
+</p>
+
+<h4>Motivation und Beispiel</h4>
+<p>
+  Standard-Datentypen sind oft zu grob. Statt jedes Mal <code>CHECK</code>-Bedingungen in jeder Tabelle zu definieren, kannst du ein <b>Gebiet</b> (Domain) einmal anlegen und dann überall wiederverwenden.
+</p>
+
+<p>
+  Beispiel: Nur bestimmte Hauptstädte sollen als gültige Werte erlaubt sein:
+</p>
+<pre style="background:#19213c;border-radius:0.7em;padding:0.9em 1.2em;">
+CREATE DOMAIN EURO_Hauptstadt AS CHARACTER(15)
+CHECK (VALUE IN (
+  'Berlin', 'Paris', 'Rom', 'Madrid', 'Lissabon', 'Wien',
+  'Amsterdam', 'Dublin', 'Brüssel', 'Luxemburg', 'Athen', 'Helsinki'
+));
+</pre>
+<ul>
+  <li>
+    Der Wert <code>VALUE</code> steht im <code>CHECK</code> für den zu prüfenden Zellwert.
+  </li>
+  <li>
+    Jetzt kannst du z.B. in <code>CREATE TABLE</code> einfach <code>EURO_Hauptstadt</code> als Datentyp angeben.
+  </li>
+</ul>
+
+<h4>Syntax</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1em 1.3em;">
+CREATE DOMAIN Gebietsname [AS] Datentyp
+  [ [CONSTRAINT Bedingungsname] CHECK (Bedingung) ]
+  [ ... ];
+
+DROP DOMAIN Gebietsname [RESTRICT | CASCADE];
+</pre>
+<ul>
+  <li><b>CREATE DOMAIN</b>: Legt das Gebiet an (mit optionalen Einschränkungen).</li>
+  <li><b>DROP DOMAIN</b>: Entfernt das Gebiet wieder.</li>
+  <li><code>CONSTRAINT</code>: Optional, damit du Bedingungen später gezielt entfernen kannst.</li>
+</ul>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.3em 0;">
+  <b style="color:#00f2ff;">Praxis-Hinweis:</b><br>
+  <b>Domains</b> (Gebiete) sind nach SQL-Norm vorgesehen, aber fast nur <b>PostgreSQL</b> unterstützt sie komplett! Oracle, SQL Server und MySQL können zwar <code>CHECK</code>-Constraints, aber keine Domains.<br>
+  <b>Alternative:</b> In der Praxis werden oft <code>CHECK</code>-Bedingungen direkt in jeder Tabelle verwendet – oder komplexere Einschränkungen über Trigger oder Sichten gelöst.
+</div>
+`
+    },
+    {
+      title: "5.7 Trigger",
+      description: "Wie funktionieren Trigger in SQL?",
+      content: `<h3>5.7 Trigger</h3>
+
+<p>
+  <b>Trigger</b> sind Aktionen, die automatisch ausgeführt werden, sobald in einer Tabelle bestimmte Ereignisse (wie <b>INSERT</b>, <b>UPDATE</b> oder <b>DELETE</b>) auftreten. Sie helfen, die <b>semantische Integrität</b> zu sichern, also komplexe Regeln oder Prüfungen in der Datenbank durchzusetzen.
+</p>
+
+<ul>
+  <li>
+    Typische Anwendungen: Automatische Datenprüfung, Berechnungen, Log-Nachrichten, Einschränkungen, Warnungen (z.B. „Bestand fast leer“).
+  </li>
+  <li>
+    <b>Alle modernen DBMS</b> (Oracle, SQL Server, MySQL, PostgreSQL) unterstützen Trigger – teilweise mit unterschiedlicher Syntax und Extras.
+  </li>
+</ul>
+
+<h4>Syntax (vereinfacht):</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1em 1.3em;">
+CREATE TRIGGER Triggername
+  BEFORE | AFTER { INSERT | UPDATE | DELETE } [OR ...]
+  ON Tabellenname
+  [REFERENCING [OLD AS alt] [NEW AS neu]]
+  [FOR EACH ROW | FOR EACH STATEMENT]
+  [WHEN Bedingung]
+Anweisungen
+</pre>
+
+<h4>Beispiele:</h4>
+<ul>
+  <li>
+    <b>Beispiel 1:</b> <i>Aktuelles Datum bei neuen Aufträgen eintragen</i> <br>
+    <code>FOR EACH STATEMENT</code> (Standard) führt die Aktion einmal pro Gesamtbefehl aus. <br>
+    <code>FOR EACH ROW</code> macht die Aktion für jeden einzelnen neuen/aktualisierten Datensatz.
+  </li>
+</ul>
+
+<pre style="background:#19213c;border-radius:0.7em;padding:0.9em 1.2em;">
+-- Oracle-Version: Trage das Datum bei jedem neuen Auftrag ein
+CREATE TRIGGER Auftragsdatum_Trigger
+BEFORE INSERT
+ON Auftrag
+REFERENCING NEW AS neu
+FOR EACH ROW
+BEGIN
+  :neu.Datum := CURRENT_DATE ;
+END ;
+</pre>
+
+<ul>
+  <li>
+    <b>Beispiel 2:</b> <i>Preis in Auftragsposten darf nie höher als Listenpreis sein.</i>
+    Wird ein zu hoher Preis eingegeben, wird automatisch der Listenpreis eingesetzt und eine Meldung ausgegeben (Oracle-PL/SQL-Syntax):
+  </li>
+</ul>
+
+<pre style="background:#19213c;border-radius:0.7em;padding:0.9em 1.2em;">
+CREATE TRIGGER Auftragspreis_Trigger
+BEFORE INSERT OR UPDATE
+ON Auftragsposten
+REFERENCING NEW AS neu FOR EACH ROW
+DECLARE
+  listenpreis NUMERIC(8,2);
+BEGIN
+  SELECT :neu.Anzahl * Preis INTO listenpreis
+  FROM Artikel
+  WHERE Anr = :neu.Artnr;
+  IF (:neu.Gesamtpreis > listenpreis)
+  THEN
+    :neu.Gesamtpreis := listenpreis;
+    dbms_output.put_line('Preis in Posnr ' || :neu.posnr || ' geändert');
+  END IF;
+END ;
+</pre>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.3em 0;">
+  <b style="color:#00f2ff;">Hinweis:</b> <br>
+  Die genaue Trigger-Syntax und -Möglichkeiten unterscheiden sich stark zwischen den Datenbanken.<br>
+  Am mächtigsten sind Trigger in <b>Oracle</b> und <b>SQL Server</b> (eigene Programmiersprachen wie PL/SQL, T-SQL).
+</div>
+
+<ul>
+  <li>
+    Trigger können einfach gelöscht werden:
+    <pre style="background:#1a202c;border-radius:0.7em;padding:0.4em 0.9em;display:inline-block;">DROP TRIGGER Triggername;</pre>
+  </li>
+</ul>
+`
+    },
+    {
+      title: "5.8 Sequenzen",
+      description: "Automatische Werte (Sequenzen) in SQL.",
+      content: `<h3>5.8 Sequenzen</h3>
+
+<p>
+  <b>Sequenzen</b> sind automatische Zähler, die zur Erzeugung von eindeutigen Nummern (z.B. Primärschlüssel) in SQL-Datenbanken dienen. Sie garantieren, dass bei jedem Einfügen automatisch eine neue, noch nicht vergebene Nummer generiert wird – ideal für Felder wie <b>Persnr</b>, <b>Auftrnr</b> usw.
+</p>
+
+<ul>
+  <li>
+    <b>SQL-Norm (ab SQL:2003):</b> Ermöglicht Erstellung, Nutzung und Löschen von Sequenzen.
+  </li>
+  <li>
+    <b>Oracle, PostgreSQL, SQL Server:</b> Unterstützen Sequenzen – Details und Syntax leicht unterschiedlich.
+  </li>
+  <li>
+    <b>MySQL:</b> Unterstützt <code>AUTO_INCREMENT</code> als Alternative direkt im Tabellenfeld, aber keine echten Sequenzen.
+  </li>
+</ul>
+
+<h4>Allgemeine Syntax:</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1em 1.3em;">
+CREATE SEQUENCE Sequenzname [ AS Datentyp ]
+  [ START WITH Anfangswert ]
+  [ INCREMENT BY Schrittweite ] ;
+
+DROP SEQUENCE Sequenzname ;
+</pre>
+
+<h4>Beispiel: Automatische Auftragsnummern ab 1000</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1em 1.3em;">
+CREATE SEQUENCE Auftragssequenz
+  START WITH 1000;
+</pre>
+
+<p>
+  Einfügen eines neuen Auftrags mit der nächsten verfügbaren Nummer:
+</p>
+<pre style="background:#19213c;border-radius:0.7em;padding:1em 1.3em;">
+INSERT INTO Auftrag (Auftrnr, Datum, Kundnr, Persnr)
+VALUES (NEXT VALUE FOR Auftragssequenz, CURRENT_DATE, 3, 5);
+</pre>
+
+<ul>
+  <li>
+    <b>Oracle:</b> verwendet <code>Sequenzname.NEXTVAL</code> anstelle von <code>NEXT VALUE FOR ...</code>:
+    <pre style="background:#23293c;border-radius:0.7em;padding:0.7em 1em;">VALUES (Auftragssequenz.NEXTVAL, ...)</pre>
+  </li>
+  <li>
+    <b>MySQL:</b> Das Feld im Create Table als <code>AUTO_INCREMENT</code> deklarieren – die Nummer wird dann automatisch generiert:
+    <pre style="background:#23293c;border-radius:0.7em;padding:0.7em 1em;">Auftrnr INT AUTO_INCREMENT PRIMARY KEY</pre>
+  </li>
+</ul>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.3em 0;">
+  <b style="color:#00f2ff;">Tipp:</b> <br>
+  Sequenzen bieten Sicherheit und Komfort – vor allem bei Primärschlüsseln sollten sie konsequent genutzt werden, um die Integrität der Datenbank zu gewährleisten.
+</div>
+`
+    },
+    {
+      title: "5.9 Zugriffsrechte",
+      description: "Wer darf was? Rechte in SQL.",
+      content: `<h3>5.9 Zugriffsrechte</h3>
+
+<p>
+  Die <b>Zugriffsrechte</b> steuern, wer was in einer SQL-Datenbank tun darf. Standardmäßig besitzt der Ersteller (Eigentümer) einer Tabelle, Sicht oder eines anderen Objekts alle Rechte daran und kann diese gezielt an andere Benutzer vergeben oder wieder entziehen.
+</p>
+
+<ul>
+  <li>
+    <b>GRANT</b>: Vergibt Zugriffsrechte an Benutzer.
+  </li>
+  <li>
+    <b>REVOKE</b>: Entzieht Zugriffsrechte wieder.
+  </li>
+  <li>
+    <b>WITH GRANT OPTION</b>: Erlaubt dem Empfänger, Rechte weiterzugeben.
+  </li>
+</ul>
+
+<h4>Wichtige Rechte:</h4>
+<ul>
+  <li><b>SELECT</b>: Lesen von Daten</li>
+  <li><b>UPDATE</b>: Ändern von Daten (optional: bestimmter Spalten)</li>
+  <li><b>DELETE</b>: Löschen von Datensätzen</li>
+  <li><b>INSERT</b>: Neue Datensätze einfügen (optional: bestimmte Spalten)</li>
+  <li><b>REFERENCES</b>: Fremdschlüssel setzen (oft DBMS-abhängig)</li>
+</ul>
+
+<h4>Syntax zum Rechte vergeben:</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1em 1.3em;">
+GRANT [Rechte] ON [Tabelle|Sicht] TO [Benutzer] [WITH GRANT OPTION];
+</pre>
+
+<h5>Beispiel:</h5>
+<p>
+  Benutzer <b>Perschef</b> darf die Tabelle <b>Personal</b> lesen und die Spalten <b>Gehalt</b> und <b>Vorgesetzt</b> ändern, außerdem die Rechte an andere weitergeben:
+</p>
+<pre style="background:#19213c;border-radius:0.7em;padding:1em 1.3em;">
+GRANT SELECT, UPDATE (Gehalt, Vorgesetzt)
+ON Personal TO Perschef
+WITH GRANT OPTION;
+</pre>
+
+<h4>Syntax zum Rechte entziehen:</h4>
+<pre style="background:#181e32;border-radius:0.7em;padding:1em 1.3em;">
+REVOKE [Rechte] ON [Tabelle|Sicht] FROM [Benutzer] [CASCADE|RESTRICT];
+</pre>
+
+<ul>
+  <li>
+    <b>CASCADE</b>: Rechte werden auch bei allen Empfängern entzogen, an die sie weitergegeben wurden.
+  </li>
+  <li>
+    <b>RESTRICT</b>: Entzieht Rechte nur, wenn sie nicht weitergegeben wurden (oft nicht überall unterstützt).
+  </li>
+</ul>
+
+<div style="background:#1e293b;border-radius:0.9em;padding:1em 1.3em;margin:1.3em 0;">
+  <b style="color:#00f2ff;">Praxis:</b><br>
+  <ul style="margin-bottom:0;">
+    <li>Eigentümer können immer alle Rechte vergeben/entziehen.</li>
+    <li>Nur vergebene Rechte können weitergegeben werden (<code>WITH GRANT OPTION</code>).</li>
+    <li>Ohne Zugriffsrecht ist keine Aktion auf einer Tabelle/Sicht möglich!</li>
+    <li>Viele DBMS haben Einschränkungen und eigene Erweiterungen, lies das jeweilige Manual.</li>
+  </ul>
+</div>
+
+<p>
+  <b>Tipp:</b> Rechteverwaltung ist ein zentrales Element für <b>Datenschutz und Sicherheit</b> in SQL-Datenbanken.
+</p>
+`
+    },
+    {
+      title: "5.10 Zugriffsschutz",
+      description: "Wie werden Daten vor unberechtigtem Zugriff geschützt?",
+      content: `<h3>5.10 Zugriffsschutz</h3>
+
+<p>
+  Der Schutz von Datenbanken ist ein mehrstufiger Prozess – von der physischen Sicherheit bis zur gezielten Rechtevergabe innerhalb des DBMS. Nur wer Zugriff erhält, darf auf Daten zugreifen oder diese verändern. Zugriffsschutz wird auf mehreren Ebenen gewährleistet:
+</p>
+
+<ol>
+  <li>
+    <b>Physische Sicherheit:</b> Zutritt zum Serverraum ist nur autorisierten Personen erlaubt. Jeder direkte Zugriff auf die Hardware kann Manipulationen ermöglichen.
+  </li>
+  <li>
+    <b>Netz- &amp; Betriebssystemschutz:</b> Netzwerkzugang, Betriebssystem-Kennungen und Passwörter werden sorgfältig verwaltet und regelmäßig geändert. Häufig werden auch Chipkarten oder andere Authentifizierungsmethoden eingesetzt.
+  </li>
+  <li>
+    <b>Datenbankspezifischer Zugriff:</b>
+    Nur das Datenbankmanagementsystem (DBMS) darf Daten ausgeben – direkter Zugriff auf Dateien ist nicht erlaubt. Innerhalb des DBMS regeln <b>Benutzerrechte</b> (GRANT/REVOKE) und <b>Sichten (Views)</b> den Datenzugriff.
+  </li>
+</ol>
+
+<div style="background:#23293a;padding:1em 1.3em;border-radius:1em;margin:1.3em 0;">
+  <b>Beispiel: Personaldaten schützen mit Sichten und Zugriffsrechten</b><br>
+  <code>
+    CREATE VIEW VPersonal AS<br>
+    SELECT Persnr, Name, Ort, Vorgesetzt, Aufgabe<br>
+    FROM Personal<br>
+    WHERE Vorgesetzt IS NOT NULL;
+  </code>
+  <ul style="margin-top:1em;">
+    <li>Alle Benutzer: <b>SELECT</b>-Recht auf <b>VPersonal</b> (Sicht ohne Gehalt etc.)</li>
+    <li>Abteilungsleiter: <b>SELECT</b> &amp; <b>UPDATE</b> auf <b>VPersonal</b>, <b>SELECT</b> auf <b>Personal</b></li>
+    <li>Personalabteilung: <b>SELECT</b> und Änderungsrechte auf <b>Personal</b></li>
+    <li>Personalchef: Alle Rechte auf <b>Personal</b></li>
+  </ul>
+</div>
+
+<p>
+  <b>Hinweis:</b> In Standard-SQL kann ein Benutzer nur auf ganze Tabellen zugreifen oder gar nicht. Einzelne Spalten können nur über Sichten gezielt freigegeben werden.
+</p>
+
+<h4>Weitere Schutzmaßnahmen:</h4>
+<ul>
+  <li>
+    <b>Audits</b>: Datenbankzugriffe können protokolliert werden (Wer? Was? Wann? Woher?), um illegale oder verdächtige Aktivitäten aufzudecken. Audits dienen als Abschreckung, verhindern aber keine Angriffe direkt.
+  </li>
+  <li>
+    <b>Verschlüsselung</b> besonders schützenswerter Datenbankbereiche ist sinnvoll, wenn hohe Anforderungen bestehen.
+  </li>
+</ul>
+
+<p>
+  Ein umfassender Zugriffsschutz kombiniert also <b>physische Sicherheit</b>, <b>Netzwerkkontrolle</b>, <b>Datenbank-Benutzerrechte</b> und <b>Sichten</b> – ergänzt durch Protokollierung (Audit) und, wenn nötig, Verschlüsselung.
+</p>
+`
+    },
+    {
+      title: "5.11 Integrität",
+      description: "Integrität in Datenbanken: Schlüssel, Regeln, etc.",
+      content: `<h3>5.11 Integrität</h3>
+
+<p>
+  Ziel einer Datenbank ist es, dass alle gespeicherten Daten korrekt und widerspruchsfrei sind. Dies wird durch verschiedene Integritätsregeln und -mechanismen unterstützt, die Anwenderfehler möglichst verhindern sollen. Dazu gehören:
+</p>
+
+<ul>
+  <li>Eingabemasken und Auswahlfelder in der Benutzeroberfläche (GUI)</li>
+  <li>Automatische Vergabe von Nummern (z.B. Primärschlüssel mit Sequenzen oder Autoinkrement)</li>
+  <li>Plausibilitätsprüfungen im Anwendungsprogramm und direkt in der Datenbank</li>
+</ul>
+
+<p>
+  Für die Unterstützung der <b>semantischen Integrität</b> stehen in SQL unter anderem folgende Werkzeuge zur Verfügung:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Befehl</th>
+      <th>Funktion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>CREATE TABLE</code> <br><code>ALTER TABLE</code></td>
+      <td>Check-Bedingungen und Einschränkungen direkt bei der Tabellendefinition</td>
+    </tr>
+    <tr>
+      <td><code>CREATE VIEW ... WITH CHECK OPTION</code></td>
+      <td>Sicherstellen, dass nur erlaubte Daten über Sichten eingefügt/geändert werden können</td>
+    </tr>
+    <tr>
+      <td><code>CREATE ASSERTION</code></td>
+      <td>Datenbankweite Zusicherungen (kaum implementiert, siehe Abschnitt 5.5)</td>
+    </tr>
+    <tr>
+      <td><code>CREATE DOMAIN</code></td>
+      <td>Datenbankweit einheitliche Wertebereiche für Attribute (kaum implementiert, siehe Abschnitt 5.6)</td>
+    </tr>
+    <tr>
+      <td><code>CREATE TRIGGER</code></td>
+      <td>Automatische Prüfungen und Korrekturen beim Einfügen, Ändern oder Löschen von Daten</td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
+<b>Beispiele:</b>
+<ul>
+  <li>
+    <code>
+      ALTER TABLE Personal ADD Arbeitszeit INTEGER NOT NULL CHECK (Arbeitszeit BETWEEN 15 AND 40);
+    </code>
+    <br>
+    &rarr; Mitarbeiter müssen eine Wochenarbeitszeit zwischen 15 und 40 Stunden haben.
+  </li>
+  <li style="margin-top: 0.8em;">
+    <code>
+      ALTER TABLE Artikel ADD CONSTRAINT Preischeck CHECK (Preis = Netto + Steuer);
+    </code>
+    <br>
+    &rarr; Überprüfung der Preiskonsistenz (ggf. Intervall wegen Rundungsfehlern verwenden oder Trigger für Berechnung nutzen).
+  </li>
+</ul>
+
+<p>
+  <b>Wichtig:</b> Integrität wird auch durch <b>Transaktionen</b> gesichert. Bei Verstößen gegen Integritätsregeln wird eine Ausnahmebehandlung ausgelöst – meist wird der Benutzer zur Korrektur aufgefordert oder die Transaktion zurückgesetzt.
+</p>
+`
+    },
+    {
+  title: "5.12 Aufbau einer Datenbank",
+  description: "Wie wird eine Datenbank strukturiert? Info-Schema, Oracle, SQL Server, MySQL...",
+  content: ` <h3>5.12 Aufbau einer Datenbank</h3>
+
+<p>
+  In großen Datenbanken mit vielen Tabellen, Sichten und weiteren Objekten ist eine klare Gliederung notwendig. Dafür bietet SQL die hierarchische Struktur mit <b>Katalogen</b> und <b>Schemata</b> an. In der Praxis arbeitet man meist nur mit Schemata.
+</p>
+
+<ul>
+  <li>Eine Datenbank kann mehrere Schemata enthalten.</li>
+  <li>In jedem Schema sind Objekte wie Tabellen, Sichten, Trigger etc. eindeutig benannt.</li>
+  <li>Greift ein Benutzer schemaübergreifend zu, muss er Objekte qualifiziert ansprechen, z.B. <code>Bike.Auftrag</code>.</li>
+</ul>
+
+<p>
+  <b>Schema-Erstellung in SQL:</b>
+</p>
+
+<pre><code>CREATE SCHEMA Schemaname [ AUTHORIZATION Benutzername ]
+  [ Schemaelement [ ... ] ]
+</code></pre>
+
+<p>
+  Ein Schema kann verschiedene Objekte enthalten, z.B. Tabellen, Sichten, Trigger, Rechte usw. Das Löschen eines Schemas erfolgt mit:
+</p>
+
+<pre><code>DROP SCHEMA Schemaname { CASCADE | RESTRICT }
+</code></pre>
+
+<ul>
+  <li><b>RESTRICT</b>: Löschen wird abgelehnt, wenn noch Objekte oder Verweise existieren.</li>
+  <li><b>CASCADE</b>: Löscht das Schema und alle enthaltenen Objekte (Tabellen, Sichten usw.).</li>
+</ul>
+
+<p>
+  <b>Beispiel:</b> Das folgende Kommando legt ein Schema <code>Bike</code> mit mehreren Tabellen und einer Sicht an:
+</p>
+
+<pre><code>
+CREATE SCHEMA Bike
+  CREATE TABLE Personal ( ... )
+  CREATE TABLE Kunde ( ... )
+  CREATE TABLE Auftrag ( ... )
+  CREATE VIEW VAuftrag ( ... ) ... ;
+</code></pre>
+
+<p>
+  Neue Objekte können jederzeit zum Schema hinzugefügt werden. Zum Beispiel:
+</p>
+<pre><code>CREATE VIEW Bike.VLager ...</code></pre>
+
+<p>
+  <b>Hinweis:</b> Die konkrete Umsetzung von Schemata und Katalogen ist je nach Datenbankhersteller unterschiedlich. In MySQL, Oracle und SQL Server gibt es jeweils eigene Besonderheiten.
+</p>` ,
+
+
+      subsections: [
+        { name: "5.12.1 Information Schema", content: `<h3>5.12.1 Information Schema</h3><p>Platzhalter für Information Schema.</p>` },
+        { name: "5.12.2 Datenbanken und Oracle", content: `<h3>5.12.2 Datenbanken und Oracle</h3><p>Platzhalter für Oracle.</p>` },
+        { name: "5.12.3 Datenbanken und SQL Server", content: `<h3>5.12.3 Datenbanken und SQL Server</h3><p>Platzhalter für SQL Server.</p>` },
+        { name: "5.12.4 Datenbanken und MySQL", content: `<h3>5.12.4 Datenbanken und MySQL</h3><p>Platzhalter für MySQL.</p>` }
+      ]
+    },
+    {
+      title: "5.13 Einrichten und Verwalten von Datenbanken",
+      description: "Wie werden Datenbanken eingerichtet und verwaltet?",
+      subsections: [
+        { name: "5.13.1 Oracle Datenbanken", content: `<h3>5.13.1 Oracle Datenbanken</h3><p>Platzhalter für Oracle DB.</p>` },
+        { name: "5.13.2 SQL Server Datenbanken", content: `<h3>5.13.2 SQL Server Datenbanken</h3><p>Platzhalter für SQL Server DB.</p>` },
+        { name: "5.13.3 MySQL Datenbanken", content: `<h3>5.13.3 MySQL Datenbanken</h3><p>Platzhalter für MySQL DB.</p>` }
+      ]
+    },
+    {
+      title: "5.14 Zusammenfassung",
+      description: "Zusammenfassung der wichtigsten Erkenntnisse zu SQL-DDL.",
+      content: `<h2>5.14 Zusammenfassung</h2><p>Platzhalter für Zusammenfassung.</p>`
+    },
+    {
+      title: "5.15 Übungsaufgaben",
+      description: "Teste dein Wissen zu SQL-DDL mit diesen Aufgaben.",
+      content: `<h2>5.15 Übungsaufgaben</h2><ul><li>Platzhalter für Aufgaben...</li></ul>`
+    },
+    {
+      title: "Literatur",
+      description: "Empfohlene Bücher und Quellen zu SQL-DDL.",
+      content: `<h2>Literatur</h2><ul><li>Platzhalter für Literatur...</li></ul>`
     }
+  ];
+
+  // === Script: Buttons & Content-Logik (wie Kapitel 4) ===
+  const mainButtons = document.querySelectorAll('.tab-buttons button');
+  const lessonContent = document.getElementById('lessonContent');
+
+  function showContent(idx) {
+    const section = sections[idx];
+    let html = `<h2>${section.title}</h2><p>${section.description}</p>`;
+    if (section.content) {
+      html += section.content;
+    }
+    if (section.subsections) {
+      html += `<div class="subsection-buttons">`;
+      section.subsections.forEach((sub, subIdx) => {
+        html += `<button data-sub="${subIdx}">${sub.name}</button>`;
+      });
+      html += `</div>`;
+      html += `<div class="sub-content" id="subContent"></div>`;
+    }
+    lessonContent.innerHTML = html;
+    lessonContent.classList.remove('visible');
+    setTimeout(() => lessonContent.classList.add('visible'), 60);
+
+    // Subkapitel Buttons
+    const subBtns = lessonContent.querySelectorAll('.subsection-buttons button');
+    const subContent = document.getElementById('subContent');
+    if (subBtns.length && subContent) {
+      subBtns.forEach((sb, i) => {
+        sb.addEventListener('click', () => {
+          subBtns.forEach(x => x.classList.remove('active'));
+          sb.classList.add('active');
+          subContent.innerHTML = section.subsections[i].content;
+        });
+      });
+      subBtns[0].click();
+    }
+  }
+
+  mainButtons.forEach((btn, idx) => {
+    btn.addEventListener('click', () => {
+      mainButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      showContent(idx);
+    });
+  });
+
+  // Direkt beim Laden das erste Kapitel + Unterkapitel anzeigen:
+  showContent(0);
+  mainButtons[0].classList.add('active');
 </script>
 </body>
 </html>

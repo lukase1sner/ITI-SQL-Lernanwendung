@@ -1,325 +1,1475 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lektion 4 – Normalisierung</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Kapitel 4: Die Zugriffssprache SQL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-          background: linear-gradient(135deg, #0b0e1a, #11142d);
-          color: #f0f0f0;
-          font-family: 'Segoe UI', sans-serif;
           margin: 0;
-          padding: 0;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
+          font-family: 'Segoe UI', sans-serif;
+          background: linear-gradient(135deg, #0b0e1a, #11142d 80%);
+          color: #f0f0f0;
+          padding: 2rem;
+          text-align: center;
           min-height: 100vh;
+          position: relative;
         }
-        .lesson-container {
-          width: 90%;
-          max-width: 1200px;
-          margin: 4rem auto;
-          background: rgba(20, 24, 40, 0.97);
-          padding: 2.5rem 3rem;
-          border-radius: 1.5rem;
-          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        body::before, body::after {
+          content: "";
+          position: fixed;
+          border-radius: 50%;
+          filter: blur(100px);
+          z-index: 0;
+          opacity: 0.3;
         }
-        h1, h2, h3 {
+        body::before {
+          width: 340px; height: 340px;
+          background: #00f2ff;
+          top: -100px; left: -120px;
+        }
+        body::after {
+          width: 270px; height: 270px;
+          background: #23d2ff;
+          bottom: -80px; right: -60px;
+        }
+        h1 {
           color: #00f2ff;
+          margin-bottom: 0.3em;
+          font-size: 2.6rem;
+          letter-spacing: 0.02em;
+          z-index: 2;
+          position: relative;
         }
-        p, li {
-          line-height: 1.6;
+        .welcome-text {
+          font-size: 1.23rem;
+          margin-bottom: 2.2rem;
+          color: #b8c3d3;
+          z-index: 2;
+          position: relative;
         }
-        pre, code {
-          background-color: #1f223a;
-          padding: 0.6rem 1rem;
-          border-radius: 0.5rem;
-          display: block;
-          overflow-x: auto;
+        .tab-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 1.3rem;
+          margin-bottom: 2.3rem;
+          z-index: 2;
+          position: relative;
         }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 2rem;
-        }
-        th, td {
-          border: 1px solid #2d334d;
-          padding: 0.75rem 1rem;
-          text-align: left;
-        }
-        th {
-          background-color: #1a1e33;
+        .tab-buttons button {
+          background: #1a1e33;
+          border: 2.2px solid #00f2ff;
           color: #00f2ff;
-        }
-        td {
-          background-color: #181b2d;
-        }
-        textarea {
-          width: 100%;
-          padding: 1rem;
-          font-family: monospace;
-          font-size: 1rem;
-          border-radius: 0.5rem;
-          background-color: #1a1e33;
-          color: white;
-          border: none;
-          margin-top: 1rem;
-        }
-        .btn {
-          margin-top: 1rem;
-          padding: 0.8rem 1.5rem;
-          background-color: #8b5cf6;
-          color: white;
-          border: none;
-          border-radius: 1rem;
+          padding: 0.95rem 2.1rem;
+          border-radius: 2.2rem;
           cursor: pointer;
           font-weight: bold;
-          box-shadow: 0 0 15px #8b5cf670;
-          transition: all 0.3s ease;
+          font-size: 1.13rem;
+          letter-spacing: 0.02em;
+          transition:
+            background 0.25s,
+            color 0.22s,
+            border-color 0.23s,
+            box-shadow 0.28s,
+            transform 0.19s;
+          box-shadow: 0 1px 12px 0 rgba(0,242,255,0.04);
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
         }
-        .btn:hover {
-          background-color: #a78bfa;
-          transform: scale(1.03);
+        .tab-buttons button.active,
+        .tab-buttons button:focus-visible {
+          background: linear-gradient(90deg,#00f2ff 60%,#38f8ff 100%);
+          color: #11142d;
+          border-color: #c6f9ff;
+          transform: scale(1.07);
+          box-shadow: 0 2px 18px 0 #00f2ff40, 0 2px 6px 0 #0002;
         }
-        .btn-secondary {
-          display: inline-block;
-          background-color: #2d2f45;
-          color: #e0e0e0;
-          padding: 0.6rem 1.2rem;
-          border-radius: 0.6rem;
-          text-decoration: none;
-          font-weight: 500;
-          margin-top: 1rem;
+        .tab-buttons button:hover:not(.active) {
+          box-shadow: 0 0 0 2px #00f2ff70;
+          border-color: #00f2ff;
+          background: #212755;
+          color: #fff;
         }
-        .feedback {
-          margin-top: 1rem;
-          font-weight: bold;
+        .lesson-content {
+          background: #1c1f35ea;
+          padding: 2.8rem 2.2rem;
+          border-radius: 1.4rem;
+          max-width: 860px;
+          margin: 2.5rem auto 0 auto;
+          box-shadow: 0 8px 38px 0 #00f2ff18, 0 3px 12px 0 #0003;
+          text-align: left;
+          line-height: 1.8;
+          font-size: 1.09rem;
+          position: relative;
+          border: 1.5px solid rgba(0,242,255,0.11);
+          opacity: 0;
+          transform: translateY(24px) scale(0.99);
+          pointer-events: none;
+          transition:
+            opacity 0.45s cubic-bezier(.42,1.35,.49,1),
+            transform 0.33s cubic-bezier(.42,1.25,.54,1.12);
+          z-index: 2;
         }
-        @media (min-width: 992px) {
-          .lesson-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-          }
-          .lesson-container > *:first-child {
-            grid-column: 1 / -1;
-          }
+        .lesson-content.visible {
+          opacity: 1;
+          pointer-events: auto;
+          transform: translateY(0) scale(1);
+        }
+        .lesson-content h2 {
+          color: #00f2ff;
+          font-size: 1.6rem;
+          margin-bottom: 0.7em;
+        }
+        .lesson-content ul {
+          margin-top: 1.5rem;
+          margin-bottom: 2rem;
+          padding-left: 1.5rem;
+          list-style-type: disc;
+        }
+        .lesson-content li {
+          margin-bottom: 0.8rem;
+        }
+        .subsection-buttons {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+          gap: 0.85rem 1.2rem;
+          margin-bottom: 1.8rem;
+          margin-top: 1.8rem;
+        }
+        .subsection-buttons button {
+          background: #181e32;
+          border: 2px solid #00f2ff;
+          color: #00f2ff;
+          padding: 0.70rem 0.2rem;
+          border-radius: 1.4rem;
+          font-size: 1rem;
+          font-weight: 600;
+          transition:
+            background 0.21s,
+            color 0.22s,
+            border-color 0.23s,
+            box-shadow 0.28s,
+            transform 0.19s;
+          box-shadow: 0 1px 8px 0 #00f2ff20;
+          cursor: pointer;
+        }
+        .subsection-buttons button.active,
+        .subsection-buttons button:focus-visible {
+          background: linear-gradient(90deg,#00f2ff 60%,#38f8ff 100%);
+          color: #11142d;
+          border-color: #fff;
+          transform: scale(1.06);
+          box-shadow: 0 2px 18px 0 #00f2ff2c, 0 2px 6px 0 #0001;
+        }
+        .subsection-buttons button:hover:not(.active) {
+          background: #00f2ff22;
+          color: #fff;
+          border-color: #38f8ff;
+          box-shadow: 0 0 0 2px #00f2ff40;
+        }
+        .sub-content {
+          margin-top: 2rem;
+        }
+        .sub-content h3 {
+          color: #00f2ff;
+          font-size: 1.22rem;
+        }
+        /* Responsive für kleine Screens */
+        @media (max-width: 600px) {
+          .lesson-content { padding: 1.2rem 0.7rem; }
+          .tab-buttons { gap: 0.4rem; }
+          .tab-buttons button { padding: 0.5rem 0.9rem; font-size: 0.98rem; }
         }
     </style>
 </head>
 <body>
-<div class="lesson-container">
-    <h1>Lektion 4: Normalisierung – saubere Datenstruktur</h1>
-
-    <div>
-        <h2>Warum normalisieren?</h2>
-        <p>Redundanzen und Anomalien können bei schlecht entworfenen Tabellen zu inkonsistenten oder fehlerhaften Daten führen. Normalisierung ist ein Prozess zur strukturellen Verbesserung von Relationen.</p>
-
-        <h2>Ziele der Normalisierung</h2>
-        <ul>
-            <li>Vermeidung von Datenredundanz</li>
-            <li>Schutz vor Einfüge-, Änderungs- und Löschanomalien</li>
-            <li>Logisch getrennte Sachverhalte trennen</li>
-        </ul>
-
-        <h2>Beispieltabelle (unnormalisiert)</h2>
-        <pre><code>Bestellung(BestNr, Kunde, Ort, Artikel, Preis)
-+--------+--------+---------+----------+--------+
-| 1      | Maier  | Berlin  | Maus     | 20,00  |
-| 1      | Maier  | Berlin  | Tastatur | 45,00  |
-| 2      | Schulz | Köln    | Monitor  | 150,00 |
-+--------+--------+---------+----------+--------+</code></pre>
-        <p>Hier wiederholen sich <code>Kunde</code> und <code>Ort</code> unnötig → Redundanz</p>
-
-        <h2>1. Normalform (1NF)</h2>
-        <p>Alle Attributwerte müssen <strong>atomar</strong> sein. Keine Listen, Gruppen oder zusammengesetzten Werte.</p>
-
-        <h2>2. Normalform (2NF)</h2>
-        <p>Alle Nicht-Schlüsselattribute müssen <strong>voll funktional abhängig</strong> vom gesamten Primärschlüssel sein.</p>
-
-        <h2>3. Normalform (3NF)</h2>
-        <p>Keine <strong>transitiven Abhängigkeiten</strong> zwischen Nicht-Schlüsselattributen.</p>
-
-        <h3>Nach der Normalisierung:</h3>
-        <pre><code>Kunde(KdNr, Name, Ort)
-Bestellung(BestNr, KdNr)
-Artikel(BestNr, Bezeichnung, Preis)</code></pre>
-
-        <h2>🔁 SQL vs. Normalisierung – Vergleich</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>SQL-Anwendung</th>
-                <th>Normalisierungsziel</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><code>CREATE TABLE ...</code></td>
-                <td>Struktur definieren: Spalten & Datentypen</td>
-            </tr>
-            <tr>
-                <td><code>PRIMARY KEY (...)</code></td>
-                <td>Einzigartigkeit sicherstellen (1NF–2NF)</td>
-            </tr>
-            <tr>
-                <td><code>FOREIGN KEY (...)</code></td>
-                <td>Tabellenbeziehung abbilden (3NF)</td>
-            </tr>
-            <tr>
-                <td><code>SELECT JOIN ...</code></td>
-                <td>Normalisierte Tabellen wieder zusammensetzen</td>
-            </tr>
-            <tr>
-                <td><code>INSERT INTO ...</code></td>
-                <td>Nur relevante Daten in Teiltabellen einfügen</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div>
-        <h3>Aufgabe 1</h3>
-        <p>Was ist eine transitive Abhängigkeit?</p>
-        <textarea id="a1"></textarea>
-        <button class="btn" onclick="checkA1()">Antwort prüfen</button>
-        <div class="feedback" id="f1"></div>
-
-        <h3>Aufgabe 2</h3>
-        <p>Welche Probleme entstehen durch Redundanz in Tabellen?</p>
-        <textarea id="a2"></textarea>
-        <button class="btn" onclick="checkA2()">Antwort prüfen</button>
-        <div class="feedback" id="f2"></div>
-
-        <h3>Aufgabe 3</h3>
-        <p>Welche der folgenden Tabellen befinden sich in 1NF?</p>
-        <ul>
-            <li><input type="checkbox" id="c1" /> <code>Kunde(Name, Wohnorte)</code></li>
-            <li><input type="checkbox" id="c2" /> <code>Bestellung(Nr, Artikel, Preis)</code></li>
-            <li><input type="checkbox" id="c3" /> <code>Artikel(Name, {Kategorien})</code></li>
-        </ul>
-        <button class="btn" onclick="checkA3()">Antwort prüfen</button>
-        <div class="feedback" id="f3"></div>
-
-        <h3>Aufgabe 4: Zuordnungs-Quiz</h3>
-        <p>Ordne die SQL-Anweisung dem passenden Normalisierungsziel zu:</p>
-        <ul style="list-style-type: none; padding-left: 0;">
-            <li>🟪 <strong>CREATE TABLE</strong> → <span id="match1">__________</span></li>
-            <li>🟪 <strong>PRIMARY KEY</strong> → <span id="match2">__________</span></li>
-            <li>🟪 <strong>FOREIGN KEY</strong> → <span id="match3">__________</span></li>
-        </ul>
-        <p><strong>Mögliche Ziele:</strong> A) Tabellenstruktur festlegen · B) Beziehungen modellieren · C) Eindeutigkeit sichern</p>
-        <button class="btn" onclick="checkMatching()">Antwort prüfen</button>
-        <div class="feedback" id="f4"></div>
-
-        <a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
-    </div>
+<h1>Kapitel 4: Die Zugriffssprache SQL</h1>
+<p class="welcome-text">Wähle einen Bereich, um zu starten:</p>
+<div class="tab-buttons">
+    <button data-index="0">🟢 4.1 Select-Befehl</button>
+    <button data-index="1">🔵 4.2 Mutationsbefehle</button>
+    <button data-index="2">🟡 4.3 Transaktionen</button>
+    <button data-index="3">🟣 4.4 Algebra & SQL</button>
+    <button data-index="4">📝 4.5 Zusammenfassung</button>
+    <button data-index="5">📝 4.6 Übungsaufgaben</button>
+    <button data-index="6">📚 Literatur</button>
 </div>
+<div class="lesson-content" id="lessonContent"></div>
 
 <script>
-    function normalize(s) {
-      return s.trim().toLowerCase();
-    }
+    const sections = [
+      {
+        title: "4.1 Der Abfragebefehl Select",
+        description: "Hier lernst du den Aufbau und die Funktionsweise des wichtigsten SQL-Befehls: SELECT.",
+        subsections: [
+          { name: "4.1.1 Aufbau des Select-Befehls", content: `<h3>4.1.1 Der Aufbau des Select-Befehls</h3>
+    <p><b>Wichtig zu wissen:</b><br>
+    SQL fragt nicht <i>wie</i> Daten gefunden werden, sondern nur <i>welche</i> Daten gesucht werden.<br>
+    Egal, wie die Datenbank intern organisiert ist (Index, Reihenfolge, etc.): Das SQL-Statement bleibt gleich!
+    </p>
+    <p>
+    <b>Das macht SQL besonders einfach und flexibel.</b> Für dich heißt das: Fokus auf den gewünschten Inhalt, nicht auf technische Details.
+    </p>
+    <h4>Syntax: Select-Hauptteil</h4>
+    <pre><code>
+    SELECT [ ALL | DISTINCT ] Spaltenauswahlliste
+    FROM   Tabellenliste
+    [ WHERE Bedingung ]
+    [ GROUP BY Spaltenliste
+      [ HAVING Bedingung ] ]
+    </code></pre>
+    <ul>
+      <li><b>Großbuchstaben</b> = reservierte Wörter (so schreiben)</li>
+      <li><b>Eckige Klammern [ ]</b> = optional, werden <i>nicht</i> mitgeschrieben</li>
+      <li><b>Geschweifte Klammern { }</b> mit Strich | = Auswahlliste, eins davon wählen</li>
+      <li><b>Drei Punkte ...</b> = beliebig oft wiederholen</li>
+      <li><b>Bezeichner:</b> Beginnen mit Buchstaben (ohne ä, ö, ü, ß), dann Buchstaben, Unterstrich (_), Ziffern</li>
+    </ul>
+    <h4>Erweiterte Syntax: Vollständiger Select-Befehl</h4>
+    <pre><code>
+    Select-Hauptteil
+    [ UNION [ALL] | EXCEPT | INTERSECT Select-Hauptteil ] [ ... ]
+    [ ORDER BY Ordnungsliste ]
+    </code></pre>
+    <ul>
+      <li>Ein <b>Select-Befehl</b> besteht aus mindestens einem Hauptteil</li>
+      <li>Weitere Select-Teile können mit UNION, EXCEPT, INTERSECT verbunden werden</li>
+      <li>Abschließend kann das Ergebnis mit <b>ORDER BY</b> sortiert werden</li>
+    </ul>
+    <h4>Reihenfolge der Abarbeitung</h4>
+    <ol>
+      <li><b>FROM</b> – Welche Tabelle(n)?</li>
+      <li><b>WHERE</b> – Einschränkung/Filter</li>
+      <li><b>SELECT</b> – Was soll angezeigt werden?</li>
+      <li><b>GROUP BY/HAVING</b> – Gruppierung (optional)</li>
+    </ol>
+    <p>
+    <i>Tipp:</i> Lies und schreibe Selects am besten immer in dieser Reihenfolge!
+    </p>
+    <h4>Vergleich SQL & Relationale Algebra</h4>
+    <table border="1" cellpadding="4" style="margin-bottom:10px;">
+      <thead>
+        <tr><th>Algebra</th><th>SQL</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Vereinigung</td><td>UNION</td></tr>
+        <tr><td>Schnitt</td><td>INTERSECT</td></tr>
+        <tr><td>Differenz</td><td>EXCEPT</td></tr>
+        <tr><td>Kreuzprodukt</td><td>Tabellenliste</td></tr>
+        <tr><td>Restriktion (σ)</td><td>WHERE</td></tr>
+        <tr><td>Projektion (π)</td><td>SELECT</td></tr>
+        <tr><td>Verbund</td><td>Tabellenliste</td></tr>
+        <tr><td>Division</td><td><i>nicht in SQL</i></td></tr>
+        <tr><td>Umbenennung</td><td>Spaltenauswahlliste, Tabellenliste</td></tr>
+      </tbody>
+    </table>
+    <small>
+    <b>Hinweis:</b> Die Syntax basiert auf der SQL2-Norm.<br>
+    Unterschiede zu Oracle, SQL Server, MySQL werden jeweils im Text gekennzeichnet.
+    </small>
+          `},
+          { name: "4.1.2 Die From-Klausel", content: `<h3>4.1.2 Die From-Klausel</h3>
+<p>
+  Jeder Select-Befehl enthält eine <b>Select-</b> und eine <b>From-Klausel</b>. Die From-Klausel verbindet in der Tabellenliste die Relationen über Kreuzprodukt oder Verbund (Join). Die Select-Klausel macht dann eine Projektion auf die gewünschten Spalten.
+</p>
+<p>
+  <b>Syntax Tabellenliste:</b><br>
+  <code>Tabellenreferenz [, ...]</code>
+</p>
+<ul>
+  <li><b>Eine Tabellenreferenz</b>: z.B. nur ein Tabellenname (SELECT * FROM Personal;)</li>
+  <li><b>Mehrere Tabellenreferenzen</b>: Kommagetrennt = Kreuzprodukt<br>
+    <code>SELECT * FROM Personal, Auftrag;</code>
+  </li>
+</ul>
 
-    function checkA1() {
-      const input = normalize(document.getElementById("a1").value);
-      const f = document.getElementById("f1");
-      if (input.includes("abhängig") && input.includes("nicht-schlüssel")) {
-        f.textContent = "✅ Richtig! Transitive Abhängigkeit betrifft Nicht-Schlüsselattribute.";
-        f.style.color = '#00f2ff';
-      } else {
-        f.textContent = "❌ Nicht ganz. Überlege, was überflüssige Abhängigkeiten sind.";
-        f.style.color = '#ff6b6b';
-      }
-    }
+<p>
+  <b>Definition Tabellenreferenz:</b>
+  <pre style="white-space:pre-line; background:#121423; border-radius:0.5em; padding:0.8em 1em; color:#9cf;">
+Tabellenname [[AS] Aliasname]
+| (Select-Hauptteil) [[AS] Aliasname]
+| (Tabellenreferenz) [[AS] Aliasname]
+| Joinausdruck [[AS] Aliasname]
+  </pre>
+</p>
 
-    function checkA2() {
-      const input = normalize(document.getElementById("a2").value);
-      const f = document.getElementById("f2");
-      if (input.includes("doppel") || input.includes("mehrfach") || input.includes("widerspruch")) {
-        f.textContent = "✅ Ja! Redundanz erzeugt Widersprüche und unnötige Wiederholungen.";
-        f.style.color = '#00f2ff';
-      } else {
-        f.textContent = "❌ Denk an Wiederholungen und fehlerhafte Updates.";
-        f.style.color = '#ff6b6b';
-      }
-    }
+<ul>
+  <li><b>Tabellenname</b>: wie immer, optional mit Alias.<br>
+    <code>SELECT * FROM Personal AS P;</code>
+  </li>
+  <li><b>Select in Klammern:</b> ein Subquery als Tabelle (erfordert Alias in MySQL/SQL Server).<br>
+    <code>SELECT * FROM (SELECT * FROM Personal) AS P2;</code>
+  </li>
+  <li><b>Klammern um Tabellennamen:</b> selten nötig, eher für komplexere Ausdrücke.<br>
+    <code>SELECT * FROM (Personal);</code>
+  </li>
+  <li><b>Joinausdruck:</b> direkt JOIN in der FROM-Klausel.<br>
+    <code>SELECT * FROM Personal NATURAL INNER JOIN Auftrag;</code>
+  </li>
+</ul>
 
-    function checkA3() {
-      const f = document.getElementById("f3");
-      const correct = !document.getElementById("c1").checked && document.getElementById("c2").checked && !document.getElementById("c3").checked;
-      if (correct) {
-        f.textContent = "✅ Korrekt! Nur Bestellung ist atomar strukturiert.";
-        f.style.color = '#00f2ff';
-      } else {
-        f.textContent = "❌ Achtung: Prüfe, ob Attributwerte Listen enthalten.";
-        f.style.color = '#ff6b6b';
-      }
-    }
-  function checkMatching() {
-    const m1 = document.getElementById("match1").textContent.trim().toUpperCase();
-    const m2 = document.getElementById("match2").textContent.trim().toUpperCase();
-    const m3 = document.getElementById("match3").textContent.trim().toUpperCase();
-    const f = document.getElementById("f4");
-    if (m1 === "A" && m2 === "C" && m3 === "B") {
-      f.textContent = "✅ Alles richtig zugeordnet!";
-      f.style.color = '#00f2ff';
-    } else {
-      f.textContent = "❌ Nicht korrekt. A = CREATE, B = FOREIGN KEY, C = PRIMARY KEY.";
-      f.style.color = '#ff6b6b';
-    }
-  }
-</script>
-</body>
-</html>
+<p>
+  <b>Beispiele Tabellenliste:</b><br>
+  <code>SELECT * FROM Personal, Auftrag;</code>
+  <br>
+  <small>(Kreuzprodukt: jede Zeile von Personal mit jeder Zeile von Auftrag.)</small>
+</p>
 
+<p>
+  <b>Kreuzprodukt - Ergebnisbeispiel:</b>
+  <br>
+  (Die ersten 11 Zeilen einer Ergebnistabelle, gekürzt.)
+</p>
+<table border="1" cellpadding="4">
+<thead>
+<tr>
+  <th>Persnr</th><th>Name</th><th>Ort</th><th>AuftrNr</th><th>Datum</th><th>Kundnr</th><th>Persnr (Auftrag)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Maria Forster</td><td>Regensburg</td><td>1</td><td>04.01.13</td><td>1</td><td>2</td></tr>
+<tr><td>1</td><td>Maria Forster</td><td>Regensburg</td><td>2</td><td>06.01.13</td><td>3</td><td>5</td></tr>
+<tr><td>1</td><td>Maria Forster</td><td>Regensburg</td><td>3</td><td>07.01.13</td><td>4</td><td>2</td></tr>
+<tr><td>1</td><td>Maria Forster</td><td>Regensburg</td><td>4</td><td>18.01.13</td><td>6</td><td>5</td></tr>
+<tr><td>1</td><td>Maria Forster</td><td>Regensburg</td><td>5</td><td>06.02.13</td><td>1</td><td>2</td></tr>
+<tr><td>2</td><td>Anna Kraus</td><td>Regensburg</td><td>1</td><td>04.01.13</td><td>1</td><td>2</td></tr>
+<tr><td>2</td><td>Anna Kraus</td><td>Regensburg</td><td>2</td><td>06.01.13</td><td>3</td><td>5</td></tr>
+<tr><td>2</td><td>Anna Kraus</td><td>Regensburg</td><td>3</td><td>07.01.13</td><td>4</td><td>2</td></tr>
+<tr><td>2</td><td>Anna Kraus</td><td>Regensburg</td><td>4</td><td>18.01.13</td><td>6</td><td>5</td></tr>
+<tr><td>2</td><td>Anna Kraus</td><td>Regensburg</td><td>5</td><td>06.02.13</td><td>1</td><td>2</td></tr>
+<tr><td>3</td><td>Ursula Rank</td><td>Frankfurt</td><td>1</td><td>04.01.13</td><td>1</td><td>2</td></tr>
+</tbody>
+</table>
 
-<a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
+<p>
+  <b>Relationale Algebra (zum Vergleich):</b>
+  <pre style="background:#121423; border-radius:0.5em; padding:0.5em 1em; color:#9cf;">
+Personal!P  (Umbenennung) <br>
+Personal × Auftrag  (Kreuzprodukt)
+  </pre>
+</p>
+<p>
+  <b>Hinweise:</b><br>
+  - <b>AS</b> ist in Oracle <u>nicht</u> in der FROM-Klausel erlaubt.<br>
+  - In MySQL/SQL Server muss bei Subqueries <u>immer</u> ein Alias vergeben werden.
+</p>
+<p>
+  <i>Erst in Kombination mit Projektion (SELECT) und Restriktion (WHERE) wird die FROM-Klausel wirklich nützlich.</i>
+</p>
+` },
+          { name: "4.1.3 Die Select-Klausel", content: `<h3>4.1.3 Die Select-Klausel</h3>
+<p>
+  Die <b>Select-Klausel</b> bestimmt, welche Daten du ausgeben willst. Sie hat die Syntax:<br>
+  <code>SELECT [ ALL | DISTINCT ] Spaltenauswahlliste</code>
+</p>
+<ul>
+  <li>
+    <b>Spaltenauswahlliste:</b> Kommagetrennte Spaltenausdrücke.<br>
+    <code>SELECT Name, Gehalt FROM Personal;</code>
+  </li>
+  <li>
+    Es sind auch beliebige Ausdrücke erlaubt – inklusive arithmetischer Operationen, Funktionen oder sogar Unterabfragen.
+  </li>
+  <li>
+    <b>Aliasnamen:</b> Mit <code>AS</code> (oder direkt) kannst du Spalten umbenennen.<br>
+    <code>SELECT Name, 12 * Gehalt AS Jahresgehalt FROM Personal;</code>
+  </li>
+</ul>
+
+<h4>Sternsymbol *</h4>
+<p>
+  Gibt alle Spalten aus.<br>
+  <code>SELECT * FROM Personal, Auftrag;</code><br>
+  <b>Tipp:</b> Nutze <code>*</code> nur für schnelle Abfragen, in Programmen besser immer die Spalten einzeln angeben!
+</p>
+<p>
+  Spaltennamen lassen sich qualifizieren:<br>
+  <code>SELECT Personal.Persnr, Name, Auftrag.AuftrNr FROM Personal, Auftrag;</code>
+</p>
+
+<h4>Skalare Funktionen in SQL</h4>
+<p>Einige nützliche Funktionen:</p>
+<ul>
+  <li><b>UPPER(Zeichenkette)</b>: alles groß</li>
+  <li><b>LOWER(Zeichenkette)</b>: alles klein</li>
+  <li><b>TRIM(Zeichenkette)</b>: entfernt Leerzeichen vorne und hinten</li>
+  <li><b>RTRIM(Zeichenkette)</b>: entfernt Leerzeichen rechts</li>
+  <li><b>SUBSTRING(Zeichenkette, Pos, Anzahl)</b> oder <b>SUBSTRING(Zeichenkette FROM Pos FOR Anzahl)</b></li>
+</ul>
+<small>
+  Hinweis: Manche Datenbanken haben Besonderheiten! In Oracle z.B. heißt <code>SUBSTR()</code> statt <code>SUBSTRING()</code>.
+</small>
+
+<h4>Aggregatfunktionen (Statistiken)</h4>
+<table border="1" cellpadding="4">
+  <thead>
+    <tr><th>Funktion</th><th>Bedeutung</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>AVG()</td><td>Mittelwert</td></tr>
+    <tr><td>COUNT()</td><td>Anzahl Zeilen</td></tr>
+    <tr><td>MAX()</td><td>Maximalwert</td></tr>
+    <tr><td>MIN()</td><td>Minimalwert</td></tr>
+    <tr><td>SUM()</td><td>Summe</td></tr>
+  </tbody>
+</table>
+<p>
+  Beispiel:<br>
+  <code>SELECT SUM(12 * Gehalt + 1000 * (6-Beurteilung)) AS PersonalkostenJahr FROM Personal;</code>
+</p>
+<p>
+  <b>COUNT(*)</b> zählt alle Zeilen (auch mit NULL), <b>COUNT(Spalte)</b> zählt nur Zeilen mit Wert in dieser Spalte.
+</p>
+<p>
+  <b>ALL</b> und <b>DISTINCT</b> können verwendet werden, z.B.:<br>
+  <code>SELECT DISTINCT Ort FROM Personal;</code> – Jeder Ort nur einmal.<br>
+  <code>SELECT COUNT(DISTINCT Vorgesetzt) FROM Personal;</code> – Anzahl verschiedener Vorgesetzte.
+</p>
+
+<h4>Zusammenfassung – Wichtige Hinweise</h4>
+<ul>
+  <li>Mit <code>SELECT DISTINCT ...</code> werden doppelte Zeilen entfernt.</li>
+  <li>Aggregatfunktionen liefern immer nur einen Wert zurück, außer sie stehen mit <b>GROUP BY</b> in Kombination.</li>
+  <li><b>NULL-Werte</b> werden bei Aggregaten (außer COUNT(*)) ignoriert.</li>
+  <li>Spaltennamen bei gleichnamigen Attributen <b>immer qualifizieren</b> (Tabellenname.Spalte).</li>
+</ul>
+` },
+          { name: "4.1.4 Die Where-Klausel", content: `<h3>4.1.4 Die WHERE-Klausel</h3>
+<p>
+  Die <b>WHERE-Klausel</b> ist das Werkzeug zur <b>Filterung von Daten</b> – sie schränkt die Ergebnismenge auf die Zeilen ein, die die angegebene Bedingung erfüllen.
+</p>
+<p>
+  <b>Syntax:</b><br>
+  <code>SELECT ... FROM ... WHERE Bedingung;</code>
+</p>
+<ul>
+  <li>Die <b>WHERE-Klausel</b> kommt nach FROM, aber vor SELECT in der logischen Auswertung.</li>
+  <li>Sie enthält einen <b>booleschen Ausdruck</b> (wahr/falsch): Nur Zeilen, die <b>wahr</b> ergeben, kommen ins Ergebnis.</li>
+</ul>
+
+<h4>Wichtige Operatoren:</h4>
+<table border="1" cellpadding="4">
+  <thead>
+    <tr><th>Typ</th><th>Operatoren</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Boolesche</td><td>NOT, AND, OR</td></tr>
+    <tr><td>Vergleich</td><td>&lt;, &lt;=, &gt;, &gt;=, =, &lt;&gt;, !=</td></tr>
+    <tr><td>Intervall</td><td>[NOT] BETWEEN ... AND ...</td></tr>
+    <tr><td>Mengen</td><td>[NOT] IN (...)</td></tr>
+    <tr><td>Ähnlichkeit</td><td>[NOT] LIKE (Wildcards: % und _)</td></tr>
+    <tr><td>Nullwerte</td><td>IS [NOT] NULL</td></tr>
+    <tr><td>Auswahl</td><td>ALL, ANY, SOME</td></tr>
+    <tr><td>Existenz</td><td>EXISTS (mit Unterabfragen)</td></tr>
+  </tbody>
+</table>
+
+<h4>Beispiele:</h4>
+<ul>
+  <li>
+    <b>Wert größer als ...</b><br>
+    <code>SELECT * FROM Personal WHERE Gehalt &gt; 3000;</code>
+  </li>
+  <li>
+    <b>Wert zwischen zwei Zahlen:</b><br>
+    <code>SELECT * FROM Personal WHERE Gehalt BETWEEN 2000 AND 3000;</code>
+  </li>
+  <li>
+    <b>Wert in einer Menge:</b><br>
+    <code>SELECT * FROM Personal WHERE Gehalt IN (2300, 2700, 3300);</code>
+  </li>
+  <li>
+    <b>LIKE – Mustervergleich (Wildcards):</b><br>
+    <code>SELECT * FROM Personal WHERE Name LIKE '%Heinz%';</code><br>
+    (Name enthält "Heinz")<br>
+    <code>SELECT * FROM Personal WHERE UPPER(Name) LIKE '%A_E%';</code>
+  </li>
+  <li>
+    <b>Nullwerte testen:</b><br>
+    <code>SELECT * FROM Personal WHERE Vorgesetzt IS NULL;</code>
+  </li>
+</ul>
+
+<h4>Unterabfragen (Subselects) in WHERE</h4>
+<p>
+  <b>Unterabfragen</b> erlauben es, Bedingungen von Ergebnissen anderer SELECTs abhängig zu machen.
+</p>
+<code>
+SELECT * FROM Personal<br>
+WHERE Ort IN (SELECT Ort FROM Personal WHERE Persnr IN (2, 5));
+</code>
+<p>Oder mit Auswahloperatoren:</p>
+<code>
+SELECT * FROM Personal<br>
+WHERE Gehalt &gt;= ALL (SELECT Gehalt FROM Personal);
+</code>
+
+<h4>EXISTS-Operator</h4>
+<p>
+  Prüft, ob die Unterabfrage mindestens ein Ergebnis liefert:
+</p>
+<code>
+SELECT * FROM Personal AS P1<br>
+WHERE EXISTS (SELECT * FROM Personal WHERE Persnr = 3 AND P1.Gehalt &lt; Gehalt);
+</code>
+
+<h4>Wichtige Hinweise</h4>
+<ul>
+  <li>Vergleiche auf NULL immer mit <code>IS NULL</code> bzw. <code>IS NOT NULL</code>! <br><i>(<code>= NULL</code> oder <code>&lt;&gt; NULL</code> funktioniert nicht!)</i></li>
+  <li>Aggregatfunktionen (z.B. MAX()) sind in WHERE direkt <b>nicht</b> erlaubt, nur in Subselects.</li>
+  <li>Klammern helfen bei komplexen Bedingungen und machen sie übersichtlicher.</li>
+</ul>
+` },
+          { name: "4.1.5 Group By & Having", content: `<h3>4.1.5 Die <span style="color:#00f2ff">GROUP BY</span>- und <span style="color:#00f2ff">HAVING</span>-Klausel</h3>
+<p>
+  Mit <b>GROUP BY</b> können Datensätze nach bestimmten Spalten <b>gruppiert</b> und mit Aggregatfunktionen ausgewertet werden.
+  <br>Die <b>HAVING</b>-Klausel filtert die Gruppen nach der Aggregation.
+</p>
+
+<h4>GROUP BY – Gruppieren nach Spalten</h4>
+<p>
+  So kann man z.B. alle Wohnorte von Mitarbeitern einmalig ausgeben:
+</p>
+<pre><code>SELECT Ort
+FROM Personal
+GROUP BY Ort;
+</code></pre>
+<ul>
+  <li>In <b>GROUP BY</b> dürfen <b>nur Spaltennamen</b> stehen (keine Ausdrücke!).</li>
+  <li>In <b>SELECT</b> dürfen nach einer Gruppierung <b>nur Spalten stehen, die gruppiert werden</b> oder Aggregatfunktionen enthalten.</li>
+</ul>
+
+<h4>Gruppieren & Zählen: Wie viele wohnen in welchem Ort?</h4>
+<pre><code>SELECT Ort, COUNT(*) AS Anzahl
+FROM Personal
+GROUP BY Ort;
+</code></pre>
+<p>
+  Ergebnis:
+  <br>
+  <table border="1" cellpadding="4">
+    <thead>
+      <tr><th>Ort</th><th>Anzahl</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Regensburg</td><td>3</td></tr>
+      <tr><td>Frankfurt</td><td>1</td></tr>
+      <tr><td>Nürnberg</td><td>2</td></tr>
+      <tr><td>Landshut</td><td>1</td></tr>
+      <tr><td>Augsburg</td><td>1</td></tr>
+      <tr><td>Stuttgart</td><td>1</td></tr>
+    </tbody>
+  </table>
+</p>
+
+<h4>HAVING – Gruppen filtern (nach der Aggregation!)</h4>
+<p>
+  Beispiel: Nur Orte mit mindestens 2 Mitarbeitern UND dazu Statistik:
+</p>
+<pre><code>
+SELECT Ort, COUNT(*) AS Anzahl, SUM(12*Gehalt) AS Jahresgehalt, 12 * MAX(Gehalt) AS MaxJahresgehalt
+FROM Personal
+GROUP BY Ort
+HAVING COUNT(*) &gt; 1;
+</code></pre>
+<ul>
+  <li><b>HAVING</b> filtert die Gruppen <i>nach</i> der Gruppierung – im Gegensatz zu <b>WHERE</b> (filtert <i>vor</i> der Gruppierung).</li>
+  <li>Nur hier sind Aggregatfunktionen im Filter erlaubt!</li>
+</ul>
+
+<h4>Alternative mit Subquery (statt HAVING):</h4>
+<pre><code>
+SELECT *
+FROM (
+  SELECT Ort, COUNT(*) AS Anzahl,
+         SUM(12*Gehalt) AS Jahresgehalt,
+         12 * MAX(Gehalt) AS MaxJahresgehalt
+  FROM Personal
+  GROUP BY Ort
+) AS Zwischentabelle
+WHERE Anzahl &gt; 1;
+</code></pre>
+
+<h4>Aggregieren über Unterabfragen</h4>
+<p>
+  Durchschnittliches Auftragsvolumen pro Auftrag und im Mittel:
+</p>
+<pre><code>
+SELECT 'Mittleres Auftragsvolumen:', AVG(Auftragsvolumen)
+FROM (
+  SELECT SUM(Gesamtpreis) AS Auftragsvolumen
+  FROM Auftragsposten
+  GROUP BY Auftrnr
+) AS Auftragspreis;
+</code></pre>
+
+<ul>
+  <li><b>GROUP BY</b> ist sehr mächtig für Statistiken & Reports – wird z.B. im Data Warehouse oft eingesetzt.</li>
+  <li><b>HAVING</b> ohne GROUP BY ist auch möglich (dann wirkt es wie ein WHERE auf Aggregatfunktionen über die ganze Tabelle).</li>
+</ul>
+
+<small><b>Hinweis:</b> GROUP BY hat keine Entsprechung in der relationalen Algebra.</small>
+` },
+          { name: "4.1.6 Union, Except und Intersect", content: `<h3>4.1.6 <span style="color:#00f2ff">UNION</span>, <span style="color:#00f2ff">EXCEPT</span> und <span style="color:#00f2ff">INTERSECT</span></h3>
+<p>
+  Mit diesen „Mengenoperatoren“ kannst du Ergebnismengen von SELECT-Anweisungen miteinander <b>verknüpfen</b>.
+</p>
+<ul>
+  <li><b>UNION</b>: Vereinigung (liefert alle unterschiedlichen Tupel beider Ergebnismengen)</li>
+  <li><b>EXCEPT</b>: Differenz (liefert alle Tupel aus dem ersten SELECT, die nicht im zweiten vorkommen)</li>
+  <li><b>INTERSECT</b>: Schnitt (liefert alle Tupel, die in beiden Ergebnismengen vorkommen)</li>
+</ul>
+
+<h4>Wichtige Voraussetzungen</h4>
+<ul>
+  <li>Beide SELECTs müssen die <b>gleiche Anzahl an Spalten</b> liefern (gleicher „Grad“).</li>
+  <li>Die Spalten müssen <b>typ-kompatibel</b> sein (z.B. beide Zahlen, beide Text).</li>
+  <li><b>INTERSECT</b> bindet stärker als UNION oder EXCEPT. <br>Klammern dürfen und sollten zur Steuerung der Reihenfolge genutzt werden.</li>
+</ul>
+
+<h4>Beispiel: Vereinigung aller Orte aus Personal <i>und</i> Kunde</h4>
+<pre><code>
+SELECT Ort
+FROM Personal
+UNION
+SELECT Ort
+FROM Kunde;
+</code></pre>
+<ul>
+  <li><b>UNION</b> entfernt doppelte Werte (wie die Relationenalgebra).</li>
+  <li>Willst du Duplikate behalten (performanter): <b>UNION ALL</b></li>
+</ul>
+
+<h4>Beispiel: Unterschied (EXCEPT)</h4>
+<pre><code>
+SELECT Ort
+FROM Personal
+EXCEPT
+SELECT Ort
+FROM Kunde;
+</code></pre>
+<ul>
+  <li>Liefert alle Orte, die es in <b>Personal</b>, aber nicht in <b>Kunde</b> gibt.</li>
+  <li><b>Hinweis:</b> In Oracle heißt EXCEPT: <b>MINUS</b></li>
+</ul>
+
+<h4>Beispiel: Schnitt (INTERSECT)</h4>
+<pre><code>
+SELECT Ort
+FROM Personal
+INTERSECT
+SELECT Ort
+FROM Kunde;
+</code></pre>
+<ul>
+  <li>Liefert alle Orte, die sowohl bei <b>Personal</b> als auch bei <b>Kunde</b> vorkommen.</li>
+</ul>
+
+<small>
+  <b>Hinweis:</b> In MySQL ist nur <b>UNION</b> (und <b>UNION ALL</b>) verfügbar, <b>INTERSECT</b> und <b>EXCEPT</b> gibt es dort (noch) nicht direkt.<br>
+  <b>UNION ALL</b> ist performanter, weil keine Prüfung auf Duplikate gemacht wird!
+</small>
+` },
+          { name: "4.1.7 Der Verbund (Join)", content: `<h3>4.1.7 Der Verbund (Join)</h3>
+<p>
+  Der <b>JOIN-Operator</b> verbindet mehrere Tabellen (Relationen) zu einer Ergebnismenge, typischerweise über gemeinsame Spalten. Joins sind extrem wichtig in der Praxis, besonders für Fremdschlüsselbeziehungen.
+</p>
+
+<h4>Grundsyntax</h4>
+<pre><code>
+SELECT ...
+FROM Tabelle1
+[ {NATURAL} ] [INNER]
+  | [NATURAL] {LEFT | RIGHT | FULL} [OUTER]
+JOIN Tabelle2
+ON Bedingung
+</code></pre>
+<ul>
+  <li>Die wichtigsten Varianten sind <b>INNER JOIN</b> (Standard-Join) und <b>NATURAL JOIN</b> (Join über gleichnamige Spalten).</li>
+  <li>Die Join-Bedingung wird mit <b>ON</b> oder <b>USING</b> angegeben.</li>
+</ul>
+
+<h4>Beispiel: Natürlicher Join</h4>
+<pre><code>
+SELECT *
+FROM Auftrag NATURAL INNER JOIN Personal;
+</code></pre>
+<ul>
+  <li>Alle Datensätze aus <b>Auftrag</b> und <b>Personal</b>, bei denen die <b>Persnr</b> übereinstimmt, werden zusammengeführt.</li>
+  <li>Die gemeinsame Spalte erscheint nur einmal im Ergebnis.</li>
+</ul>
+
+<h4>Beispiel: Join mit ON-Bedingung</h4>
+<pre><code>
+SELECT *
+FROM Auftrag
+INNER JOIN Personal
+  ON Auftrag.Persnr = Personal.Persnr;
+</code></pre>
+<ul>
+  <li>Die Verbindung erfolgt explizit über die Spalte <code>Persnr</code>.</li>
+  <li>Alle gemeinsamen Datensätze werden angezeigt – auch wenn die Spaltennamen unterschiedlich wären!</li>
+</ul>
+
+<h4>Beispiel: Join mit USING</h4>
+<pre><code>
+SELECT *
+FROM Auftrag
+INNER JOIN Personal
+  USING (Persnr);
+</code></pre>
+<ul>
+  <li>Wie NATURAL JOIN, aber du bestimmst selbst die Join-Spalte(n).</li>
+</ul>
+
+<h4>Join mit Projektion (nur gewünschte Spalten ausgeben)</h4>
+<pre><code>
+SELECT Auftrnr, Datum, Kundnr, Personal.*
+FROM Auftrag
+INNER JOIN Personal
+  ON Auftrag.Persnr = Personal.Persnr;
+</code></pre>
+<p>
+  So kannst du doppelte Spalten vermeiden und die Ergebnismenge übersichtlich halten.
+</p>
+
+<h4>Alternative: Join als WHERE-Bedingung (älterer Stil)</h4>
+<pre><code>
+SELECT Auftrnr, Datum, Kundnr, Personal.*
+FROM Auftrag, Personal
+WHERE Auftrag.Persnr = Personal.Persnr;
+</code></pre>
+<ul>
+  <li>Das klassische SQL (Kreuzprodukt + WHERE-Filterung)</li>
+  <li>Empfohlen wird aber heute der <b>JOIN ... ON ...</b>-Stil.</li>
+</ul>
+
+<h4>Theta-Join</h4>
+<p>
+  Du kannst im <b>ON</b> auch beliebige Vergleichsoperatoren nutzen, nicht nur „=“.<br>
+  <small>Beispiel: <code>ON Personal.Gehalt &gt; Auftrag.Summe</code></small>
+</p>
+
+<small>
+  <b>Hinweise:</b>
+  <ul>
+    <li>In MySQL gibt es keinen FULL JOIN; Oracle verwendet <b>MINUS</b> statt EXCEPT und unterstützt <b>NATURAL JOIN</b>.</li>
+    <li>Im SQL Server gibt es kein NATURAL JOIN/USING, dort immer <b>ON</b> verwenden.</li>
+    <li>Joins können beliebig geschachtelt werden.</li>
+    <li>Join ist das Standardmittel, um Daten aus mehreren Tabellen logisch zu verbinden!</li>
+  </ul>
+</small>
+` },
+          { name: "4.1.8 Der äußere Verbund (Outer Join)", content: `<h3>4.1.8 Der äußere Verbund (Outer Join)</h3>
+<p>
+  Im Unterschied zum <b>INNER JOIN</b> liefert der <b>OUTER JOIN</b> auch Datensätze, für die es auf einer Seite <b>keine Entsprechung</b> gibt. Typische Anwendung: Du willst <i>alle</i> Mitarbeitenden auflisten – auch wenn sie (noch) keine Aufträge haben.
+</p>
+
+<!-- Grafische Darstellung Outer Joins -->
+<div style="display: flex; flex-wrap: wrap; gap: 2.5rem; justify-content:center; margin: 1.2em 0 2em 0;">
+  <div style="text-align:center;">
+    <b>LEFT OUTER JOIN</b>
+    <div style="font-size:1.8em;">🟦<b>⊕</b>🟩</div>
+    <div style="display:inline-block;background:#0df2c01c;border-radius:8px;padding:0.8em 1.1em;margin-top:0.7em;">
+      <span style="color:#00f2ff;">Alle links,<br>passende rechts</span>
     </div>
+  </div>
+  <div style="text-align:center;">
+    <b>RIGHT OUTER JOIN</b>
+    <div style="font-size:1.8em;">🟦<b>⊕</b>🟩</div>
+    <div style="display:inline-block;background:#23aaff19;border-radius:8px;padding:0.8em 1.1em;margin-top:0.7em;">
+      <span style="color:#23d2ff;">Alle rechts,<br>passende links</span>
+    </div>
+  </div>
+  <div style="text-align:center;">
+    <b>FULL OUTER JOIN</b>
+    <div style="font-size:1.8em;">🟦<b>⊕</b>🟩</div>
+    <div style="display:inline-block;background:#d3f2ff12;border-radius:8px;padding:0.8em 1.1em;margin-top:0.7em;">
+      <span style="color:#38f8ff;">Alle aus beiden,<br>egal ob passend</span>
+    </div>
+  </div>
 </div>
 
-<script>
-    function normalize(s) {
-      return s.trim().toLowerCase();
-    }
+<!-- Syntax & Beispiele -->
+<h4>Syntax</h4>
+<pre><code>
+SELECT ...
+FROM Tabelle1
+LEFT [OUTER] JOIN Tabelle2 ON Bedingung
 
-    function checkA1() {
-      const input = normalize(document.getElementById("a1").value);
-      const f = document.getElementById("f1");
-      if (input.includes("abhängig") && input.includes("nicht-schlüssel")) {
-        f.textContent = "✅ Richtig! Transitive Abhängigkeit betrifft Nicht-Schlüsselattribute.";
-        f.style.color = '#00f2ff';
-      } else {
-        f.textContent = "❌ Nicht ganz. Überlege, was überflüssige Abhängigkeiten sind.";
-        f.style.color = '#ff6b6b';
+SELECT ...
+FROM Tabelle1
+RIGHT [OUTER] JOIN Tabelle2 ON Bedingung
+
+SELECT ...
+FROM Tabelle1
+FULL [OUTER] JOIN Tabelle2 ON Bedingung
+</code></pre>
+<ul>
+  <li><b>LEFT OUTER JOIN</b>: Alle Zeilen von <b>links</b> (Tabelle1), auch wenn keine passenden von rechts</li>
+  <li><b>RIGHT OUTER JOIN</b>: Alle Zeilen von <b>rechts</b> (Tabelle2), auch wenn keine passenden von links</li>
+  <li><b>FULL OUTER JOIN</b>: Alle Zeilen aus beiden Tabellen, nicht passende werden mit <code>NULL</code> ergänzt</li>
+</ul>
+
+<h4>Beispiel: Alle Mitarbeiter mit/ohne Aufträge</h4>
+<pre><code>
+SELECT Persnr, Name, COUNT(AuftrNr) AS AnzahlAuftrag
+FROM Personal NATURAL LEFT OUTER JOIN Auftrag
+GROUP BY Persnr, Name;
+</code></pre>
+<p>
+  Ergebnis: <br>
+  <i>Auch Mitarbeitende, die keine Aufträge haben, werden mit ausgegeben (Anzahl = 0)</i>
+</p>
+
+<!-- Farbig gestaltete Ergebnis-Tabelle -->
+<table style="border-collapse:collapse;margin:1.4em auto;width:95%;background:#151b2b;border-radius:1.2em;overflow:hidden;box-shadow:0 1px 12px #00f2ff18;">
+  <thead style="background:#112e3d;">
+    <tr>
+      <th style="padding:0.75em 1.1em;color:#00f2ff;">Persnr</th>
+      <th style="padding:0.75em 1.1em;color:#00f2ff;">Name</th>
+      <th style="padding:0.75em 1.1em;color:#00f2ff;">AnzahlAuftrag</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td style="padding:0.7em 1em;">2</td><td>Anna Kraus</td><td style="color:#0fd;">3</td></tr>
+    <tr><td>5</td><td>Johanna Köster</td><td style="color:#0fd;">2</td></tr>
+    <tr style="background:#26324e77;"><td>1</td><td>Maria Forster</td><td style="color:#ffc;">0</td></tr>
+    <tr><td>3</td><td>Ursula Rank</td><td style="color:#ffc;">0</td></tr>
+    <tr style="background:#26324e77;"><td>4</td><td>Heinz Rolle</td><td style="color:#ffc;">0</td></tr>
+    <tr><td>6</td><td>Marianne Lambert</td><td style="color:#ffc;">0</td></tr>
+    <tr style="background:#26324e77;"><td>7</td><td>Thomas Noster</td><td style="color:#ffc;">0</td></tr>
+    <tr><td>8</td><td>Renate Wolters</td><td style="color:#ffc;">0</td></tr>
+    <tr style="background:#26324e77;"><td>9</td><td>Ernst Pach</td><td style="color:#ffc;">0</td></tr>
+  </tbody>
+</table>
+
+<h4>Hinweise zur Praxis</h4>
+<ul>
+  <li>Das Wort <b>OUTER</b> ist optional: <code>LEFT JOIN</code> ist dasselbe wie <code>LEFT OUTER JOIN</code>.</li>
+  <li>In <b>MySQL</b> gibt es <i>kein</i> FULL OUTER JOIN, nur LEFT/RIGHT OUTER JOIN.</li>
+  <li>In <b>SQL Server</b> wird <code>NATURAL</code> nicht unterstützt, stattdessen <code>ON</code> verwenden.</li>
+  <li>Verwende für Zählungen von Aufträgen <code>COUNT(AuftrNr)</code> (statt <code>COUNT(*)</code>), damit du "0" für leere Zeilen bekommst.</li>
+  <li><b>FULL OUTER JOIN</b> nur nutzen, wenn wirklich nötig, da meist langsam und wenig gebraucht.</li>
+</ul>
+
+<h4>Outer Join als UNION nachbauen</h4>
+<pre><code>
+SELECT Persnr, Name, COUNT(*) AS AnzahlAuftrag
+FROM Personal NATURAL INNER JOIN Auftrag
+GROUP BY Persnr, Name
+UNION
+SELECT Persnr, Name, 0
+FROM Personal
+WHERE Persnr NOT IN (SELECT Persnr FROM Auftrag);
+</code></pre>
+<p>
+  So funktioniert ein Outer Join "zu Fuß": Erst normale Verbund-Ergebnisse, dann fehlende mit 0 ergänzen.
+</p>
+
+<small>
+  <b>Merke:</b> Nutze <span style="color:#00f2ff;">ON</span> oder <span style="color:#00f2ff;">USING</span> statt <span style="color:#00f2ff;">NATURAL</span> für mehr Kontrolle. <br>
+  Verwende Outer Joins gezielt, wenn du wirklich alle Datensätze aus einer oder beiden Tabellen brauchst!
+</small>
+` },
+          { name: "4.1.9 Die Order-By-Klausel", content: `<h3>4.1.9 Die Order-By-Klausel</h3>
+<p>
+  In einer relationalen Datenbank ist die Reihenfolge der Daten **grundsätzlich beliebig** – das Ergebnis eines <b>SELECT</b> ist <i>immer ungeordnet</i>. Doch in der Praxis willst du meistens sortierte Listen!
+</p>
+
+<h4>Order By: Syntax und Beispiele</h4>
+<pre><code>
+SELECT ...
+FROM ...
+[WHERE ...]
+ORDER BY Attribut1 [ASC|DESC], Attribut2 [ASC|DESC], ...
+</code></pre>
+<ul>
+  <li>Du kannst <b>beliebig viele</b> Sortierkriterien angeben – durch Komma getrennt.</li>
+  <li>Standardmäßig wird <b>aufsteigend</b> (<code>ASC</code>) sortiert. Für <b>absteigend</b> <code>DESC</code> angeben.</li>
+  <li>Du kannst auch <b>Spaltennummern</b> (beginnend bei 1) statt Namen nutzen, z.B. <code>ORDER BY 2 DESC, 1</code>.</li>
+</ul>
+
+<h4>Beispiel: Wohnorte nach Mitarbeiterzahl sortiert</h4>
+<pre><code>
+SELECT Ort, COUNT(*) AS Anzahl
+FROM Personal
+GROUP BY Ort
+ORDER BY Anzahl DESC, Ort;
+</code></pre>
+<p>Das Ergebnis könnte so aussehen:</p>
+
+<table style="border-collapse:collapse;margin:1.4em auto;width:330px;background:#151b2b;border-radius:1em;box-shadow:0 1px 10px #00f2ff11;">
+  <thead style="background:#112e3d;">
+    <tr>
+      <th style="padding:0.6em 1em;color:#00f2ff;">Ort</th>
+      <th style="padding:0.6em 1em;color:#00f2ff;">Anzahl</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Regensburg</td><td style="color:#0fd;">3</td></tr>
+    <tr><td>Nürnberg</td><td>2</td></tr>
+    <tr><td>Frankfurt</td><td>1</td></tr>
+    <tr><td>Landshut</td><td>1</td></tr>
+    <tr><td>Augsburg</td><td>1</td></tr>
+    <tr><td>Stuttgart</td><td>1</td></tr>
+  </tbody>
+</table>
+
+<h4>Sortierreihenfolge: ASC & DESC</h4>
+<ul>
+  <li><b>ASC</b>: aufsteigend (Standard, kann weggelassen werden)</li>
+  <li><b>DESC</b>: absteigend (z. B. bei Zahlen, Datum, Alphabet)</li>
+</ul>
+<pre><code>
+ORDER BY Name ASC, Gehalt DESC
+</code></pre>
+
+<h4>Praxis-Tipps</h4>
+<ul>
+  <li>Nutze <b>Attributnamen</b> statt Spaltennummern für bessere Lesbarkeit!</li>
+  <li>Du kannst auch auf <b>Aliase</b> sortieren (<code>COUNT(*) AS Anzahl</code> → <code>ORDER BY Anzahl</code>)</li>
+  <li>Komplexe Ausdrücke zuerst als Alias anlegen, dann sortieren</li>
+</ul>
+
+<small>
+  <b>Hinweis:</b> Die Sortierung passiert <i>nach</i> der Auswahl und Gruppierung der Daten!
+</small>
+` },
+          { name: "4.1.10 Nullwerte und Coalesce", content: `<h3>4.1.10 Nullwerte und die Coalesce-Funktion</h3>
+<p>
+  <b>Nullwerte</b> (= fehlende Angaben in der Datenbank) sind oft die Ursache für merkwürdige SQL-Ergebnisse oder leere Ausgaben. In SQL steht <code>NULL</code> für "unbekannt" – <b>nicht</b> für 0 oder einen leeren String!
+</p>
+
+<div style="margin: 1.3em 0; background: #1e293b; border-radius: 1em; padding: 1.4em 1.7em;">
+  <h4 style="color:#00f2ff;margin-top:0;">Regel Nr. 1: Vergleiche nie direkt mit <code>NULL</code></h4>
+  <p>
+    <b>Falsch:</b> <code>WHERE Attribut = NULL</code> <br>
+    <b>Richtig:</b> <code>WHERE Attribut IS NULL</code> <br>
+    <b>Oder:</b> <code>WHERE Attribut IS NOT NULL</code>
+  </p>
+</div>
+
+<h4>Praxisfalle: "Gleicher Chef?"</h4>
+<pre><code>
+SELECT Name, Gehalt, Vorgesetzt
+FROM Personal
+WHERE Vorgesetzt = (
+  SELECT Vorgesetzt
+  FROM Personal
+  WHERE Persnr = 1
+);
+</code></pre>
+<p>
+  <b>Was passiert?</b> Mitarbeiterin 1 hat <code>Vorgesetzt = NULL</code>. SQL vergleicht aber nie zwei Nullwerte direkt – das Ergebnis ist immer <b>leer</b>. Selbst andere Mitarbeitende mit <code>NULL</code> werden nicht ausgegeben!
+</p>
+
+<div style="margin:1.5em 0; background: #1e293b; border-radius: 1em; padding: 1.2em 1.5em;">
+  <h4 style="color:#00f2ff;margin-top:0;">Regel Nr. 2: Nullwerte in Berechnungen & Aggregaten</h4>
+  <ul>
+    <li>Nullwerte machen einen ganzen Ausdruck zu NULL (<b>kein Wert</b>!)</li>
+    <li>SUM, AVG, MAX, MIN ignorieren Zeilen mit NULL – <code>COUNT(*)</code> zählt trotzdem alle.</li>
+  </ul>
+</div>
+
+<h4>Beispiel: Jahrespersonalkosten falsch berechnet?</h4>
+<pre><code>
+SELECT SUM(12*Gehalt+1000*(6-Beurteilung)) AS Jahrespersonalkosten
+FROM Personal;
+</code></pre>
+<p>
+  <b>Was passiert?</b> Gibt es Mitarbeitende mit <code>Beurteilung = NULL</code>, dann wird der ganze Ausdruck für diese Person zu <code>NULL</code>. Diese Zeile fehlt in der Gesamtsumme!
+</p>
+
+<div style="background: #222c3c; border-radius: 1em; padding: 1em 1.3em; margin:1.3em 0;">
+  <h4 style="color:#00f2ff;margin-top:0;">Die Rettung: COALESCE</h4>
+  <p>
+    Die Funktion <b>COALESCE(expr1, expr2)</b> gibt den ersten <i>nicht-NULL</i> Wert zurück. Sie ist ideal, um Standardwerte für NULLs festzulegen!
+  </p>
+  <pre><code>
+SELECT SUM(12 * Gehalt + COALESCE(1000*(6-Beurteilung), 1000))
+AS Jahrespersonalkosten
+FROM Personal;
+  </code></pre>
+  <p>
+    <b>Erklärung:</b> Ist <code>1000*(6-Beurteilung)</code> NULL, wird stattdessen <b>1000</b> addiert!
+  </p>
+</div>
+
+<h4>COALESCE im Outer Join</h4>
+<pre><code>
+SELECT Persnr, Name, COALESCE(SUM(Gesamtpreis), 0) AS Summe
+FROM Personal
+LEFT OUTER JOIN Auftrag ON ...
+GROUP BY Persnr, Name;
+</code></pre>
+<p>
+  So bekommen Mitarbeitende ohne Aufträge eine <b>0</b> statt NULL als Summe angezeigt!
+</p>
+
+<div style="margin:1.2em 0 0 0; background: #223444; border-radius: 0.8em; padding: 1em;">
+  <span style="color:#00f2ff;"><b>Tipp:</b></span> Die <b>Coalesce-Funktion</b> ist überall dort sinnvoll, wo dir NULL im Ergebnis unangenehm auffällt oder du mit eigenen Standardwerten weiterrechnen willst.
+</div>
+` },
+          { name: "4.1.11 Arbeitsweise des Select", content: `<h3>4.1.11 Arbeitsweise des Select-Befehls</h3>
+<p>
+  Der <b>SELECT-Befehl</b> wirkt manchmal wie Magie – in Wirklichkeit folgt SQL aber immer einer klaren Abarbeitungsreihenfolge!
+  Um Fehler zu vermeiden und effiziente Abfragen zu schreiben, solltest du diese Reihenfolge gut kennen und beim Lesen oder Planen von SELECTs immer einhalten.
+</p>
+
+<!-- Grafik: Flussdiagramm der Reihenfolge -->
+<div style="display: flex; justify-content: center; margin: 2em 0;">
+  <svg width="480" height="270" viewBox="0 0 480 270">
+    <style>
+      .step { fill: #10162a; stroke: #00f2ff; stroke-width:2; }
+      .step-label { fill: #00f2ff; font-size: 16px; font-family: Segoe UI, Arial, sans-serif; text-anchor: middle;}
+      .arrow { stroke: #23d2ff; stroke-width:2; marker-end:url(#arrowhead);}
+    </style>
+    <defs>
+      <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="5" refY="2" orient="auto" markerUnits="strokeWidth">
+        <polygon points="0 0, 8 2, 0 4" fill="#23d2ff"/>
+      </marker>
+    </defs>
+    <rect x="140" y="12" width="200" height="32" rx="10" class="step"/>
+    <text x="240" y="33" class="step-label">1. FROM (Verbund, Kreuzprodukt)</text>
+    <line x1="240" y1="44" x2="240" y2="66" class="arrow"/>
+    <rect x="140" y="66" width="200" height="32" rx="10" class="step"/>
+    <text x="240" y="87" class="step-label">2. WHERE (Restriktion)</text>
+    <line x1="240" y1="98" x2="240" y2="120" class="arrow"/>
+    <rect x="140" y="120" width="200" height="32" rx="10" class="step"/>
+    <text x="240" y="141" class="step-label">3. SELECT (Projektion)</text>
+    <line x1="240" y1="152" x2="240" y2="174" class="arrow"/>
+    <rect x="140" y="174" width="200" height="32" rx="10" class="step"/>
+    <text x="240" y="195" class="step-label">4. GROUP BY / HAVING</text>
+    <line x1="240" y1="206" x2="240" y2="218" class="arrow"/>
+    <rect x="140" y="218" width="200" height="32" rx="10" class="step"/>
+    <text x="240" y="239" class="step-label">5. UNION, INTERSECT, EXCEPT</text>
+    <line x1="240" y1="250" x2="240" y2="262" class="arrow"/>
+    <text x="240" y="268" fill="#b8c3d3" font-size="15px" text-anchor="middle">6. ORDER BY (Sortierung)</text>
+  </svg>
+</div>
+
+<p style="margin-top: 2em;">
+  <b>Merke dir:</b> <br>
+  <ol style="margin-left: 1.5em;">
+    <li><b>FROM:</b> Welche Tabellen/Relationen? Kreuzprodukt & Verbund werden berechnet.</li>
+    <li><b>WHERE:</b> Einschränkungen/Filter (Restriktion) – nur passende Zeilen bleiben übrig.</li>
+    <li><b>SELECT:</b> Welche Spalten/Attribute sollen ausgegeben werden? (Projektion)</li>
+    <li><b>GROUP BY / HAVING:</b> Gruppieren & nach Gruppen filtern (Aggregatfunktionen nutzen).</li>
+    <li><b>UNION / INTERSECT / EXCEPT:</b> Mengenoperationen, mehrere Teilabfragen verbinden.</li>
+    <li><b>ORDER BY:</b> Am Ende sortieren!</li>
+  </ol>
+</p>
+
+<div style="background: #1e293b; border-radius: 1em; padding: 1.1em 1.4em; margin:1.6em 0;">
+  <b style="color:#00f2ff">Praxis-Tipp:</b> <br>
+  Schreibe oder prüfe SELECT-Befehle immer in dieser Reihenfolge. So verhinderst du Fehler und erkennst, warum manche Ergebnisse unerwartet ausfallen.
+</div>
+
+<h4>Beispiel (kompletter SELECT):</h4>
+<pre><code>
+SELECT Ort, COUNT(*) AS Anzahl
+FROM Personal
+WHERE Gehalt > 2000
+GROUP BY Ort
+HAVING COUNT(*) &gt; 1
+ORDER BY Anzahl DESC;
+</code></pre>
+<ul>
+  <li><b>FROM</b>: Personal</li>
+  <li><b>WHERE</b>: Nur Gehalt &gt; 2000</li>
+  <li><b>SELECT</b>: Ort, Anzahl</li>
+  <li><b>GROUP BY</b>: Ort</li>
+  <li><b>HAVING</b>: Nur Orte mit &gt;1 MA</li>
+  <li><b>ORDER BY</b>: Nach Anzahl absteigend</li>
+</ul>
+
+<div style="margin-top: 2em; color:#b8c3d3;">
+  <span style="color:#00f2ff;"><b>Fazit:</b></span> <br>
+  <b>Wer die Abarbeitungsreihenfolge kennt, kann auch komplexe SELECTs locker analysieren und gestalten!</b>
+</div>
+` },
+        ]
+      },
+      {
+        title: "4.2 Mutationsbefehle in SQL",
+        description: "Lerne, wie du mit SQL Daten einfügst, veränderst oder löschst.",
+        content: `<h2>4.2 Mutationsbefehle in SQL</h2>
+<p>
+  Nicht nur lesen – auch <b>Daten verändern</b> ist mit SQL möglich! Drei Befehle stehen dafür bereit:<br>
+  <b>INSERT</b> (einfügen), <b>UPDATE</b> (ändern), <b>DELETE</b> (löschen).
+</p>
+
+<!-- Grafik -->
+<div style="display:flex; gap:2em; justify-content:center; margin:2em 0 1em 0; flex-wrap:wrap">
+  <div style="background:#1a1e33;border-radius:1.2em;padding:1.3em 2.3em;box-shadow:0 2px 18px #00f2ff18;min-width:170px;">
+    <div style="font-size:2.3em;">➕</div>
+    <b>INSERT</b><br>
+    <span style="color:#85f4f4;">Fügt neue Zeilen ein</span>
+  </div>
+  <div style="background:#1a1e33;border-radius:1.2em;padding:1.3em 2.3em;box-shadow:0 2px 18px #00f2ff18;min-width:170px;">
+    <div style="font-size:2.3em;">📝</div>
+    <b>UPDATE</b><br>
+    <span style="color:#85f4f4;">Ändert bestehende Zeilen</span>
+  </div>
+  <div style="background:#1a1e33;border-radius:1.2em;padding:1.3em 2.3em;box-shadow:0 2px 18px #00f2ff18;min-width:170px;">
+    <div style="font-size:2.3em;">🗑️</div>
+    <b>DELETE</b><br>
+    <span style="color:#85f4f4;">Löscht Zeilen</span>
+  </div>
+</div>
+
+<h3>DELETE – Zeilen löschen</h3>
+<div style="background:#1e293b;padding:1.1em 1.6em;border-radius:1em;margin:1em 0;">
+  <pre><code>DELETE FROM Tabellenname [WHERE Bedingung];</code></pre>
+  <ul>
+    <li>Ohne <code>WHERE</code> werden <b>alle</b> Zeilen gelöscht!</li>
+    <li>Mit <code>WHERE</code> kannst du gezielt filtern.</li>
+  </ul>
+</div>
+<b>Beispiel:</b>
+<pre><code>DELETE FROM Personal WHERE Name = 'Ursula Rank';</code></pre>
+<b>Achtung:</b> <span style="color:#ffc857">DELETE ohne WHERE entfernt die ganze Tabelle!</span>
+
+<hr style="margin:2.5em 0">
+
+<h3>UPDATE – Zeilen ändern</h3>
+<div style="background:#1e293b;padding:1.1em 1.6em;border-radius:1em;margin:1em 0;">
+  <pre><code>UPDATE Tabellenname
+SET Spalte = Ausdruck [, ...]
+[WHERE Bedingung];</code></pre>
+  <ul>
+    <li>Mehrere Spalten lassen sich gleichzeitig ändern.</li>
+    <li>Auch hier ist <code>WHERE</code> sehr wichtig!</li>
+  </ul>
+</div>
+<b>Beispiel:</b>
+<pre><code>UPDATE Personal
+SET Gehalt = 1.05 * Gehalt
+WHERE Gehalt &lt; 3000;</code></pre>
+<b>Hinweis:</b> Mit <code>SET Spalte = NULL</code> setzt du einen Wert auf Null.
+
+<hr style="margin:2.5em 0">
+
+<h3>INSERT – Zeilen einfügen</h3>
+<div style="background:#1e293b;padding:1.1em 1.6em;border-radius:1em;margin:1em 0;">
+  <pre><code>INSERT INTO Tabellenname [(Spaltenliste)]
+VALUES (Wert1, Wert2, ...)[, (...), ...];
+
+ODER
+
+INSERT INTO Tabellenname [(Spaltenliste)]
+SELECT ...</code></pre>
+  <ul>
+    <li>Mit <code>VALUES</code> eine oder mehrere Zeilen direkt angeben.</li>
+    <li>Mit <code>SELECT</code> neue Zeilen aus anderen Tabellen erzeugen.</li>
+  </ul>
+</div>
+<b>Beispiel 1 (einzelne Zeile):</b>
+<pre><code>INSERT INTO Personal (Persnr, Name, GebDatum, Ort)
+VALUES (10, 'Lars Anger', DATE '1980-01-13', 'Augsburg');</code></pre>
+<b>Beispiel 2 (mehrere Zeilen):</b>
+<pre><code>INSERT INTO Personal (Persnr, Name, GebDatum, Ort)
+VALUES
+  (10, 'Lars Anger', DATE '1980-01-13', 'Augsburg'),
+  (11, 'Karl Meier', DATE '1983-05-15', 'Darmstadt');</code></pre>
+<b>Beispiel 3 (Daten aus anderer Zeile übernehmen):</b>
+<pre><code>INSERT INTO Personal(Persnr, Name, GebDatum, Vorgesetzt, Gehalt)
+SELECT 10, 'Lars Anger', DATE '1980-01-13', Vorgesetzt, Gehalt
+FROM Personal
+WHERE Persnr = 7;</code></pre>
+
+<hr style="margin:2.5em 0 1.5em 0">
+
+<div style="background:#0b1120;color:#fffa;padding:1em 1.4em;border-radius:0.9em;margin-bottom:2em;">
+  <b style="color:#00f2ff;">Sicherheits-Tipp:</b> <br>
+  <span style="color:#ffc857;">Verwende immer eine <code>WHERE</code>-Klausel bei DELETE & UPDATE,</span>
+  <br>sonst veränderst du versehentlich ALLE Zeilen der Tabelle!
+</div>
+
+<ul style="margin: 2.5em 0 0 0;">
+  <li><b style="color:#00f2ff">INSERT:</b> Neuen Datensatz einfügen</li>
+  <li><b style="color:#00f2ff">UPDATE:</b> Bestehenden Datensatz ändern</li>
+  <li><b style="color:#00f2ff">DELETE:</b> Datensatz löschen</li>
+</ul>
+`
+      },
+      {
+        title: "4.3 Transaktionsbetrieb mit SQL",
+        description: "Verstehe Transaktionen, Commit und Rollback in SQL.",
+        content: `<h2>4.3 Transaktionsbetrieb mit SQL</h2>
+<p>
+  Wenn Daten in der Datenbank <b>verändert</b> werden, ist Sicherheit und Kontrolle Pflicht! <br>
+  <b>Transaktionen</b> sorgen dafür, dass Änderungen entweder vollständig („ganz oder gar nicht“) durchgeführt werden oder rückgängig gemacht werden können.
+</p>
+
+<div style="display:flex; gap:1.7em;flex-wrap:wrap;justify-content:center;margin:2em 0;">
+  <div style="background:#14202e;padding:1.1em 2em;border-radius:1.2em;min-width:180px;">
+    <span style="font-size:1.5em;">✅</span> <b>COMMIT</b><br>
+    <span style="color:#64f5d9;">Speichert alle Änderungen dauerhaft</span>
+  </div>
+  <div style="background:#14202e;padding:1.1em 2em;border-radius:1.2em;min-width:180px;">
+    <span style="font-size:1.5em;">↩️</span> <b>ROLLBACK</b><br>
+    <span style="color:#ffb84c;">Macht alle Änderungen seit dem letzten COMMIT rückgängig</span>
+  </div>
+</div>
+
+<h3>Wie funktionieren Transaktionen?</h3>
+<ul>
+  <li>Eine Transaktion ist eine <b>Gruppe von SQL-Befehlen</b> (INSERT/UPDATE/DELETE), die zusammen als „Einheit“ betrachtet werden.</li>
+  <li>Mit <code>COMMIT;</code> werden alle Änderungen <b>dauerhaft</b> gespeichert.</li>
+  <li>Mit <code>ROLLBACK;</code> wird die komplette Transaktion <b>rückgängig</b> gemacht.</li>
+</ul>
+
+<div style="background:#0b1120;color:#fff3;padding:1em 1.4em;border-radius:0.9em;margin:2em 0;">
+  <b style="color:#00f2ff;">Wichtig:</b> <br>
+  Nach jedem COMMIT/ROLLBACK beginnt automatisch die nächste Transaktion!
+</div>
+
+<h3>Syntax</h3>
+<pre style="background:#1e293b;color:#fff;padding:1em 1.5em;border-radius:1em;"><code>COMMIT;    -- Änderungen speichern<br>ROLLBACK;  -- Änderungen verwerfen (zurücksetzen)</code></pre>
+
+<h3>Praxisbeispiel</h3>
+<p>
+  Angenommen, du überweist 1000€ von Konto A zu Konto B. Beide Änderungen (A und B) sollen <b>immer zusammen</b> passieren – nie nur eine allein!
+</p>
+<pre style="background:#1e293b;color:#fff;padding:1em 1.5em;border-radius:1em;">
+<code>UPDATE Bank SET Saldo = Saldo - 1000 WHERE Konto = 'A';
+UPDATE Bank SET Saldo = Saldo + 1000 WHERE Konto = 'B';
+COMMIT;</code>
+</pre>
+<ul>
+  <li><b>Nach dem COMMIT:</b> Die Überweisung ist endgültig!</li>
+  <li><b>Vor dem COMMIT:</b> Kannst du per <code>ROLLBACK;</code> alles zurücksetzen.</li>
+</ul>
+
+<div style="background:#14202e;color:#f0f0f0;padding:1em 1.5em;border-radius:1em;margin:2em 0;">
+  <b>Tipp:</b><br>
+  Bei Fehlern oder versehentlichen Änderungen kannst du mit <code>ROLLBACK;</code> die Datenbank in den <b>letzten konsistenten Zustand</b> zurückversetzen.
+</div>
+
+<h3>Extra: BEGIN TRANSACTION</h3>
+<ul>
+  <li>In <b>Oracle</b> & MySQL wird die Transaktion meist automatisch gestartet.</li>
+  <li>In <b>SQL Server</b> oder bei manchen Programmiersprachen (z.B. PHP/PDO) beginnt man explizit mit:<br>
+    <code>BEGIN TRANSACTION;</code>
+  </li>
+</ul>
+
+<h4 style="margin-top:2em">Das ACID-Prinzip</h4>
+<ul>
+  <li><b>Atomarität:</b> Alles oder nichts (COMMIT oder ROLLBACK)</li>
+  <li><b>Konsistenz:</b> Datenbank bleibt immer „korrekt“</li>
+  <li><b>Isolation:</b> Transaktionen beeinflussen sich nicht gegenseitig</li>
+  <li><b>Dauerhaftigkeit:</b> Nach COMMIT sind Daten sicher gespeichert</li>
+</ul>
+
+<div style="background:#1a1e33;border-left:5px solid #00f2ff;padding:1em 1.7em;border-radius:0.8em;margin-top:2em;">
+  <b style="color:#00f2ff;">Merke:</b> <br>
+  <b>COMMIT</b> = alles speichern, <b>ROLLBACK</b> = alles zurücksetzen.<br>
+  <span style="color:#ffc857;">Nie vergessen, regelmäßig zu committen oder bei Fehlern zu rollen!</span>
+</div>
+`
+      },
+      {
+        title: "4.4 Relationale Algebra und SQL",
+        description: "Vergleiche die relationale Algebra mit SQL-Befehlen.",
+        content: `<h2>4.4 Relationale Algebra und SQL</h2>
+<p>
+  Die <b>relationale Algebra</b> bildet die mathematische Grundlage für SQL. Mit den SQL-Befehlen kannst du <b>alle wichtigen Operatoren</b> der relationalen Algebra abbilden und kombinieren!
+</p>
+
+<div style="background:#14202e;padding:1.2em 2em;border-radius:1.2em;margin:2em 0;">
+  <b>Vergleichstabelle: Relationale Algebra &rarr; SQL</b>
+  <table border="0" style="margin-top:1em;width:100%;color:#f0f0f0;border-collapse:separate;border-spacing:0 0.6em;">
+    <thead style="color:#00f2ff;">
+      <tr><th align="left">Operator</th><th align="left">Algebra</th><th align="left">SQL-Befehl</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Vereinigung</td><td><code>R1 ∪ R2</code></td><td><code>SELECT * FROM R1 UNION SELECT * FROM R2</code></td></tr>
+      <tr><td>Kreuzprodukt</td><td><code>R1 × R2</code></td><td><code>SELECT * FROM R1, R2</code></td></tr>
+      <tr><td>Restriktion (Filter)</td><td><code>σ_b(R)</code></td><td><code>SELECT * FROM R WHERE b</code></td></tr>
+      <tr><td>Projektion (Spaltenauswahl)</td><td><code>π_x1,...,xn(R)</code></td><td><code>SELECT x1, ..., xn FROM R</code></td></tr>
+      <tr><td>Differenz</td><td><code>R1 ∖ R2</code></td><td><code>SELECT * FROM R1 EXCEPT SELECT * FROM R2</code></td></tr>
+      <tr><td>Verbund (Join)</td><td><code>R1 ⨝ R2</code></td><td><code>SELECT * FROM R1 NATURAL JOIN R2</code></td></tr>
+      <tr><td>Schnitt</td><td><code>R1 ∩ R2</code></td><td><code>SELECT * FROM R1 INTERSECT SELECT * FROM R2</code></td></tr>
+      <tr><td>Umbenennung</td><td>–</td><td><code>SELECT ... AS ...</code> oder <code>... AS ...</code> in FROM</td></tr>
+      <tr><td>Division</td><td>–</td><td><i>Kein direkter Operator! (Workaround mit Unterabfragen)</i></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Beispiel: Division per SQL mit Unterabfragen</h3>
+<p>
+  Die <b>Division</b> ist in SQL <i>nicht direkt implementiert</i>, aber du kannst sie mit <b>GROUP BY</b>, <b>HAVING</b> und Unterabfragen nachbilden. Hier ein Klassiker: „Finde alle Lieferanten, die mindestens die gleichen Artikel wie Lieferant 3 liefern“.
+</p>
+<pre style="background:#1e293b;color:#fff;padding:1em 1.5em;border-radius:1em;">
+<code>SELECT Liefnr
+FROM Lieferung
+WHERE Anr IN ( SELECT Anr FROM Lieferung WHERE Liefnr = 3 )
+GROUP BY Liefnr
+HAVING COUNT(*) = (
+  SELECT COUNT(*) FROM Lieferung WHERE Liefnr = 3
+);
+</code></pre>
+
+<ul>
+  <li>Im <b>WHERE</b> wird zuerst auf die relevanten Artikel von Lieferant 3 gefiltert.</li>
+  <li><b>GROUP BY</b> gruppiert nach Lieferant.</li>
+  <li><b>HAVING</b> prüft, ob die Anzahl der gelieferten Artikel gleich groß ist wie bei Lieferant 3.</li>
+</ul>
+
+<div style="background:#00f2ff14;padding:1em 1.7em;border-left:6px solid #00f2ff;border-radius:0.9em;margin:2em 0;">
+  <b style="color:#00f2ff;">Fazit:</b> <br>
+  SQL bildet alle Grundoperationen der relationalen Algebra nach – <br>
+  nur die <b>Division</b> benötigt etwas „Tricksen“ mit Unterabfragen &amp; Gruppierung.
+</div>
+`
+      },
+      {
+        title: "4.5 Zusammenfassung",
+        description: "Wichtige Erkenntnisse zu SQL im Überblick.",
+        content: `<h2>4.5 Zusammenfassung</h2>
+<div style="background:#162032;padding:1.4em 2em;border-radius:1.2em;margin:2em 0 2em 0;">
+  <b style="color:#00f2ff;">SQL im Überblick:</b>
+  <ul style="line-height:1.8;">
+    <li>Nur <b>vier Grundbefehle</b> reichen zum Arbeiten mit relationalen Datenbanken:
+      <span style="color:#00f2ff;">SELECT</span> (Abfragen),
+      <span style="color:#00f2ff;">UPDATE</span> (Ändern),
+      <span style="color:#00f2ff;">INSERT</span> (Einfügen),
+      <span style="color:#00f2ff;">DELETE</span> (Löschen)
+    </li>
+    <li>Für Transaktionen kommen noch <span style="color:#00f2ff;">COMMIT</span> und <span style="color:#00f2ff;">ROLLBACK</span> dazu.</li>
+    <li><b>SELECT</b> ist sehr mächtig, aber komplex – mit Übung aber leicht beherrschbar.</li>
+    <li>Wichtige Konzepte:
+      <ul style="margin-top:0.5em;">
+        <li>Abarbeitungsreihenfolge des SELECT-Befehls (siehe Übersicht!)</li>
+        <li>Zielgerichteter Einsatz von <b>Joins</b> (Verbund)</li>
+        <li>Nutzung von <b>Unterabfragen</b> und <b>Gruppierung/Aggregation</b></li>
+        <li>Beachtung von SQL-Dialekt-Unterschieden zwischen Oracle, SQL Server und MySQL</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div style="background:#12202b;padding:1em 1.7em;border-radius:1em;margin-bottom:2em;">
+  <b style="color:#00f2ff;">Tipp:</b> Mit ein wenig Übung und Neugier wird SQL vom „Schreckgespenst” zum echten Power-Tool!
+</div>
+
+<h3>Abweichungen von der SQL-Norm: Die großen Drei im Vergleich</h3>
+<table style="width:100%;background:#172233;color:#eee;margin:1.5em 0;border-radius:1em;overflow:hidden;font-size:0.99em;">
+  <thead style="background:#222c3c;color:#00f2ff;">
+    <tr>
+      <th style="text-align:left;padding:0.7em 1em;">System</th>
+      <th style="text-align:left;padding:0.7em 1em;">Abweichungen von der Norm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:0.7em 1em;"><b>Oracle</b></td>
+      <td style="padding:0.7em 1em;">
+        <ul style="margin:0;line-height:1.7;">
+          <li><b>AS</b> im FROM-Teil nicht erlaubt</li>
+          <li>EXCEPT heißt <b>MINUS</b></li>
+          <li><b>Substring</b>-Syntax: <code>Substr(str,pos,anz)</code></li>
+          <li>Im INSERT nur eine <b>VALUES</b>-Angabe erlaubt</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:0.7em 1em;"><b>SQL Server</b></td>
+      <td style="padding:0.7em 1em;">
+        <ul style="margin:0;line-height:1.7;">
+          <li>SELECT im FROM braucht <b>Aliasnamen</b></li>
+          <li><b>NATURAL/USING</b> nicht unterstützt</li>
+          <li><b>Substring</b>: <code>Substring(str,pos,anz)</code></li>
+          <li>DATE als Typ/Operator nicht erlaubt</li>
+          <li>Transaktion mit <b>BEGIN TRANSACTION</b></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:0.7em 1em;"><b>MySQL</b></td>
+      <td style="padding:0.7em 1em;">
+        <ul style="margin:0;line-height:1.7;">
+          <li>SELECT im FROM braucht <b>Aliasnamen</b></li>
+          <li>Nach Aggregatfunktion kein Leerzeichen erlaubt</li>
+          <li><b>NATURAL INNER JOIN:</b> "INNER" nicht erlaubt</li>
+          <li><b>FULL OUTER JOIN</b>, <b>EXCEPT</b> und <b>INTERSECT</b> nicht unterstützt</li>
+          <li>Transaktionsbetrieb nur mit <b>InnoDB</b>-Engine</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="background:#00f2ff14;padding:1em 1.7em;border-left:6px solid #00f2ff;border-radius:0.9em;margin:2em 0;">
+  <b style="color:#00f2ff;">Fazit:</b>
+  <br>Wer die Grundprinzipien und die Abarbeitung von SELECT versteht, kann mit SQL jede praktische Datenbankabfrage lösen – egal welches System im Hintergrund läuft.
+</div>
+`
+      },
+      {
+        title: "4.6 Übungsaufgaben",
+        description: "Teste dein Wissen zu SQL mit diesen Aufgaben.",
+        content: `<h3>Übungsaufgaben</h3><ul><li>Stelle eine SELECT-Abfrage zusammen, die ...</li><li>Führe ein UPDATE durch, bei dem ...</li><li>... (weitere Aufgaben)</li></ul>`
+      },
+      {
+        title: "Literatur",
+        description: "Empfohlene Bücher und Quellen zu SQL.",
+        content: `<h3>Literatur</h3><ul><li>Klassik: SQL for Smarties – Joe Celko</li><li>Modern: Das SQL-Handbuch – R. van der Lans</li></ul>`
+      }
+    ];
+
+    const mainButtons = document.querySelectorAll('.tab-buttons button');
+    const lessonContent = document.getElementById('lessonContent');
+
+    function showContent(idx) {
+      const section = sections[idx];
+      let html = `<h2>${section.title}</h2><p>${section.description}</p>`;
+      if (section.content) {
+        html += section.content;
+      }
+      if (section.subsections) {
+        html += `<div class="subsection-buttons">`;
+        section.subsections.forEach((sub, subIdx) => {
+          html += `<button data-sub="${subIdx}">${sub.name}</button>`;
+        });
+        html += `</div>`;
+        html += `<div class="sub-content" id="subContent"></div>`;
+      }
+      lessonContent.innerHTML = html;
+      lessonContent.classList.remove('visible');
+      setTimeout(() => lessonContent.classList.add('visible'), 60);
+
+      // Subkapitel Buttons
+      const subBtns = lessonContent.querySelectorAll('.subsection-buttons button');
+      const subContent = document.getElementById('subContent');
+      if (subBtns.length && subContent) {
+        subBtns.forEach((sb, i) => {
+          sb.addEventListener('click', () => {
+            subBtns.forEach(x => x.classList.remove('active'));
+            sb.classList.add('active');
+            subContent.innerHTML = section.subsections[i].content;
+          });
+        });
+        subBtns[0].click();
       }
     }
 
-    function checkA2() {
-      const input = normalize(document.getElementById("a2").value);
-      const f = document.getElementById("f2");
-      if (input.includes("doppel") || input.includes("mehrfach") || input.includes("widerspruch")) {
-        f.textContent = "✅ Ja! Redundanz erzeugt Widersprüche und unnötige Wiederholungen.";
-        f.style.color = '#00f2ff';
-      } else {
-        f.textContent = "❌ Denk an Wiederholungen und fehlerhafte Updates.";
-        f.style.color = '#ff6b6b';
-      }
-    }
+    mainButtons.forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        mainButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        showContent(idx);
+      });
+    });
 
-    function checkA3() {
-      const f = document.getElementById("f3");
-      const correct = !document.getElementById("c1").checked && document.getElementById("c2").checked && !document.getElementById("c3").checked;
-      if (correct) {
-        f.textContent = "✅ Korrekt! Nur Bestellung ist atomar strukturiert.";
-        f.style.color = '#00f2ff';
-      } else {
-        f.textContent = "❌ Achtung: Prüfe, ob Attributwerte Listen enthalten.";
-        f.style.color = '#ff6b6b';
-      }
-    }
+    // Direkt beim Laden das erste Kapitel + Unterkapitel anzeigen:
+    showContent(0);
+    mainButtons[0].classList.add('active');
 </script>
 </body>
 </html>

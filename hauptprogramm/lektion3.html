@@ -1,230 +1,1489 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lektion 3 – Relationale Algebra</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Kapitel 3: Datenbankdesign</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-          background: linear-gradient(135deg, #0b0e1a, #11142d);
-          color: #f0f0f0;
-          font-family: 'Segoe UI', sans-serif;
           margin: 0;
-          padding: 0;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
+          font-family: 'Segoe UI', sans-serif;
+          background: linear-gradient(135deg, #0b0e1a, #11142d 80%);
+          color: #f0f0f0;
+          padding: 2rem;
+          text-align: center;
           min-height: 100vh;
+          position: relative;
         }
-        .lesson-container {
-          width: 90%;
-          max-width: 1200px;
-          margin: 4rem auto;
-          background: rgba(20, 24, 40, 0.97);
-          padding: 2.5rem 3rem;
-          border-radius: 1.5rem;
-          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        body::before, body::after {
+          content: "";
+          position: fixed;
+          border-radius: 50%;
+          filter: blur(100px);
+          z-index: 0;
+          opacity: 0.3;
         }
-        h1, h2, h3 {
+        body::before {
+          width: 340px; height: 340px;
+          background: #00f2ff;
+          top: -100px; left: -120px;
+        }
+        body::after {
+          width: 270px; height: 270px;
+          background: #23d2ff;
+          bottom: -80px; right: -60px;
+        }
+
+        h1 {
           color: #00f2ff;
+          margin-bottom: 0.3em;
+          font-size: 2.6rem;
+          letter-spacing: 0.02em;
+          z-index: 2;
+          position: relative;
         }
-        p, li {
-          line-height: 1.6;
+        .welcome-text {
+          font-size: 1.23rem;
+          margin-bottom: 2.2rem;
+          color: #b8c3d3;
+          z-index: 2;
+          position: relative;
         }
-        pre, code {
-          background-color: #1f223a;
-          padding: 0.6rem 1rem;
-          border-radius: 0.5rem;
-          display: block;
-          overflow-x: auto;
+        .tab-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 1.3rem;
+          margin-bottom: 2.3rem;
+          z-index: 2;
+          position: relative;
         }
-        .table-img {
-          width: 100%;
-          max-width: 480px;
-          margin: 1rem 0;
-          border-radius: 0.5rem;
-          border: 1px solid #2a2f50;
-        }
-        textarea {
-          width: 100%;
-          padding: 1rem;
-          font-family: monospace;
-          font-size: 1rem;
-          border-radius: 0.5rem;
-          background-color: #1a1e33;
-          color: white;
-          border: none;
-          margin-top: 1rem;
-        }
-        .btn {
-          margin-top: 1rem;
-          padding: 0.8rem 1.5rem;
-          background-color: #8b5cf6;
-          color: white;
-          border: none;
-          border-radius: 1rem;
+        .tab-buttons button {
+          background: #1a1e33;
+          border: 2.2px solid #00f2ff;
+          color: #00f2ff;
+          padding: 0.95rem 2.1rem;
+          border-radius: 2.2rem;
           cursor: pointer;
           font-weight: bold;
-          box-shadow: 0 0 15px #8b5cf670;
-          transition: all 0.3s ease;
+          font-size: 1.13rem;
+          letter-spacing: 0.02em;
+          transition:
+            background 0.25s,
+            color 0.22s,
+            border-color 0.23s,
+            box-shadow 0.28s,
+            transform 0.19s;
+          box-shadow: 0 1px 12px 0 rgba(0,242,255,0.04);
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
         }
-        .btn:hover {
-          background-color: #a78bfa;
-          transform: scale(1.03);
+        .tab-buttons button.active,
+        .tab-buttons button:focus-visible {
+          background: linear-gradient(90deg,#00f2ff 60%,#38f8ff 100%);
+          color: #11142d;
+          border-color: #c6f9ff;
+          transform: scale(1.07);
+          box-shadow: 0 2px 18px 0 #00f2ff40, 0 2px 6px 0 #0002;
         }
-        .btn-secondary {
-          display: inline-block;
-          background-color: #2d2f45;
-          color: #e0e0e0;
-          padding: 0.6rem 1.2rem;
-          border-radius: 0.6rem;
-          text-decoration: none;
-          font-weight: 500;
-          margin-top: 1rem;
+        .tab-buttons button:hover:not(.active) {
+          box-shadow: 0 0 0 2px #00f2ff70;
+          border-color: #00f2ff;
+          background: #212755;
+          color: #fff;
         }
-        .feedback {
-          margin-top: 1rem;
-          font-weight: bold;
+        .lesson-content {
+          background: #1c1f35ea;
+          padding: 2.8rem 2.2rem;
+          border-radius: 1.4rem;
+          max-width: 860px;
+          margin: 2.5rem auto 0 auto;
+          box-shadow: 0 8px 38px 0 #00f2ff18, 0 3px 12px 0 #0003;
+          text-align: left;
+          line-height: 1.8;
+          font-size: 1.09rem;
+          position: relative;
+          border: 1.5px solid rgba(0,242,255,0.11);
+          opacity: 0;
+          transform: translateY(24px) scale(0.99);
+          pointer-events: none;
+          transition:
+            opacity 0.45s cubic-bezier(.42,1.35,.49,1),
+            transform 0.33s cubic-bezier(.42,1.25,.54,1.12);
+          z-index: 2;
         }
-        .hidden {
-          display: none;
+        .lesson-content.visible {
+          opacity: 1;
+          pointer-events: auto;
+          transform: translateY(0) scale(1);
         }
-        @media (min-width: 992px) {
-          .lesson-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-          }
-          .lesson-container > *:first-child {
-            grid-column: 1 / -1;
-          }
+        .lesson-content h2 {
+          color: #00f2ff;
+          font-size: 1.6rem;
+          margin-bottom: 0.7em;
+        }
+        .lesson-content ul {
+          margin-top: 1.5rem;
+          margin-bottom: 2rem;
+          padding-left: 1.5rem;
+          list-style-type: disc;
+        }
+        .lesson-content li {
+          margin-bottom: 0.8rem;
+        }
+        .subsection-buttons {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+          gap: 0.85rem 1.2rem;
+          margin-bottom: 1.8rem;
+          margin-top: 1.8rem;
+        }
+        .subsection-buttons button {
+          background: #181e32;
+          border: 2px solid #00f2ff;
+          color: #00f2ff;
+          padding: 0.70rem 0.2rem;
+          border-radius: 1.4rem;
+          font-size: 1rem;
+          font-weight: 600;
+          transition:
+            background 0.21s,
+            color 0.22s,
+            border-color 0.23s,
+            box-shadow 0.28s,
+            transform 0.19s;
+          box-shadow: 0 1px 8px 0 #00f2ff20;
+          cursor: pointer;
+        }
+        .subsection-buttons button.active,
+        .subsection-buttons button:focus-visible {
+          background: linear-gradient(90deg,#00f2ff 60%,#38f8ff 100%);
+          color: #11142d;
+          border-color: #fff;
+          transform: scale(1.06);
+          box-shadow: 0 2px 18px 0 #00f2ff2c, 0 2px 6px 0 #0001;
+        }
+        .subsection-buttons button:hover:not(.active) {
+          background: #00f2ff22;
+          color: #fff;
+          border-color: #38f8ff;
+          box-shadow: 0 0 0 2px #00f2ff40;
+        }
+        .sub-content {
+          margin-top: 2rem;
+        }
+        .sub-content h3 {
+          color: #00f2ff;
+          font-size: 1.22rem;
+        }
+        /* Responsive für kleine Screens */
+        @media (max-width: 600px) {
+          .lesson-content { padding: 1.2rem 0.7rem; }
+          .tab-buttons { gap: 0.4rem; }
+          .tab-buttons button { padding: 0.5rem 0.9rem; font-size: 0.98rem; }
         }
     </style>
 </head>
 <body>
-<div class="lesson-container">
-    <h1>Lektion 3: Relationale Algebra – Operationen auf Tabellen</h1>
-
-    <div>
-        <h2>Was ist relationale Algebra?</h2>
-        <p>Die relationale Algebra ist ein fundamentales Konzept aus der theoretischen Informatik und Datenbanklehre. Sie bildet die Basis für die Formulierung von Anfragen in relationalen Datenbanksystemen. Alle SQL-Abfragen lassen sich auch in äquivalente algebraische Ausdrücke überführen.</p>
-
-        <h2>Grundoperationen mit Symbolen</h2>
-        <ul>
-            <li><strong>σ (Selektion)</strong>: Filtert Zeilen anhand einer Bedingung<br><code>σ Ort = 'Berlin' (Kunde)</code></li>
-            <li><strong>π (Projektion)</strong>: Gibt bestimmte Spalten zurück<br><code>π Name, Ort (Kunde)</code></li>
-            <li><strong>∪ (Vereinigung)</strong>: Kombination von zwei Relationen mit gleicher Struktur<br><code>Kunden_Nord ∪ Kunden_Süd</code></li>
-            <li><strong>− (Differenz)</strong>: Zeilen in A, aber nicht in B<br><code>A − B</code></li>
-            <li><strong>× (Kartesisches Produkt)</strong>: Kombination jeder Zeile aus zwei Tabellen</li>
-        </ul>
-
-        <h2>Erweiterte Operationen</h2>
-        <ul>
-            <li><strong>⨝ (Join)</strong>: Verknüpft Tabellen über gemeinsame Attribute<br><code>Kunde ⨝ Bestellung</code></li>
-            <li><strong>ρ (Umbenennung)</strong>: Benennt eine Relation oder Spalte um</li>
-        </ul>
-
-        <h3>Tabellenbeispiel: Kunde</h3>
-        <pre><code>Kunde(KNr, Name, Ort)
-+------+----------+--------+
-| 101  | Meier    | Berlin |
-| 102  | Schulz   | Köln   |
-| 103  | Becker   | Berlin |
-+------+----------+--------+</code></pre>
-
-        <h3>Tabellenbeispiel: Bestellung</h3>
-        <pre><code>Bestellung(BNr, KNr, Artikel)
-+------+-------+------------+
-| 1    | 101   | Maus       |
-| 2    | 103   | Tastatur   |
-| 3    | 101   | Monitor    |
-+------+-------+------------+</code></pre>
-
-        <h3>Beispielausdruck</h3>
-        <code>π Artikel (σ Ort = 'Berlin' (Kunde ⨝ Bestellung))</code>
-        <p><em>Gibt alle Artikel zurück, die von Kunden aus Berlin bestellt wurden.</em></p>
-    </div>
-
-    <div>
-        <h3>Aufgabe 1</h3>
-        <p>Wie lautet der Ausdruck, um alle <strong>Artikel von Kunde 101</strong> zu ermitteln?</p>
-        <textarea id="answer1"></textarea>
-        <button class="btn" onclick="checkAnswer1()">Antwort prüfen</button>
-        <div class="feedback" id="feedback1"></div>
-
-        <h3>Aufgabe 2</h3>
-        <p>Was bewirkt die <strong>Projektion (π)</strong> in der relationalen Algebra?</p>
-        <textarea id="answer2"></textarea>
-        <button class="btn" onclick="checkAnswer2()">Antwort prüfen</button>
-        <div class="feedback" id="feedback2"></div>
-
-        <h3>Aufgabe 3</h3>
-        <p>Was liefert der Ausdruck <code>π Artikel (σ KNr = 101 (Bestellung))</code>?</p>
-        <textarea id="answer3"></textarea>
-        <button class="btn" onclick="checkAnswer3()">Antwort prüfen</button>
-        <div class="feedback" id="feedback3"></div>
-
-        <h3>Aufgabe 4</h3>
-        <p>Erkläre den Ausdruck: <code>π Name (σ Artikel = 'Maus' (Kunde ⨝ Bestellung))</code></p>
-        <textarea id="answer4"></textarea>
-        <button class="btn" onclick="checkAnswer4()">Antwort prüfen</button>
-        <div class="feedback" id="feedback4"></div>
-
-        <a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
-    </div>
+<h1>Kapitel 3: Datenbankdesign</h1>
+<p class="welcome-text">Wähle einen Bereich, um zu starten:</p>
+<div class="tab-buttons">
+    <button data-index="0">📐 3.1 Normalformen</button>
+    <button data-index="1">🧩 3.2 Entity-Relationship-Modell</button>
+    <button data-index="2">📝 3.3 Übungsaufgaben</button>
+    <button data-index="3">📚 Literatur</button>
 </div>
+<div class="lesson-content" id="lessonContent"></div>
 
 <script>
-    const normalize = s => s.trim().toLowerCase();
+    const sections = [
+      {
+        title: "3.1 Normalformen",
+        description: "Lerne die verschiedenen Normalformen kennen, die beim Design von relationalen Datenbanken wichtig sind.",
+        subsections: [
+          {
+            name: "3.1.1 Erste Normalform",
+            content: `
+              <h3>Definition: Erste Normalform</h3>
+              <p>
+                Eine Relation ist in der ersten Normalform, wenn alle zugrundeliegenden Gebiete nur <strong>atomare Werte</strong> enthalten.
+                Das heißt: Alle Attribute dürfen nur einfache, nicht weiter zerlegbare Werte enthalten.
+              </p>
+              <p>
+                <b>Beispiel:</b> Eine Tabelle darf z.B. nicht mehrere Telefonnummern in einer Zelle speichern, sondern braucht für jede Nummer ein eigenes Attribut oder einen eigenen Datensatz.
+              </p>
+              <p>
+                Dies wurde bei der Definition einer (normalisierten) Relation bereits gefordert. Damit sind <b>alle Relationen automatisch in der ersten Normalform!</b>
+              </p>
+              <p>
+                Die Definition ist historisch bedingt, weil E. F. Codd in der Originaldefinition einer Relation nicht forderte, dass eine Relation nur atomare Attribute enthalten darf.
+              </p>
+              <p>
+                <b>Die Relation <i>VerkaeuferProdukt</i> ist z.B. in der ersten Normalform.</b> Aber sie hat zwei Schwächen (siehe Kapitel 2):<br>
+                <ul>
+                  <li>Redundanzen: Zu jedem verkauften Produkt werden immer alle Verkäuferdaten aufgelistet.</li>
+                  <li>Löscht man das Produkt "Staubsauger", verschwinden alle Infos zum Verkäufer "Müller" (Datenverlust).</li>
+                </ul>
+                Ein Ersetzen durch den Null-Wert ist nicht erlaubt, da das Attribut <i>Produktname</i> Teil des Primärschlüssels ist (Integritätsregel!).
+                Auch das Einfügen eines neuen Verkäufers ist nicht möglich, solange er noch nichts verkauft hat.
+              </p>
+              <p>
+                In <b>objektrelationalen Datenbanken</b> wird auf die Atomarität bewusst verzichtet (sog. <b>NF2-Normalformen</b>, "Non-First-Normal-Form").
+                Relationen, die sich nicht in erster Normalform befinden, sind also erlaubt.
+              </p>
+              <p>
+                <b>Fazit:</b> Die erste Normalform ist nur ein Einstieg. Weitere Normalformen sind nötig, um die Qualität der Relationen zu verbessern.
+              </p>
+            `
+          },
+           {
+        name: "3.1.2 Funktionale Abhängigkeit",
+        content: `
+          <h3>Definition: Funktionale Abhängigkeit</h3>
+          <p>
+            Die Qualität einer Relation hängt stark von den Zusammenhängen zwischen den einzelnen Attributen ab. Diese Zusammenhänge beschreiben wir durch das Konzept der funktionalen Abhängigkeit.
+          </p>
+          <blockquote>
+            <strong>Definition:</strong> Ein Attribut <b>Y</b> einer Relation <b>R</b> heißt funktional abhängig vom Attribut <b>X</b> derselben Relation, wenn zu jedem X-Wert höchstens ein Y-Wert möglich ist.<br>
+            <b>Notation:</b> <code>X → Y</code>
+          </blockquote>
+          <p>
+            X und Y können dabei auch zusammengesetzte Attribute sein. Ist Y von X funktional abhängig, so folgt aus einem X-Wert höchstens ein Y-Wert (es können aber Nullwerte auftreten).
+          </p>
+          <p>
+            <b>Beispiel:</b><br>
+            In der Relation <i>VerkaeuferProdukt</i> hängen die Verkäuferdaten von der Verkäufernummer eindeutig ab:<br>
+            <code>
+              VerkNr → VerkName<br>
+              VerkNr → PLZ<br>
+              VerkNr → VerkAdresse<br>
+              VerkNr → (VerkName, PLZ, VerkAdresse)
+            </code>
+          </p>
+          <p>
+            Jeder Superschlüssel beschreibt ein Tupel eindeutig – daher gehen von jedem Superschlüssel Pfeile zu allen anderen Attributen!
+          </p>
+          <p>
+            <b>Primärschlüssel-Beispiel:</b><br>
+            In der Relation <i>VerkaeuferProdukt</i> ist der Primärschlüssel das zusammengesetzte Attribut (VerkNr, Produktname). Es gilt:
+            <code>
+              (VerkNr, Produktname) → Umsatz<br>
+              (VerkNr, Produktname) → VerkName<br>
+              (VerkNr, Produktname) → PLZ<br>
+              (VerkNr, Produktname) → VerkAdresse
+            </code>
+          </p>
+          <p>
+            Achtung: Nicht jede scheinbare Abhängigkeit ist gültig! Beispiel:
+            <code>VerkName → VerkAdresse</code> ist <b>falsch</b> – es könnte mehrere Verkäufer mit gleichem Namen geben.
+          </p>
+          <p>
+            Auch zwischen Postleitzahlen und Adressen bestehen nicht immer Abhängigkeiten, weil verschiedene Orte gleiche Postleitzahlen haben können und umgekehrt. Es gilt also nicht immer: <code>PLZ → VerkAdresse</code> oder <code>Adresse → PLZ</code>.
+          </p>
+          <p>
+            <b>Volle funktionale Abhängigkeit</b>:<br>
+            Ein Attribut Y ist <b>voll funktional abhängig</b> vom Attribut X, wenn es funktional abhängig von X ist, <u>nicht</u> aber funktional abhängig von <b>Teilattributen</b> von X.<br>
+            <b>Notation:</b> <code>X ⇒ Y</code>
+          </p>
+          <p>
+            In der Relation <i>VerkaeuferProdukt</i> gibt es die folgenden <b>vollen funktionalen Abhängigkeiten</b>:
+            <ul>
+              <li>(VerkNr, Produktname) → Umsatz</li>
+              <li>VerkNr → VerkName</li>
+              <li>VerkNr → PLZ</li>
+              <li>VerkNr → VerkAdresse</li>
+            </ul>
+          </p>
+          <p>
+            Von allen Superschlüsseln und damit auch vom Primärschlüssel führen Pfeile zu allen anderen Attributen.<br>
+            Wenn der Primärschlüssel aber kein <b>Doppelpfeil</b> (<code>⇒</code>) zu allen anderen Attributen hat, gibt es eine volle funktionale Abhängigkeit schon von einem Teil des Primärschlüssels – das führt zu Redundanzen.
+          </p>
+          <p>
+            <b>Wichtig für das Design:</b><br>
+            Redundanzen durch (zu viele) funktionale Abhängigkeiten sollen beseitigt werden!
+          </p>
+        `
+      },
+          {
+  name: "3.1.3 Zweite Normalform",
+  content: `
+    <h3>Definition: Zweite Normalform</h3>
+    <p>
+      Im letzten Abschnitt hast du gesehen, dass funktionale Abhängigkeiten vom Primärschlüssel immer existieren.<br>
+      <strong>Redundanzen entstehen aber, wenn nicht alle Attribute voll funktional vom Primärschlüssel abhängen.</strong>
+    </p>
+    <blockquote>
+      <strong>Definition:</strong> Eine Relation ist in der <b>zweiten Normalform</b>, wenn sie in der ersten Normalform ist und jedes <u>Nichtschlüsselattribut</u> voll funktional vom Primärschlüssel abhängt.<br>
+      <i>Ein Nichtschlüsselattribut ist jedes Attribut, das kein Schlüsselkandidat ist.</i>
+    </blockquote>
+    <ul>
+      <li>Die zweite Normalform bezieht sich nur auf den Zusammenhang zwischen allen Nichtschlüsselattributen und dem Primärschlüssel.</li>
+      <li>Alternative Schlüssel (Schlüsselkandidaten) sind weiterhin erlaubt.</li>
+    </ul>
+    <p>
+      Für alle Relationen in <strong>mindestens erster Normalform</strong> gilt:<br>
+      <code>Primärschlüssel → Nichtschlüsselattribut</code><br>
+      Für alle Relationen in <strong>mindestens zweiter Normalform</strong> gilt zusätzlich:<br>
+      <code>Primärschlüssel ⇒ Nichtschlüsselattribut</code>
+    </p>
+    <p>
+      <strong>Wirkung:</strong> Viele Redundanzen werden mit dieser kleinen Bedingung der zweiten Normalform entfernt!<br>
+      Beispiel: In der Relation <i>VerkaeuferProdukt</i> sind die Verkäuferdaten (<i>VerkName, PLZ, VerkAdresse</i>) nicht voll funktional abhängig vom Primärschlüssel – die Relation ist daher <u>nicht</u> in der zweiten Normalform.
+    </p>
+    <p>
+      <strong>Wichtige Konsequenz:</strong>
+      <ul>
+        <li>Ob eine Relation in 2NF ist, hängt nur von der <b>Struktur des Primärschlüssels</b> ab.</li>
+        <li>Hat der Primärschlüssel nur ein Attribut, sind alle funktionalen Abhängigkeiten automatisch voll funktional.</li>
+      </ul>
+    </p>
+    <blockquote>
+      <strong>Merke:</strong> Eine normalisierte Relation mit einem <u>nicht zusammengesetzten Primärschlüssel</u> ist immer mindestens in der zweiten Normalform.
+    </blockquote>
+    <p>
+      Umgekehrt: Ist eine Relation <u>nicht</u> in 2NF, hat sie immer einen zusammengesetzten Primärschlüssel.<br>
+      In der Praxis besitzen viele Relationen (z.B. chemische Elemente) einen einfachen Schlüssel (z.B. <i>Protonen</i>) – sie sind damit direkt in 2NF.
+    </p>
+    <h4>Von 1NF in 2NF – Beispiel</h4>
+    <p>
+      Jede Relation in 1NF lässt sich einfach in 2NF überführen: Füge ein neues Attribut (z.B. <b>Nr</b>) als einfachen Primärschlüssel hinzu.<br>
+      Beispiel-Tabelle (<i>VerkaeuferProdukt2NF</i>):
+    </p>
+    <div style="overflow-x:auto;">
+    <table style="border-collapse:collapse;width:100%;margin:1em 0;">
+      <tr style="background:#23d2ff44;">
+        <th style="border:1px solid #23d2ff;padding:4px 8px;">Nr</th>
+        <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkNr</th>
+        <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkName</th>
+        <th style="border:1px solid #23d2ff;padding:4px 8px;">PLZ</th>
+        <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkAdresse</th>
+        <th style="border:1px solid #23d2ff;padding:4px 8px;">Produktname</th>
+        <th style="border:1px solid #23d2ff;padding:4px 8px;">Umsatz</th>
+      </tr>
+      <tr><td>1</td><td>V1</td><td>Meier</td><td>80331</td><td>München</td><td>Waschmaschine</td><td>11000</td></tr>
+      <tr><td>2</td><td>V1</td><td>Meier</td><td>80331</td><td>München</td><td>Herd</td><td>5000</td></tr>
+      <tr><td>3</td><td>V1</td><td>Meier</td><td>80331</td><td>München</td><td>Kühlschrank</td><td>1000</td></tr>
+      <tr><td>4</td><td>V2</td><td>Schneider</td><td>70173</td><td>Stuttgart</td><td>Herd</td><td>4000</td></tr>
+      <tr><td>5</td><td>V2</td><td>Schneider</td><td>70173</td><td>Stuttgart</td><td>Kühlschrank</td><td>3000</td></tr>
+      <tr><td>6</td><td>V3</td><td>Müller</td><td>50667</td><td>Köln</td><td>Staubsauger</td><td>1000</td></tr>
+    </table>
+    </div>
+    <p>
+      <b>Aber:</b> Auch in 2NF können noch Redundanzen bestehen! Das Problem ist mit einfachem Nummernschlüssel nicht optimal gelöst.<br>
+      <i>Das Attribut <b>Produktname</b> ist jetzt kein Teil des Schlüssels mehr, dadurch sind Redundanzen weiter möglich.</i>
+    </p>
+    <p>
+      Die zweite Normalform erleichtert das Arbeiten mit Relationen, aber entfernt nicht immer alle Redundanzen.<br>
+      <b>Konsequenz:</b> Für vollständige Redundanzfreiheit braucht es weitere Normalformen.
+    </p>
+  `
+},
+          {
+  name: "3.1.4 Dritte Normalform nach Boyce und Codd",
+  content: `
+    <h3>Definition: Dritte Normalform nach Boyce und Codd (BCNF)</h3>
+    <p>
+      Die zweite Normalform sorgt dafür, dass vom Primärschlüssel nur volle funktionale Abhängigkeiten (Doppelpfeile) zu den Nichtschlüsselattributen bestehen.<br>
+      <b>Aber:</b> Gibt es eine <b>volle funktionale Abhängigkeit von einem Attribut, das kein Schlüsselkandidat ist</b>, entstehen trotzdem Redundanzen!<br>
+      <i>Beispiel: Die Verkäufernummer (<code>VerkNr</code>) in der Relation <i>VerkaeuferProdukt2NF</i> ist so ein Fall.</i>
+    </p>
+    <p>
+      <b>Logische Folgerung:</b> <u>Alle weiteren solchen Abhängigkeiten (Pfeile) müssen verboten werden</u> – das ist die Kernaussage der Dritten Normalform nach Boyce und Codd.
+    </p>
+    <blockquote>
+      <b>Definition: Determinante</b><br>
+      Eine Determinante ist ein (ggf. zusammengesetztes) Attribut, von dem ein anderes Attribut voll funktional abhängt.
+    </blockquote>
+    <ul>
+      <li>In 2NF ist mindestens der Primärschlüssel eine Determinante.</li>
+      <li>Die BCNF geht einen Schritt weiter.</li>
+    </ul>
+    <blockquote>
+      <b>Definition: Dritte Normalform nach Boyce-Codd (BCNF)</b><br>
+      Eine normalisierte Relation ist in der dritten Normalform (nach BCNF), wenn <b>jede Determinante dieser Relation ein Schlüsselkandidat ist</b>.
+    </blockquote>
+    <p>
+      Das bedeutet: Es gibt außer Schlüsselkandidaten keine Determinanten mehr.<br>
+      Oder anders: Alle vollen funktionalen Abhängigkeiten (Doppelpfeile) starten <b>bei Schlüsselkandidaten</b>!
+    </p>
+    <p>
+      Jede Relation in der dritten Normalform befindet sich auch immer in der zweiten Normalform.<br>
+      <b>Die BCNF ist strenger als die 2NF!</b>
+    </p>
+    <h4>Beispiel: Überführung in die dritte Normalform</h4>
+    <p>
+      Die Relation <i>VerkaeuferProdukt2NF</i> ist <b>nicht</b> in der dritten Normalform, denn <code>VerkNr</code> ist eine Determinante, aber <b>kein</b> Schlüsselkandidat!<br>
+      Lösung: Wir zerlegen die Relation in drei neue, redundanzfreie Relationen:
+    </p>
+    <div style="overflow-x:auto;">
+      <b>Tab. 3.3 – Verkaeufer</b>
+      <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkNr</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkName</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">PLZ</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkAdresse</th>
+        </tr>
+        <tr><td>V1</td><td>Meier</td><td>80331</td><td>München</td></tr>
+        <tr><td>V2</td><td>Schneider</td><td>70173</td><td>Stuttgart</td></tr>
+        <tr><td>V3</td><td>Müller</td><td>50667</td><td>Köln</td></tr>
+      </table>
+    </div>
+    <div style="overflow-x:auto;">
+      <b>Tab. 3.4 – Produkt</b>
+      <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">ProdNr</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">Produktname</th>
+        </tr>
+        <tr><td>P1</td><td>Waschmaschine</td></tr>
+        <tr><td>P2</td><td>Herd</td></tr>
+        <tr><td>P3</td><td>Kühlschrank</td></tr>
+        <tr><td>P4</td><td>Staubsauger</td></tr>
+      </table>
+    </div>
+    <div style="overflow-x:auto;">
+      <b>Tab. 3.5 – Verknüpfung</b>
+      <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkNr</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">ProdNr</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">Umsatz</th>
+        </tr>
+        <tr><td>V1</td><td>P1</td><td>11000</td></tr>
+        <tr><td>V1</td><td>P2</td><td>5000</td></tr>
+        <tr><td>V1</td><td>P3</td><td>1000</td></tr>
+        <tr><td>V2</td><td>P2</td><td>4000</td></tr>
+        <tr><td>V2</td><td>P3</td><td>3000</td></tr>
+        <tr><td>V3</td><td>P4</td><td>1000</td></tr>
+      </table>
+    </div>
+    <p>
+      <b>Ergebnis:</b> Alle drei Relationen sind jetzt in der dritten Normalform (BCNF) und <b>vollständig redundanzfrei</b>.<br>
+      Produkte, Verkäufer und Umsätze lassen sich einfach ändern oder ergänzen – ohne Mehrfacheinträge!
+    </p>
+    <blockquote>
+      <b>Merke:</b> Die dritte Normalform beseitigt alle Redundanzen außerhalb der Schlüsselkandidaten.<br>
+      Ziel: Jede Relation sollte in BCNF gebracht werden, um optimale Datenkonsistenz und Handhabbarkeit zu erreichen!
+    </blockquote>
+    <p>
+      <i>Übung: Bestimme die Normalformen aller Relationen einer Beispieldatenbank. Prüfe, ob alle in 3NF/BCNF sind!</i>
+    </p>
+  `
+},
+          {
+  name: "3.1.5 Dritte Normalform nach Codd",
+  content: `
+    <h3>Definition: Dritte Normalform nach Codd (3NF)</h3>
+    <p>
+      Die dritte Normalform nach Boyce und Codd (BCNF) ist praktisch optimal, weil sie leicht zu prüfen ist und Redundanzen zuverlässig entfernt.<br>
+      Die <b>ursprüngliche 3NF von E. F. Codd</b> (1970) geht allerdings noch einen Schritt weiter und betrachtet das Konzept der <b>transitiven Abhängigkeit</b>.
+    </p>
+    <h4>Was ist eine transitive Abhängigkeit?</h4>
+    <p>
+      Eine transitive Abhängigkeit liegt vor, wenn ein Attribut <b>Y</b> nicht direkt, sondern über ein anderes Nichtschlüsselattribut <b>Z</b> vom Primärschlüssel <b>X</b> abhängt:
+      <br>
+      <code>X ⇒ Z ⇒ Y</code>
+    </p>
+    <p>
+      <b>Beispiel:</b> Die Relation <i>VerkaeuferLand</i>:
+    </p>
+    <div style="overflow-x:auto;">
+      <b>Tab. 3.6 – VerkaeuferLand</b>
+      <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkNr</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkName</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">PLZ</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkAdresse</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">Bundesland</th>
+        </tr>
+        <tr><td>V1</td><td>Meier</td><td>80331</td><td>München</td><td>Bayern</td></tr>
+        <tr><td>V2</td><td>Schneider</td><td>70173</td><td>Stuttgart</td><td>Baden-Württemberg</td></tr>
+        <tr><td>V3</td><td>Müller</td><td>50667</td><td>Köln</td><td>Nordrhein-Westfalen</td></tr>
+      </table>
+    </div>
+    <p>
+      In dieser Relation gilt zum Beispiel:<br>
+      <code>
+        VerkNr ⇒ PLZ<br>
+        PLZ ⇒ Bundesland<br>
+        &rArr; VerkNr transitiv ⇒ Bundesland (über PLZ)
+      </code>
+    </p>
+    <blockquote>
+      <b>Definition: Transitive Abhängigkeit</b><br>
+      Ein Attribut <b>Y</b> einer Relation <b>R</b> heißt <b>transitiv abhängig</b> vom Attribut <b>X</b>, wenn ein Nichtschlüsselattribut <b>Z</b> existiert, sodass gilt:<br>
+      X ⇒ Z und Z ⇒ Y
+    </blockquote>
+    <p>
+      <b>Definition: Dritte Normalform nach Codd (3NF):</b><br>
+      Eine Relation ist in der dritten Normalform nach Codd, wenn sie sich in der zweiten Normalform befindet und jedes Nichtschlüsselattribut <u>nicht transitiv vom Primärschlüssel abhängt</u>.
+    </p>
+    <p>
+      <b>Beziehung zu BCNF:</b> Jede Relation in BCNF ist automatisch auch in der 3NF nach Codd, weil in BCNF keine nicht-Schlüsselkandidaten als Determinanten auftreten dürfen (daher auch keine Transitivitäten).
+    </p>
+    <p>
+      <b>Umkehrung gilt nicht!</b> Es gibt Relationen, die zwar in der dritten Normalform nach Codd, aber <u>nicht</u> in der BCNF sind (meist bei mehreren zusammengesetzten Schlüsselkandidaten mit Überlappung).
+    </p>
+    <blockquote>
+      <b>Merke:</b><br>
+      Hat eine Relation <b>nur nicht-zusammengesetzte Schlüsselkandidaten</b>, sind die beiden Definitionen (3NF nach Codd und BCNF) gleichwertig.<br>
+      Unterschiede gibt es nur bei Relationen mit mindestens zwei sich überlappenden, zusammengesetzten Schlüsseln.
+    </blockquote>
+    <p>
+      <b>Praxis-Tipp:</b><br>
+      Im modernen Design wird fast immer die <b>dritte Normalform nach Boyce und Codd</b> empfohlen, da sie einfacher prüfbar ist und automatisch alle Transitivitäten beseitigt. Wenn im Folgenden von der dritten Normalform die Rede ist, ist immer die BCNF gemeint!
+    </p>
+  `
+},
 
-    function checkAnswer1() {
-      const input = normalize(document.getElementById("answer1").value);
-      const feedback = document.getElementById("feedback1");
-      if (input.includes("π") && input.includes("artikel") && input.includes("σ") && input.includes("knr = 101")) {
-        feedback.textContent = "✅ Richtig! Du kombinierst Selektion und Projektion korrekt.";
-        feedback.style.color = '#00f2ff';
-      } else {
-        feedback.textContent = "❌ Nicht ganz. Denke an: σ KNr = 101 und dann π Artikel.";
-        feedback.style.color = '#ff6b6b';
+          {
+  name: "3.1.6 Vierte Normalform",
+  content: `
+    <h3>Definition: Vierte Normalform (4NF)</h3>
+    <p>
+      Die dritte Normalform (BCNF) beseitigt Redundanzen, die durch funktionale Abhängigkeiten außerhalb von Schlüsselkandidaten entstehen.
+      Probleme können aber weiterhin bei Relationen mit komplexen, zusammengesetzten Schlüsseln auftreten. Hier setzen die höheren Normalformen an, die in der Praxis jedoch seltener eine Rolle spielen.
+    </p>
+    <h4>Problem: Mehrwertige Abhängigkeiten</h4>
+    <p>
+      Betrachten wir eine Relation, die zwei voneinander unabhängige Fakten speichert. Zum Beispiel, welche Produkte ein Verkäufer verkauft und welche Firmenfahrzeuge er nutzt. Das Produkt und das Fahrzeug sind dabei voneinander unabhängig.
+    </p>
+    <p>
+      Wenn wir dies in einer einzigen Relation <i>VerkaeuferProduktKFZ</i> speichern, entsteht eine "mehrwertige Abhängigkeit" und erhebliche Redundanz. Jedes Produkt des Verkäufers muss mit jedem seiner Fahrzeuge kombiniert werden.
+    </p>
+    <div style="overflow-x:auto;">
+      <b>Tab. 3.8 – VerkaeuferProduktKFZ (in 3NF, aber nicht 4NF)</b>
+      <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkNr</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">Produktname</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">KFZNr</th>
+        </tr>
+        <tr><td>V1</td><td>Waschmaschine</td><td>M-E 515</td></tr>
+        <tr><td>V1</td><td>Waschmaschine</td><td>M-X 333</td></tr>
+        <tr><td>V1</td><td>Herd</td><td>M-E 515</td></tr>
+        <tr><td>V1</td><td>Herd</td><td>M-X 333</td></tr>
+        <tr><td>V1</td><td>Kühlschrank</td><td>M-E 515</td></tr>
+        <tr><td>V1</td><td>Kühlschrank</td><td>M-X 333</td></tr>
+        <tr><td>V2</td><td>Herd</td><td>S-H 654</td></tr>
+        <tr><td>V2</td><td>Herd</td><td>K-J 123</td></tr>
+        <tr><td>V2</td><td>Kühlschrank</td><td>S-H 654</td></tr>
+        <tr><td>V2</td><td>Kühlschrank</td><td>K-J 123</td></tr>
+        <tr><td>V3</td><td>Staubsauger</td><td>K-J 123</td></tr>
+      </table>
+    </div>
+    <p>
+      Diese Relation ist in der dritten Normalform, da es keine transitiven Abhängigkeiten gibt und der Primärschlüssel aus allen drei Attributen <code>(VerkNr, Produktname, KFZNr)</code> besteht.
+    </p>
+    <blockquote>
+      <b>Definition: Mehrwertige Abhängigkeit</b><br>
+      Ein Attribut <b>Y</b> ist von einem Attribut <b>X</b> mehrwertig abhängig (Notation: <code>X →→ Y</code>), wenn zu jedem X-Wert eine Menge von Y-Werten gehört, die unabhängig von anderen Attributen (z.B. Z) in der Relation ist.
+      <br>In unserem Beispiel gilt:
+      <br><code>VerkNr →→ Produktname</code>
+      <br><code>VerkNr →→ KFZNr</code>
+    </blockquote>
+    <blockquote>
+      <b>Definition: Vierte Normalform (4NF)</b><br>
+      Eine normalisierte Relation ist in der vierten Normalform, wenn aus jeder mehrwertigen Abhängigkeit <code>X →→ Y</code> folgt, dass <b>X</b> ein Superschlüssel ist.
+    </blockquote>
+    <p>
+      Da in unserem Beispiel <code>VerkNr</code> allein kein Superschlüssel ist, verletzt die Relation die 4NF.
+    </p>
+    <h4>Lösung: Zerlegung der Relation</h4>
+    <p>
+      Um die 4NF zu erreichen, zerlegen wir die Relation entlang ihrer unabhängigen Abhängigkeiten in zwei separate Relationen.
+    </p>
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 250px;">
+        <b>Tab. 3.10 – VerkaeuferProduktname</b>
+        <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+          <tr style="background:#23d2ff44;"><th style="border:1px solid #23d2ff;padding:4px 8px;">VerkNr</th><th style="border:1px solid #23d2ff;padding:4px 8px;">Produktname</th></tr>
+          <tr><td>V1</td><td>Waschmaschine</td></tr>
+          <tr><td>V1</td><td>Herd</td></tr>
+          <tr><td>V1</td><td>Kühlschrank</td></tr>
+          <tr><td>V2</td><td>Herd</td></tr>
+          <tr><td>V2</td><td>Kühlschrank</td></tr>
+          <tr><td>V3</td><td>Staubsauger</td></tr>
+        </table>
+      </div>
+      <div style="flex: 1; min-width: 250px;">
+        <b>Tab. 3.11 – VerkaeuferKFZ</b>
+        <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+          <tr style="background:#23d2ff44;"><th style="border:1px solid #23d2ff;padding:4px 8px;">VerkNr</th><th style="border:1px solid #23d2ff;padding:4px 8px;">KFZNr</th></tr>
+          <tr><td>V1</td><td>M-E 515</td></tr>
+          <tr><td>V1</td><td>M-X 333</td></tr>
+          <tr><td>V2</td><td>S-H 654</td></tr>
+          <tr><td>V2</td><td>K-J 123</td></tr>
+          <tr><td>V3</td><td>K-J 123</td></tr>
+        </table>
+      </div>
+    </div>
+    <p>
+      <b>Ergebnis:</b> Beide neuen Relationen sind nun in der vierten Normalform und die Redundanzen sind beseitigt. Die ursprüngliche Information kann durch einen natürlichen Verbund (Join) der beiden Tabellen jederzeit wiederhergestellt werden.
+    </p>
+  `
+},
+        {
+  name: "3.1.7 Fünfte Normalform",
+  content: `
+    <h3>Definition: Fünfte Normalform (5NF)</h3>
+    <p>
+      Die fünfte Normalform (auch als "Project-Join Normal Form" bezeichnet) ist die höchste Normalform. Sie behandelt komplexe, nicht-triviale <b>Verbundabhängigkeiten</b> (Join Dependencies). In der Praxis ist sie nur selten relevant, da solche Abhängigkeiten schwer zu erkennen sind und oft auf sehr spezifischen Geschäftsregeln beruhen.
+    </p>
+    <h4>Problem: Verbundabhängigkeit (Join Dependency)</h4>
+    <p>
+      Manchmal lässt sich eine Relation nicht verlustfrei in zwei, sondern nur in <b>drei oder mehr</b> Tabellen zerlegen. Dies ist ein Anzeichen für eine Verbundabhängigkeit.
+    </p>
+    <p>
+      Nehmen wir an, es gibt eine zusätzliche Regel: Bestimmte Produkte dürfen nicht mit bestimmten Fahrzeugen transportiert werden. Unsere Relation aus dem 4NF-Beispiel ist dadurch nun selbst in 4NF, da keine mehrwertigen Abhängigkeiten mehr existieren (Produkt und KFZ sind nicht mehr völlig unabhängig). Trotzdem enthält sie noch Redundanzen.
+    </p>
+    <div style="overflow-x:auto;">
+      <b>Tab. 3.13 – VerkaeuferProduktKFZ4NF (in 4NF, aber nicht 5NF)</b>
+      <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">VerkNr</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">Produktname</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">KFZNr</th>
+        </tr>
+        <tr><td>V1</td><td>Waschmaschine</td><td>M-E 515</td></tr>
+        <tr><td>V1</td><td>Herd</td><td>M-E 515</td></tr>
+        <tr><td>V1</td><td>Herd</td><td>M-X 333</td></tr>
+        <tr><td>V1</td><td>Kühlschrank</td><td>M-E 515</td></tr>
+        <tr><td>V2</td><td>Herd</td><td>S-H 654</td></tr>
+        <tr><td>V2</td><td>Herd</td><td>K-J 123</td></tr>
+        <tr><td>V2</td><td>Kühlschrank</td><td>S-H 654</td></tr>
+        <tr><td>V3</td><td>Staubsauger</td><td>K-J 123</td></tr>
+      </table>
+    </div>
+    <blockquote>
+      <b>Definition: Verbundabhängigkeit</b><br>
+      Eine Relation R besitzt eine Verbundabhängigkeit, wenn sie sich verlustfrei in mehrere Teilrelationen (Projektionen) zerlegen lässt, sodass der Verbund dieser Teilrelationen wieder die exakte Originalrelation R ergibt.
+    </blockquote>
+    <blockquote>
+      <b>Definition: Fünfte Normalform (5NF)</b><br>
+      Eine Relation ist in der fünften Normalform, wenn sie in der vierten Normalform ist und keine (nicht-trivialen) Verbundabhängigkeiten besitzt.
+    </blockquote>
+    <h4>Lösung: Zerlegung in drei Relationen</h4>
+    <p>
+      Die Relation in Tab. 3.13 kann verlustfrei in drei Tabellen zerlegt werden:
+      <ol>
+        <li>Welcher Verkäufer verkauft welches Produkt? (Tab. 3.10)</li>
+        <li>Welcher Verkäufer nutzt welches KFZ? (Tab. 3.11)</li>
+        <li>Welches Produkt darf mit welchem KFZ transportiert werden? (Tab. 3.14)</li>
+      </ol>
+    </p>
+    <div style="overflow-x:auto;">
+      <b>Tab. 3.14 – ProduktKFZ (die dritte Zerlegung)</b>
+      <table style="border-collapse:collapse;width:100%;margin:0.7em 0;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">Produktname</th>
+          <th style="border:1px solid #23d2ff;padding:4px 8px;">KFZNr</th>
+        </tr>
+        <tr><td>Waschmaschine</td><td>M-E 515</td></tr>
+        <tr><td>Herd</td><td>M-E 515</td></tr>
+        <tr><td>Herd</td><td>M-X 333</td></tr>
+        <tr><td>Herd</td><td>S-H 654</td></tr>
+        <tr><td>Herd</td><td>K-J 123</td></tr>
+        <tr><td>Kühlschrank</td><td>M-E 515</td></tr>
+        <tr><td>Kühlschrank</td><td>S-H 654</td></tr>
+        <tr><td>Staubsauger</td><td>K-J 123</td></tr>
+      </table>
+    </div>
+    <p>
+      Nur der Verbund aller <b>drei</b> Tabellen ergibt wieder die korrekte Ausgangstabelle. Da eine solche Zerlegung möglich ist, war die ursprüngliche Relation nicht in 5NF.
+    </p>
+    <blockquote>
+      <b>Hierarchie der Abhängigkeiten:</b><br>
+      Eine funktionale Abhängigkeit ist ein Spezialfall einer mehrwertigen Abhängigkeit. Eine mehrwertige Abhängigkeit ist wiederum ein Spezialfall einer Verbundabhängigkeit. Die 5NF ist also die allgemeingültigste Form.
+    </blockquote>
+  `
+},
+          {
+  name: "3.1.8 Zusammenfassung",
+  content: `
+    <h3>Zusammenfassung der Normalformen</h3>
+    <p>
+      Die Lehre der Normalformen ist ein zentrales Werkzeug für das Design robuster und redundanzfreier Datenbanken. Hier sind die wichtigsten Erkenntnisse zusammengefasst:
+    </p>
+    <ul>
+      <li>
+        <b>Erste Normalform (1NF):</b> Die Grundvoraussetzung. Alle Attributwerte müssen atomar sein.
+      </li>
+      <li>
+        <b>Zweite Normalform (2NF):</b> Beseitigt Teilabhängigkeiten. Jedes Nichtschlüsselattribut muss vom <strong>gesamten</strong> Primärschlüssel abhängen (nur relevant bei zusammengesetzten Schlüsseln).
+      </li>
+      <li>
+        <b>Dritte Normalform (3NF/BCNF):</b> Beseitigt transitive Abhängigkeiten. Kein Nichtschlüsselattribut darf von einem anderen Nichtschlüsselattribut abhängen. <strong>Die BCNF ist in der Praxis das wichtigste Ziel für ein gutes Datenbankdesign.</strong>
+      </li>
+       <li>
+        <b>Vierte (4NF) & Fünfte (5NF) Normalform:</b> Behandeln komplexe mehrwertige bzw. Verbundabhängigkeiten. Sie sind nur in seltenen Spezialfällen relevant, die durch ein einfaches Schlüsseldesign meist vermieden werden.
+      </li>
+    </ul>
+    <h4>Der Kompromiss: Normalisierung vs. Performance</h4>
+    <p>
+      Ein höheres Normalisierungslevel führt zu mehr Tabellen. Um Daten abzufragen, sind oft mehrere Verbundoperationen (Joins) nötig, was die Ausführungszeit verlängern kann.
+    </p>
+    <p>
+      Aus diesem Grund kann es in performancekritischen Anwendungen eine bewusste Entscheidung sein, eine niedrigere Normalform (z.B. 2NF statt 3NF) zu wählen und kontrollierte Redundanzen in Kauf zu nehmen. Dieser Prozess wird <strong>Denormalisierung</strong> genannt.
+    </p>
+    <blockquote>
+      <b>Goldene Regel für Designer:</b><br>
+      Kenne alle Schlüsselkandidaten und funktionalen Abhängigkeiten deiner Daten. Entwirf einfache, leicht verständliche Relationen und vermeide komplexe, zusammengesetzte Schlüssel, wo immer es möglich ist.
+    </blockquote>
+  `
+},
+        ]
+      },
+      {
+        title: "3.2 Entity-Relationship-Modell",
+        description: "Das Entity-Relationship-Modell ist das zentrale Werkzeug für den konzeptuellen Entwurf von Datenbanken.",
+        subsections: [
+          {
+  name: "3.2.1 Entitäten",
+  content: `
+    <h3>Entitäten im Entity-Relationship-Modell</h3>
+    <p>
+      Das Entity-Relationship-Modell (ERM) ist die Basis für den konzeptuellen Entwurf von Datenbanken. Es beschreibt, welche <b>Entitäten</b> (Objekte) und <b>Beziehungen</b> zwischen diesen existieren. Die wichtigsten Begriffe sind unten zusammengefasst:
+    </p>
+    <ul>
+      <li><b>Entität:</b> Eindeutig unterscheidbares Objekt (z.B. Person, Produkt)</li>
+      <li><b>Eigenschaft (Attribut):</b> Merkmal einer Entität (z.B. Name, Preis)</li>
+      <li><b>Beziehung:</b> Verknüpft Entitäten (z.B. „verkauft“ zwischen Verkäufer und Produkt)</li>
+      <li><b>Subtyp/Supertyp:</b> Spezialisierung/Verallgemeinerung einer Entität</li>
+      <li><b>Schwache Entität:</b> Existiert nur in Verbindung mit einer anderen Entität</li>
+    </ul>
+
+    <h4>Begriffsbeispiele</h4>
+    <table style="margin:1em auto; border-collapse:collapse; min-width:320px;">
+      <tr style="background:#232b45;">
+        <th style="padding:4px 10px; border:1px solid #00f2ff;">Begriff</th>
+        <th style="padding:4px 10px; border:1px solid #00f2ff;">Beispiel</th>
+      </tr>
+      <tr>
+        <td style="border:1px solid #00f2ff;">Entität</td>
+        <td style="border:1px solid #00f2ff;">Person, Produkt, Rechnung</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #00f2ff;">Eigenschaft</td>
+        <td style="border:1px solid #00f2ff;">Name, Preis, Verfallsdatum</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #00f2ff;">Beziehung</td>
+        <td style="border:1px solid #00f2ff;">Verkäufer verkauft Produkt</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #00f2ff;">Subtyp/Supertyp</td>
+        <td style="border:1px solid #00f2ff;">Verkäufer ist Subtyp von Mitarbeiter</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #00f2ff;">Schwache Entität</td>
+        <td style="border:1px solid #00f2ff;">Arbeitszeit von Mitarbeiter</td>
+      </tr>
+    </table>
+
+    <h4>Graphik: Entität mit Eigenschaften</h4>
+    <div style="display:flex; justify-content:center; margin:1.2em 0;">
+      <svg width="350" height="140">
+        <rect x="130" y="45" width="90" height="45" rx="11" fill="#19203a" stroke="#00f2ff" stroke-width="2.3"/>
+        <text x="175" y="70" fill="#00f2ff" font-size="1.18em" text-anchor="middle" alignment-baseline="middle" font-weight="bold">Person</text>
+        <!-- Eigenschaften -->
+        <ellipse cx="65" cy="35" rx="50" ry="18" fill="#232b45" stroke="#23d2ff" stroke-width="1.5"/>
+        <text x="65" y="39" fill="#b8c3d3" font-size="0.95em" text-anchor="middle">Vorname</text>
+        <ellipse cx="65" cy="105" rx="40" ry="15" fill="#232b45" stroke="#23d2ff" stroke-width="1.5"/>
+        <text x="65" y="110" fill="#b8c3d3" font-size="0.95em" text-anchor="middle">Nachname</text>
+        <ellipse cx="280" cy="35" rx="30" ry="15" fill="#232b45" stroke="#23d2ff" stroke-width="1.5"/>
+        <text x="280" y="40" fill="#b8c3d3" font-size="0.95em" text-anchor="middle">Gehalt</text>
+        <ellipse cx="280" cy="110" rx="30" ry="15" fill="#232b45" stroke="#23d2ff" stroke-width="1.5"/>
+        <text x="280" y="115" fill="#b8c3d3" font-size="0.95em" text-anchor="middle">Adresse</text>
+        <!-- Verbindungen -->
+        <line x1="150" y1="65" x2="115" y2="35" stroke="#23d2ff" stroke-width="1.2"/>
+        <line x1="150" y1="85" x2="110" y2="105" stroke="#23d2ff" stroke-width="1.2"/>
+        <line x1="220" y1="60" x2="250" y2="40" stroke="#23d2ff" stroke-width="1.2"/>
+        <line x1="220" y1="80" x2="250" y2="110" stroke="#23d2ff" stroke-width="1.2"/>
+      </svg>
+    </div>
+    <p style="text-align:center; color:#b8c3d3; margin-top:-0.7em;">Entitäten (Rechteck), Eigenschaften (Ellipse)</p>
+
+    <h4>Graphik: Beziehung zwischen Entitäten</h4>
+    <div style="display:flex; justify-content:center; margin:1.2em 0;">
+      <svg width="370" height="90">
+        <rect x="35" y="25" width="70" height="36" rx="9" fill="#19203a" stroke="#00f2ff" stroke-width="2"/>
+        <text x="70" y="47" fill="#00f2ff" font-size="1em" text-anchor="middle" font-weight="bold">Person</text>
+        <rect x="265" y="25" width="70" height="36" rx="9" fill="#19203a" stroke="#00f2ff" stroke-width="2"/>
+        <text x="300" y="47" fill="#00f2ff" font-size="1em" text-anchor="middle" font-weight="bold">Abteilung</text>
+        <polygon points="140,43 170,22 200,43 170,64" fill="#19203a" stroke="#23d2ff" stroke-width="2"/>
+        <text x="170" y="44" fill="#23d2ff" font-size="0.92em" text-anchor="middle">enthält</text>
+        <!-- Verbindungslinien -->
+        <line x1="105" y1="43" x2="140" y2="43" stroke="#23d2ff" stroke-width="1.3"/>
+        <line x1="200" y1="43" x2="265" y2="43" stroke="#23d2ff" stroke-width="1.3"/>
+        <text x="115" y="33" fill="#b8c3d3" font-size="0.88em">m</text>
+        <text x="255" y="33" fill="#b8c3d3" font-size="0.88em">1</text>
+      </svg>
+    </div>
+    <p style="text-align:center; color:#b8c3d3; margin-top:-0.7em;">1:n Beziehung (z.B. „Eine Abteilung enthält viele Personen“)</p>
+
+    <h4>Graphik: Subtyp & Supertyp</h4>
+    <div style="display:flex; justify-content:center; margin:1.2em 0;">
+      <svg width="370" height="100">
+        <rect x="150" y="10" width="70" height="36" rx="8" fill="#19203a" stroke="#00f2ff" stroke-width="2"/>
+        <text x="185" y="32" fill="#00f2ff" font-size="1em" text-anchor="middle" font-weight="bold">Mitarbeiter</text>
+        <rect x="40" y="60" width="70" height="36" rx="8" fill="#19203a" stroke="#23d2ff" stroke-width="2"/>
+        <text x="75" y="82" fill="#23d2ff" font-size="1em" text-anchor="middle">Verkäufer</text>
+        <rect x="260" y="60" width="70" height="36" rx="8" fill="#19203a" stroke="#23d2ff" stroke-width="2"/>
+        <text x="295" y="82" fill="#23d2ff" font-size="1em" text-anchor="middle">Sekretärin</text>
+        <line x1="185" y1="46" x2="75" y2="60" stroke="#23d2ff" stroke-width="1.3"/>
+        <line x1="185" y1="46" x2="295" y2="60" stroke="#23d2ff" stroke-width="1.3"/>
+      </svg>
+    </div>
+    <p style="text-align:center; color:#b8c3d3; margin-top:-0.7em;">Subtypen („Verkäufer“, „Sekretärin“) vom Supertyp „Mitarbeiter“</p>
+
+    <h4>Graphik: Starke und schwache Entität</h4>
+    <div style="display:flex; justify-content:center; margin:1.2em 0;">
+      <svg width="400" height="90">
+        <!-- Stark -->
+        <rect x="45" y="30" width="95" height="40" rx="11" fill="#19203a" stroke="#00f2ff" stroke-width="2.3"/>
+        <text x="92" y="55" fill="#00f2ff" font-size="1em" text-anchor="middle" font-weight="bold">Produkt</text>
+        <!-- Schwach (doppelte Linie) -->
+        <rect x="260" y="30" width="110" height="40" rx="11" fill="#19203a" stroke="#00f2ff" stroke-width="2.3"/>
+        <rect x="264" y="34" width="102" height="32" rx="10" fill="none" stroke="#00f2ff" stroke-width="1.1"/>
+        <text x="315" y="54" fill="#00f2ff" font-size="1em" text-anchor="middle" font-weight="bold">Fehlerliste</text>
+        <line x1="140" y1="50" x2="260" y2="50" stroke="#23d2ff" stroke-width="1.2"/>
+      </svg>
+    </div>
+    <p style="text-align:center; color:#b8c3d3; margin-top:-0.7em;">Doppellinien markieren eine <b>schwache Entität</b> (z.B. Fehlerliste ist von Produkt abhängig)</p>
+
+    <h4>Praxis: Wie entstehen daraus Datenbanktabellen?</h4>
+    <pre style="background:#181e32; color:#b8c3d3; padding:0.8em 1em; border-radius:1.1em; margin:1.2em 0 1.5em 0;">
+CREATE TABLE Person (
+  Persnr INTEGER PRIMARY KEY,
+  Vorname CHARACTER(20),
+  Nachname CHARACTER(20),
+  -- weitere Eigenschaften
+);
+    </pre>
+
+    <ul style="margin-top:1em;">
+      <li><b>Schritt 1:</b> Alle Entitäten und ihre Eigenschaften bestimmen</li>
+      <li><b>Schritt 2:</b> Beziehungen zwischen den Entitäten identifizieren</li>
+      <li><b>Schritt 3:</b> Alles als Tabellen und Relationen abbilden</li>
+    </ul>
+    <p style="margin-top:1em; color:#b8c3d3;">
+      <i>Im nächsten Schritt modellieren wir die Beziehungen zwischen Entitäten. Je klarer Entitäten und Attribute erkannt werden, desto einfacher das spätere Design!</i>
+    </p>
+  `
+},
+
+         {
+  name: "3.2.2 Beziehungen",
+  content: `
+    <h3>Beziehungen im Entity-Relationship-Modell</h3>
+    <p>
+      In relationalen Datenbanken werden Entitäten durch <b>Beziehungen</b> miteinander verbunden. Die wichtigste technische Umsetzung ist der <b>Fremdschlüssel</b>, der als „Kitt“ die logischen Zusammenhänge zwischen den Tabellen herstellt.
+    </p>
+
+    <h4>Beziehungsarten im Überblick</h4>
+    <p>
+      Beziehungen lassen sich grundsätzlich in <b>drei Kategorien</b> unterteilen. In der Praxis existieren noch feiner abgestufte Varianten, die im Folgenden grafisch und tabellarisch dargestellt sind:
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.1rem;">
+      <!-- 1:1 -->
+      <div style="background:#181e32;border-radius:1.1rem;padding:1.2rem;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:1.3rem;">
+          <svg width="82" height="52"><rect x="0" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><rect x="42" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><text x="20" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">A</text><text x="62" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">B</text><line x1="40" y1="26" x2="42" y2="26" stroke="#23d2ff" stroke-width="2"/><text x="41" y="14" fill="#00f2ff" font-size="12">1:1</text></svg>
+        </div>
+        <div style="text-align:center;font-size:0.98rem;color:#b8c3d3;margin-top:0.7em;">1 zu 1 Beziehung</div>
+      </div>
+      <!-- 1:c -->
+      <div style="background:#181e32;border-radius:1.1rem;padding:1.2rem;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:1.3rem;">
+          <svg width="82" height="52"><rect x="0" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><rect x="42" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><text x="20" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">A</text><text x="62" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">B</text><line x1="40" y1="26" x2="42" y2="26" stroke="#23d2ff" stroke-width="2"/><text x="41" y="14" fill="#00f2ff" font-size="12">1:c</text></svg>
+        </div>
+        <div style="text-align:center;font-size:0.98rem;color:#b8c3d3;margin-top:0.7em;">1 zu c (0 oder 1) Beziehung</div>
+      </div>
+      <!-- m:1 -->
+      <div style="background:#181e32;border-radius:1.1rem;padding:1.2rem;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:1.3rem;">
+          <svg width="92" height="52"><rect x="0" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><rect x="52" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><text x="20" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">A</text><text x="72" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">B</text><polyline points="40,26 52,26" stroke="#23d2ff" stroke-width="2"/><text x="46" y="14" fill="#00f2ff" font-size="12">m:1</text></svg>
+        </div>
+        <div style="text-align:center;font-size:0.98rem;color:#b8c3d3;margin-top:0.7em;">m zu 1 Beziehung</div>
+      </div>
+      <!-- m:c -->
+      <div style="background:#181e32;border-radius:1.1rem;padding:1.2rem;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:1.3rem;">
+          <svg width="92" height="52"><rect x="0" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><rect x="52" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><text x="20" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">A</text><text x="72" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">B</text><polyline points="40,26 52,26" stroke="#23d2ff" stroke-width="2"/><text x="46" y="14" fill="#00f2ff" font-size="12">m:c</text></svg>
+        </div>
+        <div style="text-align:center;font-size:0.98rem;color:#b8c3d3;margin-top:0.7em;">m zu c (0 oder 1) Beziehung</div>
+      </div>
+      <!-- m:n -->
+      <div style="background:#181e32;border-radius:1.1rem;padding:1.2rem;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:1.3rem;">
+          <svg width="92" height="52"><rect x="0" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><rect x="52" y="17" width="40" height="18" rx="7" fill="#23d2ff20" stroke="#23d2ff" /><text x="20" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">A</text><text x="72" y="30" fill="#23d2ff" font-size="14" font-family="Segoe UI" text-anchor="middle">B</text><polyline points="40,26 52,26" stroke="#23d2ff" stroke-width="2"/><text x="46" y="14" fill="#00f2ff" font-size="12">m:n</text></svg>
+        </div>
+        <div style="text-align:center;font-size:0.98rem;color:#b8c3d3;margin-top:0.7em;">m zu n Beziehung</div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:2em;">Klassische ER-Diagramme für Beziehungstypen</h4>
+    <div style="display:flex;flex-wrap:wrap;gap:1.8rem;justify-content:center;margin-bottom:1.4rem;">
+      <!-- m:1 Beispiel: Abteilung - Person -->
+      <div>
+        <svg width="250" height="70">
+          <rect x="10" y="20" width="90" height="34" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="150" y="20" width="90" height="34" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <polygon points="120,37 140,37 130,57" fill="#23d2ff"/>
+          <line x1="100" y1="37" x2="150" y2="37" stroke="#23d2ff" stroke-width="2"/>
+          <text x="55" y="42" fill="#00f2ff" font-size="15" font-family="Segoe UI">Abteilung</text>
+          <text x="195" y="42" fill="#00f2ff" font-size="15" font-family="Segoe UI">Person</text>
+          <text x="125" y="65" fill="#b8c3d3" font-size="12" font-family="Segoe UI" text-anchor="middle">m:1</text>
+        </svg>
+        <div style="text-align:center;font-size:0.97rem;color:#b8c3d3;">Mehrere Personen gehören zu einer Abteilung</div>
+      </div>
+      <!-- m:n Beispiel: Verkäufer - Produkt -->
+      <div>
+        <svg width="250" height="70">
+          <rect x="10" y="20" width="90" height="34" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="150" y="20" width="90" height="34" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <ellipse cx="130" cy="37" rx="13" ry="17" fill="#23d2ff" fill-opacity="0.16" stroke="#00f2ff" stroke-width="2"/>
+          <line x1="100" y1="37" x2="117" y2="37" stroke="#23d2ff" stroke-width="2"/>
+          <line x1="143" y1="37" x2="150" y2="37" stroke="#23d2ff" stroke-width="2"/>
+          <text x="55" y="42" fill="#00f2ff" font-size="15" font-family="Segoe UI">Verkäufer</text>
+          <text x="195" y="42" fill="#00f2ff" font-size="15" font-family="Segoe UI">Produkt</text>
+          <text x="130" y="41" fill="#00f2ff" font-size="13" font-family="Segoe UI" text-anchor="middle">verkauft</text>
+          <text x="130" y="65" fill="#b8c3d3" font-size="12" font-family="Segoe UI" text-anchor="middle">m:n</text>
+        </svg>
+        <div style="text-align:center;font-size:0.97rem;color:#b8c3d3;">Viele Verkäufer können viele Produkte verkaufen</div>
+      </div>
+      <!-- 1:c Beispiel: Mitarbeiter - Verkäufer -->
+      <div>
+        <svg width="250" height="70">
+          <rect x="10" y="20" width="90" height="34" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="150" y="20" width="90" height="34" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <polygon points="100,37 130,37 130,57 100,57" fill="#23d2ff" fill-opacity="0.28"/>
+          <line x1="100" y1="37" x2="150" y2="37" stroke="#23d2ff" stroke-width="2"/>
+          <text x="55" y="42" fill="#00f2ff" font-size="15" font-family="Segoe UI">Mitarbeiter</text>
+          <text x="195" y="42" fill="#00f2ff" font-size="15" font-family="Segoe UI">Verkäufer</text>
+          <text x="125" y="65" fill="#b8c3d3" font-size="12" font-family="Segoe UI" text-anchor="middle">1:c</text>
+        </svg>
+        <div style="text-align:center;font-size:0.97rem;color:#b8c3d3;">Jeder Verkäufer ist genau ein Mitarbeiter</div>
+      </div>
+    </div>
+
+    <h4>Beispieltabelle: Beziehungen im Alltag</h4>
+    <div style="overflow-x:auto;margin-bottom:1.1em;">
+      <table style="border-collapse:collapse;width:100%;background:#181e32;border-radius:1.1em;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:6px 8px;">Beziehung</th>
+          <th style="border:1px solid #23d2ff;padding:6px 8px;">Bemerkung</th>
+        </tr>
+        <tr><td style="border:1px solid #23d2ff;padding:6px 8px;">KFZ-Halter – KFZ</td><td style="border:1px solid #23d2ff;padding:6px 8px;">1 Halter kann mehrere KFZ anmelden<br>1 KFZ ist auf maximal einen Halter zugelassen</td></tr>
+        <tr><td style="border:1px solid #23d2ff;padding:6px 8px;">Student – Vorlesung</td><td style="border:1px solid #23d2ff;padding:6px 8px;">1 Student besucht mehrere Vorlesungen<br>1 Vorlesung belegen mehrere Studenten</td></tr>
+        <tr><td style="border:1px solid #23d2ff;padding:6px 8px;">Kunde – Bestellung</td><td style="border:1px solid #23d2ff;padding:6px 8px;">1 Kunde gibt mehrere Bestellungen auf<br>1 Bestellung gehört zu genau einem Kunden</td></tr>
+        <tr><td style="border:1px solid #23d2ff;padding:6px 8px;">Park – Baum</td><td style="border:1px solid #23d2ff;padding:6px 8px;">In 1 Park wachsen mehrere Bäume<br>1 Baum steht in einem Park</td></tr>
+        <tr><td style="border:1px solid #23d2ff;padding:6px 8px;">Verkäufer – Produkt</td><td style="border:1px solid #23d2ff;padding:6px 8px;">Viele Verkäufer können viele Produkte verkaufen</td></tr>
+      </table>
+    </div>
+
+    <h4>Zusammenfassung</h4>
+    <ul>
+      <li>Beziehungen stellen logische Verknüpfungen zwischen Entitäten her (in SQL meist durch Fremdschlüssel).</li>
+      <li>Es gibt verschiedene Beziehungstypen: 1:1, 1:c, m:1, m:c, m:n – sie bestimmen, wie viele Datensätze zueinander passen.</li>
+      <li>Die genaue Art der Beziehung hängt immer von den Gegebenheiten der realen Welt ab.</li>
+      <li>Im ER-Diagramm werden Beziehungen meist durch Linien (und manchmal Rauten/Text) dargestellt.</li>
+    </ul>
+    <p><i>Tipp: Für korrekte Modellierung ist ein gutes Verständnis der realen Prozesse und Regeln unerlässlich!</i></p>
+  `
+},
+
+          {
+  name: "3.2.3 Beziehungsrelationen",
+  content: `
+    <h3>Beziehungsrelationen in relationalen Datenbanken</h3>
+    <p>
+      Nach der Ermittlung von Entitäten und deren Beziehungen werden diese im letzten Schritt als <b>Relationen</b> (Tabellen) umgesetzt. Der zentrale Mechanismus ist dabei der <b>Fremdschlüssel</b>, der als Verbindungsglied („Kitt“) zwischen den Relationen dient.
+    </p>
+
+    <h4>1. m:n Beziehungen</h4>
+    <p>
+      Eine <b>m:n-Beziehung</b> wird in einer eigenen <strong>Beziehungsrelation</strong> (Verbindungstabelle) abgebildet. Sie enthält die beiden Fremdschlüssel zu den Primärschlüsseln der beteiligten Entitäten und eventuell weitere Attribute wie Umsatz, Menge o.ä.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:2rem;">
+      <div>
+        <svg width="330" height="100">
+          <rect x="0" y="40" width="75" height="35" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="255" y="40" width="75" height="35" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="120" y="10" width="90" height="80" rx="14" fill="#191d31" stroke="#23d2ff" stroke-width="2"/>
+          <text x="37" y="63" fill="#00f2ff" font-size="15" font-family="Segoe UI" text-anchor="middle">Verkäufer</text>
+          <text x="292" y="63" fill="#00f2ff" font-size="15" font-family="Segoe UI" text-anchor="middle">Produkt</text>
+          <text x="165" y="32" fill="#00f2ff" font-size="14" font-family="Segoe UI">Verknüpfung</text>
+          <text x="165" y="55" fill="#b8c3d3" font-size="12" font-family="Segoe UI">VerkNr</text>
+          <text x="165" y="70" fill="#b8c3d3" font-size="12" font-family="Segoe UI">ProdNr</text>
+          <text x="165" y="85" fill="#b8c3d3" font-size="12" font-family="Segoe UI">Umsatz</text>
+          <line x1="75" y1="57" x2="120" y2="57" stroke="#23d2ff" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="210" y1="57" x2="255" y2="57" stroke="#23d2ff" stroke-width="2" marker-end="url(#arrow)"/>
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#23d2ff" />
+            </marker>
+          </defs>
+        </svg>
+        <div style="text-align:center;font-size:0.98rem;color:#b8c3d3;">m:n Beziehung als eigene Relation mit 2 Fremdschlüsseln</div>
+      </div>
+      <div style="flex:1;min-width:220px;">
+        <b>SQL-Beispiel:</b>
+        <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE Verknuepfung (
+  VerkNr CHAR(4) REFERENCES Verkaeufer,
+  ProdNr CHAR(4) REFERENCES Produkt,
+  Umsatz INTEGER,
+  PRIMARY KEY (VerkNr, ProdNr)
+);</pre>
+      </div>
+    </div>
+    <p>
+      Die Kombination der beiden Fremdschlüssel (<code>VerkNr</code>, <code>ProdNr</code>) ist gleichzeitig der zusammengesetzte Primärschlüssel der Beziehungsrelation.
+    </p>
+
+    <h4>2. m:1 Beziehungen</h4>
+    <p>
+      Bei <b>m:1-Beziehungen</b> wird der Fremdschlüssel direkt in die „Viele“-Relation eingefügt. Beispiel: <b>Viele Personen gehören zu einer Abteilung</b>.
+    </p>
+    <svg width="330" height="72">
+      <rect x="0" y="26" width="75" height="28" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+      <rect x="255" y="26" width="75" height="28" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+      <line x1="75" y1="40" x2="255" y2="40" stroke="#23d2ff" stroke-width="2"/>
+      <text x="37" y="45" fill="#00f2ff" font-size="15" font-family="Segoe UI" text-anchor="middle">Abteilung</text>
+      <text x="292" y="45" fill="#00f2ff" font-size="15" font-family="Segoe UI" text-anchor="middle">Person</text>
+      <text x="163" y="30" fill="#b8c3d3" font-size="13" text-anchor="middle">Fremdschlüssel: Abteilungsnr</text>
+    </svg>
+    <b>SQL-Beispiel:</b>
+    <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE Person (
+  PersNr INTEGER,
+  Name CHARACTER(25),
+  Abteilungsnr INTEGER NOT NULL REFERENCES Abteilung,
+  PRIMARY KEY (PersNr)
+);</pre>
+
+    <h4>3. m:c Beziehungen</h4>
+    <p>
+      Wie bei m:1, jedoch <b>dürfen Nullwerte auftreten</b> (d.h., der Fremdschlüssel kann leer sein).
+    </p>
+    <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE Person (
+  PersNr INTEGER,
+  Name CHARACTER(25),
+  Abteilungsnr INTEGER REFERENCES Abteilung,
+  PRIMARY KEY (PersNr)
+); // Kein NOT NULL!</pre>
+
+    <h4>4. 1:c Beziehungen (Subtyp/Supertyp)</h4>
+    <p>
+      Subtypen werden meist so umgesetzt, dass der <b>Primärschlüssel des Subtyps</b> zugleich als Fremdschlüssel auf den Supertyp verweist. Der Wert muss eindeutig und nicht null sein.
+    </p>
+    <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE Verkaeufer (
+  PersNr INTEGER REFERENCES Mitarbeiter,
+  PRIMARY KEY (PersNr)
+);</pre>
+
+    <h4>5. c:c Beziehungen</h4>
+    <p>
+      Selten, aber möglich: <b>Fremdschlüssel ist UNIQUE, aber nicht NOT NULL.</b>
+    </p>
+    <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE KFZ (
+  KFZNr INTEGER,
+  MotorNr INTEGER REFERENCES Motor,
+  PRIMARY KEY (KFZNr),
+  UNIQUE (MotorNr)
+);</pre>
+
+    <h4>Zusammenfassung: Von Beziehungen zu Relationen</h4>
+    <div style="overflow-x:auto;margin-bottom:1em;">
+      <table style="border-collapse:collapse;width:100%;background:#181e32;border-radius:1em;">
+        <tr style="background:#23d2ff44;">
+          <th style="border:1px solid #23d2ff;padding:6px 8px;">Beziehung</th>
+          <th style="border:1px solid #23d2ff;padding:6px 8px;">Überführung in Relationen/Fremdschlüssel</th>
+        </tr>
+        <tr>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">m:n</td>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">Beziehungsrelation mit 2 Fremdschlüsseln<br>(m zu 1 oder m zu c Beziehungen)</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">m:c</td>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">Fremdschlüssel in m-Relation, <b>ohne</b> NOT NULL</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">m:1</td>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">Fremdschlüssel in m-Relation, <b>mit</b> NOT NULL</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">c:c</td>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">Fremdschlüssel in beliebiger Relation, <b>mit</b> UNIQUE</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">c:1</td>
+          <td style="border:1px solid #23d2ff;padding:6px 8px;">Wie c:c, zusätzlich <b>NOT NULL</b></td>
+        </tr>
+      </table>
+    </div>
+    <ul>
+      <li>Beziehungsrelationen sind die Brücke zwischen ER-Modell und relationaler Datenbank.</li>
+      <li>Die Art der Beziehung bestimmt, wie Fremdschlüssel gesetzt und Relationen gestaltet werden.</li>
+      <li>Normalformen und ER-Modell führen meist zum gleichen Ergebnis, wenn sauber gearbeitet wird.</li>
+    </ul>
+    <p><i>Im nächsten Schritt werden die Fremdschlüssel-Eigenschaften vertieft.</i></p>
+  `
+},
+
+         {
+  name: "3.2.4 Fremdschlüsseleigenschaften",
+  content: `
+    <h3>Fremdschlüsseleigenschaften: Integrität, Nullwerte & Referenzverhalten</h3>
+    <p>
+      Beim Überführen von Beziehungen ins relationale Modell ist das Verhalten von <b>Fremdschlüsseln</b> entscheidend für Datenkonsistenz. Es gelten die Integritätsregeln – insbesondere, dass jeder Fremdschlüsselwert entweder <b>null</b> oder ein existierender Wert im referenzierten Primärschlüssel sein muss.
+    </p>
+
+    <h4>Wann darf ein Fremdschlüssel <span style="color:#00f2ff">NULL</span> sein?</h4>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.1rem;">
+      <div style="background:#181e32;padding:1.1em 1em;border-radius:1em;">
+        <b>Beispiel KFZ–Halter (m:c)</b><br>
+        <svg width="170" height="60">
+          <rect x="10" y="15" width="60" height="24" rx="8" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="100" y="15" width="60" height="24" rx="8" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <text x="40" y="33" fill="#00f2ff" font-size="14" text-anchor="middle">KFZ</text>
+          <text x="130" y="33" fill="#00f2ff" font-size="14" text-anchor="middle">Halter</text>
+          <text x="85" y="12" fill="#b8c3d3" font-size="12" text-anchor="middle">m:c</text>
+        </svg>
+        <div style="color:#b8c3d3;">Ein abgemeldetes KFZ hat keinen Halter → <b>Halternr darf NULL sein!</b></div>
+      </div>
+      <div style="background:#181e32;padding:1.1em 1em;border-radius:1em;">
+        <b>Beispiel Bestellung–Kunde (m:1)</b><br>
+        <svg width="170" height="60">
+          <rect x="10" y="15" width="60" height="24" rx="8" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="100" y="15" width="60" height="24" rx="8" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <text x="40" y="33" fill="#00f2ff" font-size="14" text-anchor="middle">Bestellung</text>
+          <text x="130" y="33" fill="#00f2ff" font-size="14" text-anchor="middle">Kunde</text>
+          <text x="85" y="12" fill="#b8c3d3" font-size="12" text-anchor="middle">m:1</text>
+        </svg>
+        <div style="color:#b8c3d3;">Jede Bestellung braucht einen Kunden → <b>Kundnr darf NICHT NULL sein!</b></div>
+      </div>
+    </div>
+
+    <h4>Allgemeine Regeln für NULL-Werte in Fremdschlüsseln</h4>
+    <ul>
+      <li><b>m:1</b> und <b>c:1</b> Beziehungen: <b>KEINE</b> Nullwerte im Fremdschlüssel (NOT NULL).</li>
+      <li><b>m:c</b> und <b>c:c</b> Beziehungen: <b>NULL</b> ist erlaubt.</li>
+      <li><b>m:n</b> Beziehungen werden als m:1/m:c Beziehungen umgesetzt; Regel wie oben.</li>
+    </ul>
+
+    <h4>Referenzielle Integrität: Was passiert bei Lösch- und Änderungsoperationen?</h4>
+    <p>
+      Was, wenn auf einen Datensatz (z. B. einen Kunden) in einer anderen Tabelle verwiesen wird und der Datensatz gelöscht oder sein Primärschlüssel geändert werden soll? Dafür gibt es die SQL-Mechanismen <b>ON DELETE</b> und <b>ON UPDATE</b>.
+    </p>
+    <table style="border-collapse:collapse;width:100%;background:#181e32;border-radius:1em;margin-bottom:1em;">
+      <tr style="background:#23d2ff44;">
+        <th style="border:1px solid #23d2ff;padding:6px 8px;">Verhalten</th>
+        <th style="border:1px solid #23d2ff;padding:6px 8px;">Beschreibung</th>
+        <th style="border:1px solid #23d2ff;padding:6px 8px;">Wann sinnvoll?</th>
+      </tr>
+      <tr>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;"><b>NO ACTION</b></td>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;">Löschen/Ändern wird abgelehnt, wenn noch abhängige Fremdschlüssel existieren.</td>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;">Standard; bei wichtigen, verpflichtenden Beziehungen (z.B. Bestellung–Kunde)</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;"><b>CASCADE</b></td>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;">Alle abhängigen Datensätze werden mit gelöscht/geändert (kaskadierendes Verhalten).</td>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;">Wenn Folgeoperationen gewünscht sind (z.B. alle Bestellungen eines Kunden beim Löschen des Kunden entfernen)</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;"><b>SET NULL</b></td>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;">Betroffene Fremdschlüssel werden auf <b>NULL</b> gesetzt.</td>
+        <td style="border:1px solid #23d2ff;padding:6px 8px;">Nur möglich, wenn Nullwerte erlaubt sind (z.B. bei m:c, c:c Beziehungen, siehe KFZ–Halter Beispiel)</td>
+      </tr>
+    </table>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2em;margin-bottom:1em;">
+      <div>
+        <b>SQL-Beispiel (m:n):</b>
+        <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE Verknuepfung (
+  VerkNr CHAR(4) REFERENCES Verkaeufer
+    ON DELETE NO ACTION ON UPDATE CASCADE,
+  ProdNr CHAR(4) REFERENCES Produkt
+    ON DELETE NO ACTION ON UPDATE CASCADE,
+  Umsatz INTEGER,
+  PRIMARY KEY (VerkNr, ProdNr)
+);</pre>
+      </div>
+      <div>
+        <b>SQL-Beispiel (SET NULL möglich):</b>
+        <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE KFZ (
+  KFZNr INTEGER,
+  MotorNr INTEGER REFERENCES Motor
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  PRIMARY KEY (KFZNr),
+  UNIQUE (MotorNr)
+);</pre>
+      </div>
+    </div>
+
+    <h4>Zusammengefasst – worauf muss der Datenbankdesigner achten?</h4>
+    <ul>
+      <li><b>Prüfe immer zuerst:</b> Sind Nullwerte im Fremdschlüssel sinnvoll und erlaubt?</li>
+      <li>Setze <code>NOT NULL</code> (und ggf. <code>UNIQUE</code>) im Fremdschlüssel-Attribut, wo keine Nullwerte zulässig sind.</li>
+      <li>Lege fest, wie sich Lösch- und Änderungsoperationen auf abhängige Tabellen auswirken sollen (ON DELETE/ON UPDATE).</li>
+      <li>ON DELETE/ON UPDATE müssen zum erlaubten NULL-Verhalten passen!</li>
+      <li>Die Default-Einstellung ist NO ACTION, also keine automatische Änderung oder Löschung.</li>
+    </ul>
+    <p><i>Eine korrekte Behandlung der Fremdschlüsseleigenschaften ist entscheidend für Datenkonsistenz und spätere Wartbarkeit deiner Datenbank!</i></p>
+  `
+},
+
+          {
+  name: "3.2.5 Schwache Entitäten und Subtypen",
+  content: `
+    <h3>Schwache Entitäten und Subtypen</h3>
+    <p>
+      <b>Schwache Entitäten</b> und <b>Subtypen</b> sind zwei wichtige Spezialfälle beim Datenbankdesign. Sie bestimmen direkt die <b>Eigenschaften von Fremdschlüsseln</b> und sorgen für eine saubere, redundanzarme Datenstruktur.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2em;">
+      <div>
+        <h4>Beispiel: Schwache Entität <i>Arbeitszeit</i></h4>
+        <svg width="220" height="90">
+          <rect x="10" y="18" width="70" height="35" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="120" y="10" width="90" height="50" rx="13" fill="#191d31" stroke="#00f2ff" stroke-width="2" stroke-dasharray="4 2"/>
+          <line x1="80" y1="36" x2="120" y2="36" stroke="#23d2ff" stroke-width="2"/>
+          <text x="45" y="40" fill="#00f2ff" font-size="15" text-anchor="middle">Person</text>
+          <text x="165" y="36" fill="#00f2ff" font-size="15" text-anchor="middle">Arbeitszeit</text>
+          <text x="160" y="60" fill="#b8c3d3" font-size="13">(schwach)</text>
+          <text x="105" y="25" fill="#b8c3d3" font-size="12">1</text>
+          <text x="105" y="50" fill="#b8c3d3" font-size="12">m</text>
+        </svg>
+        <ul>
+          <li>Jede <b>Arbeitszeit</b> gehört zu genau einer <b>Person</b>.</li>
+          <li>Ohne Person ist ein Arbeitszeit-Eintrag wertlos.</li>
+          <li><b>Person</b> = starke Entität, <b>Arbeitszeit</b> = schwache Entität</li>
+        </ul>
+        <b>Fremdschlüsseleigenschaften für schwache Entitäten:</b>
+        <ul>
+          <li>NOT NULL</li>
+          <li>ON DELETE CASCADE</li>
+          <li>ON UPDATE CASCADE</li>
+        </ul>
+        <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE Arbeitszeit (
+  ZeitID INTEGER PRIMARY KEY,
+  PersNr INTEGER NOT NULL REFERENCES Person
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  Von DATETIME,
+  Bis DATETIME
+);</pre>
+        <div style="color:#b8c3d3;margin-top:0.5em;">
+          Wird eine <b>Person</b> gelöscht, verschwinden <b>alle zugehörigen Arbeitszeiten</b> automatisch (CASCADE).
+        </div>
+      </div>
+      <div>
+        <h4>Subtypen & Supertyp: Beispiel Mitarbeiter</h4>
+        <svg width="210" height="110">
+          <rect x="65" y="10" width="80" height="36" rx="9" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="10" y="65" width="80" height="32" rx="9" fill="#191d31" stroke="#23d2ff" stroke-width="2"/>
+          <rect x="120" y="65" width="80" height="32" rx="9" fill="#191d31" stroke="#23d2ff" stroke-width="2"/>
+          <line x1="105" y1="46" x2="50" y2="65" stroke="#23d2ff" stroke-width="2"/>
+          <line x1="105" y1="46" x2="170" y2="65" stroke="#23d2ff" stroke-width="2"/>
+          <text x="105" y="33" fill="#00f2ff" font-size="15" text-anchor="middle">Mitarbeiter</text>
+          <text x="50" y="85" fill="#00f2ff" font-size="13" text-anchor="middle">Verkäufer</text>
+          <text x="160" y="85" fill="#00f2ff" font-size="13" text-anchor="middle">Informatiker</text>
+          <text x="22" y="61" fill="#b8c3d3" font-size="13">Subtyp</text>
+          <text x="175" y="61" fill="#b8c3d3" font-size="13">Subtyp</text>
+          <text x="144" y="26" fill="#b8c3d3" font-size="13">Supertyp</text>
+        </svg>
+        <ul>
+          <li><b>Subtypen</b> sind spezielle Entitäten mit eigenen Attributen (z.B. Verkaufsprovision).</li>
+          <li><b>Mitarbeiter</b> ist der <b>Supertyp</b> (gemeinsame Basisdaten).</li>
+          <li>Der Primärschlüssel des Subtyps ist auch <b>Fremdschlüssel</b> auf den Supertyp.</li>
+        </ul>
+        <b>Fremdschlüsseleigenschaften für Subtypen:</b>
+        <ul>
+          <li>ON DELETE CASCADE</li>
+          <li>ON UPDATE CASCADE</li>
+          <li>Meist gleichzeitig Primärschlüssel des Subtyps!</li>
+        </ul>
+        <pre style="background:#11142d;color:#00f2ff;padding:0.7em 1.2em;border-radius:1em;font-size:0.97em;">
+CREATE TABLE Verkaeufer (
+  PersNr INTEGER REFERENCES Mitarbeiter
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (PersNr),
+  Provision INTEGER
+);</pre>
+        <div style="color:#b8c3d3;margin-top:0.5em;">
+          Jeder Verkäufer ist auch ein Mitarbeiter. Wird der Mitarbeiter gelöscht, verschwindet der Verkäufer automatisch.
+        </div>
+      </div>
+    </div>
+    <hr style="margin:2em 0;">
+    <h4>Merke:</h4>
+    <ul>
+      <li>
+        <b>Schwache Entität:</b> Hat genau einen Fremdschlüssel, der <b>NOT NULL</b> ist und <b>ON DELETE/UPDATE CASCADE</b> besitzt. Auf schwache Entitäten verweist kein Fremdschlüssel.
+      </li>
+      <li>
+        <b>Subtyp:</b> Meist schwach gegenüber Supertyp. Fremdschlüssel ist <b>ON DELETE/UPDATE CASCADE</b> und meistens zugleich Primärschlüssel.
+      </li>
+      <li>
+        Subtypen helfen, Redundanzen in großen Tabellen zu vermeiden (z.B. separate Verkäufer-, Informatiker-, Sekretärinnen-Tabellen).
+      </li>
+    </ul>
+    <p style="color:#b8c3d3;">
+      Diese Prinzipien machen die Fremdschlüsselsetzung in schwachen Entitäten und Subtypen sehr einfach und sicher!
+    </p>
+  `
+},
+
+         {
+  name: "3.2.6 Zusammenfassung",
+  content: `
+    <h3>Zusammenfassung: Entity-Relationship-Modellierung</h3>
+    <p>
+      Mit dem Entity-Relationship-Modell (ERM) kannst du relationale Datenbanken logisch und verständlich modellieren. Das Vorgehen ist bewährt, nachvollziehbar und ergänzt perfekt die Normalformenlehre.
+    </p>
+    <div style="background:#181e32;padding:1.3em 1em 1em 1em;border-radius:1em;margin-bottom:1.3em;">
+      <h4>Das Kochrezept für Datenbankdesign</h4>
+      <ol style="margin-left:1.2em;">
+        <li><b>Entitäten bestimmen</b> & wichtige <b>Eigenschaften</b> finden</li>
+        <li><b>Beziehungen</b> zwischen Entitäten ermitteln</li>
+        <li>Entitäten in <b>Relationen</b> & Eigenschaften in <b>Attribute</b> überführen</li>
+        <li>Gegebenenfalls in die <b>dritte (oder höhere) Normalform</b> transformieren</li>
+        <li>
+          <span style="color:#00f2ff;">m:n</span> Beziehungen in eigene Beziehungsrelationen überführen,<br>
+          andere Beziehungen als <b>Fremdschlüssel</b> abbilden
+        </li>
+        <li>Fremdschlüsseleigenschaften bestimmen<br>
+          (Stichworte: <i>schwache Entität</i>, <i>Subtyp</i>)
+        </li>
+      </ol>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:2em;justify-content:center;margin-bottom:1.2em;">
+      <div style="flex:1;min-width:250px;">
+        <svg width="220" height="70">
+          <rect x="10" y="12" width="60" height="30" rx="8" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="90" y="12" width="60" height="30" rx="8" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <rect x="170" y="12" width="38" height="30" rx="8" fill="#191d31" stroke="#00f2ff" stroke-width="2"/>
+          <text x="40" y="32" fill="#00f2ff" font-size="13" text-anchor="middle">Kunde</text>
+          <text x="120" y="32" fill="#00f2ff" font-size="13" text-anchor="middle">Bestellung</text>
+          <text x="189" y="32" fill="#00f2ff" font-size="13" text-anchor="middle">Ware</text>
+          <line x1="70" y1="27" x2="90" y2="27" stroke="#23d2ff" stroke-width="2"/>
+          <line x1="150" y1="27" x2="170" y2="27" stroke="#23d2ff" stroke-width="2"/>
+        </svg>
+        <div style="color:#b8c3d3;text-align:center;margin-top:0.3em;">Beispiel: ER-Modell mit mehreren Entitäten und Relationen</div>
+      </div>
+      <div style="flex:1;min-width:220px;background:#11142d;border-radius:1em;padding:0.7em 1em 0.9em 1em;">
+        <b style="color:#00f2ff;">Praxis-Tipp:</b><br>
+        <span style="color:#b8c3d3;">
+          Je komplexer die Datenbank, desto wichtiger sind Schemata, ER-Diagramme und ggf. CASE-Tools zur Übersicht.
+        </span>
+      </div>
+    </div>
+    <h4 style="margin-top:1em;">Merksatz</h4>
+    <blockquote style="border-left:3px solid #00f2ff;padding-left:1em;color:#b8c3d3;font-size:1.08em;">
+      Ein gutes Datenbankdesign ist einmalige Arbeit, schlechte Entwürfe werden täglich bestraft!
+    </blockquote>
+    <ul>
+      <li><b>Sauberes Design = langlebige, sichere, wartbare Datenbank</b></li>
+      <li>Komplexität wächst mit der Anzahl der Entitäten – nutze Untergruppen/Schemata!</li>
+      <li>Große Projekte: CASE-Tools oder ERP-Systeme wie SAP ERP sind Standard</li>
+    </ul>
+    <p style="color:#b8c3d3;">Das ER-Modell ist dein Grundwerkzeug für stabile und flexible Datenbanksysteme!</p>
+  `
+},
+
+        ]
+      },
+      {
+  title: "3.3 Übungsaufgaben",
+  description: "Teste dein Wissen zum Thema Datenbankdesign mit passenden Übungsaufgaben.",
+  content: `
+    <ol>
+      <li>Zeigen Sie, dass sich jede Relation mit nicht zusammengesetztem Primärschlüssel in der zweiten Normalform befindet.</li>
+      <li>Geben Sie alle vollen funktionalen Abhängigkeiten
+        <ul>
+          <li>a) in der Relation VerkaeuferProdukt (siehe Tab. 3.1)</li>
+          <li>b) in allen Relationen der Bike-Datenbank aus dem Anhang an.</li>
+        </ul>
+      </li>
+      <li>Geben Sie zu allen Relationen aus Aufgabe 2 die Determinanten an.</li>
+      <li>Geben Sie zu den Relationen Verkaeufer, Produkt und Verknuepfung aus Tab. 3.3, 3.4 und 3.5 alle Determinanten an.</li>
+      <li>Bestimmen Sie die höchste Normalform (nur bis zur 3.NF!) aller Relationen der Bike-Datenbank aus dem Anhang.</li>
+      <li>Geben Sie eine Relation an, die in der dritten Normalform nach Codd, jedoch nicht in der dritten Normalform nach Boyce und Codd ist. (Hinweis: Diese Relation muss zwei zusammengesetzte Schlüsselkandidaten besitzen, die sich in mindestens einem Attribut überlappen.)</li>
+      <li>Diskutieren Sie die Relation VerkaeuferProduktKFZ aus Tab. 3.12. Bestimmen Sie den Primärschlüssel und die funktionalen und mehrwertigen Abhängigkeiten. Schließen Sie daraus auf die Normalform.</li>
+      <li>Die Relation ProduktKFZ aus Tab. 3.14 ist aus einer Projektion entstanden. Sie enthält aber in der Praxis nicht alle Kombinationsmöglichkeiten. Welche Tupel sollten daher noch hinzugefügt werden? Welches Ergebnis ergibt dann der Verbund aus dieser Relation mit den Relationen VerkaeuferProduktname und VerkaeuferKFZ? Kommen eventuell gegenüber der Relation VerkaeuferProduktKFZ4NF noch weitere Tupel hinzu? Wirkt sich dies gegebenenfalls auf die Normalform aus?</li>
+      <li>Geben Sie zu allen Fremdschlüsseln der Relationen Personal, Kunde und Auftrag der Datenbank Bike (siehe auch Tab. 2.6, 2.7 und 2.8) die drei Fremdschlüsseleigenschaften an.</li>
+      <li>Geben Sie zur Beispieldatenbank Bike an, welche Entitäten schwach sind, bei welchen Relationen es sich um Beziehungsrelationen handelt und ob Sub- und Supertypen vorliegen.</li>
+      <li>Das Auftragswesen der Datenbank Bike ist nur rudimentär implementiert. Erweitern Sie daher die Datenbank durch ein einfaches Rechnungswesen. Die neue Relation Rechnung sollte mindestens ein Rechnungsdatum, den Rechnungsbetrag, Informationen über einen Rabatt, erfolgte Mahnung und erfolgte Bezahlung enthalten. Ergänzen Sie das Entity-Relationship-Modell aus Abb. 10.1 im Anhang. Geben Sie alle neuen Fremd- und Primärschlüssel und die Eigenschaften der Fremdschlüssel an. Ist die Relation Rechnung schwach?</li>
+    </ol>
+  `
+},
+
+      {
+        title: "Literatur",
+        description: "Empfohlene Bücher und Quellen rund ums Datenbankdesign."
+      }
+    ];
+
+    const mainButtons = document.querySelectorAll('.tab-buttons button');
+    const lessonContent = document.getElementById('lessonContent');
+
+    function showContent(idx) {
+      const section = sections[idx];
+      let html = `<h2>${section.title}</h2><p>${section.description}</p>`;
+      if (section.content) {
+  html += section.content;
+}
+
+      if (section.subsections) {
+        html += `<div class="subsection-buttons">`;
+        section.subsections.forEach((sub, subIdx) => {
+          html += `<button data-sub="${subIdx}">${sub.name}</button>`;
+        });
+        html += `</div>`;
+        html += `<div class="sub-content" id="subContent"></div>`;
+      }
+      lessonContent.innerHTML = html;
+      lessonContent.classList.remove('visible');
+      setTimeout(() => lessonContent.classList.add('visible'), 60);
+
+      // Subkapitel Buttons
+      const subBtns = lessonContent.querySelectorAll('.subsection-buttons button');
+      const subContent = document.getElementById('subContent');
+      if (subBtns.length && subContent) {
+        subBtns.forEach((sb, i) => {
+          sb.addEventListener('click', () => {
+            subBtns.forEach(x => x.classList.remove('active'));
+            sb.classList.add('active');
+            // Inhalt anzeigen
+            subContent.innerHTML = section.subsections[i].content;
+          });
+        });
+        // Beim Laden: direkt erstes Unterkapitel anzeigen
+        subBtns[0].click();
       }
     }
 
-    function checkAnswer2() {
-      const input = normalize(document.getElementById("answer2").value);
-      const feedback = document.getElementById("feedback2");
-      if (input.includes("spalte") || input.includes("spalten")) {
-        feedback.textContent = "✅ Genau! Die Projektion wählt bestimmte Spalten aus.";
-        feedback.style.color = '#00f2ff';
-      } else {
-        feedback.textContent = "❌ Nicht korrekt. Projektion betrifft die Auswahl von Spalten.";
-        feedback.style.color = '#ff6b6b';
-      }
-    }
+    mainButtons.forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        mainButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        showContent(idx);
+      });
+    });
 
-    function checkAnswer3() {
-      const input = normalize(document.getElementById("answer3").value);
-      const feedback = document.getElementById("feedback3");
-      if (input.includes("artikel") && input.includes("kunde") && input.includes("101")) {
-        feedback.textContent = "✅ Richtig! Die gesuchten Artikel von Kunde 101.";
-        feedback.style.color = '#00f2ff';
-      } else {
-        feedback.textContent = "❌ Nicht ganz. Überlege, was die Bedingung KNr = 101 filtert.";
-        feedback.style.color = '#ff6b6b';
-      }
-    }
-
-    function checkAnswer4() {
-      const input = normalize(document.getElementById("answer4").value);
-      const feedback = document.getElementById("feedback4");
-      if (input.includes("kunden") && input.includes("maus") && input.includes("name")) {
-        feedback.textContent = "✅ Korrekt! Es werden die Namen aller Kunden ausgegeben, die eine Maus bestellt haben.";
-        feedback.style.color = '#00f2ff';
-      } else {
-        feedback.textContent = "❌ Nicht ganz. Gesucht sind Kundennamen zu Artikel 'Maus'.";
-        feedback.style.color = '#ff6b6b';
-      }
-    }
+    // Direkt beim Laden das erste Kapitel + Unterkapitel anzeigen:
+    showContent(0);
+    mainButtons[0].classList.add('active');
 </script>
 </body>
 </html>

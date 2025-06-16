@@ -1,248 +1,404 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lektion 2 – Das Relationenmodell</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Das Relationenmodell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
+          margin: 0;
+          font-family: 'Segoe UI', sans-serif;
           background: linear-gradient(135deg, #0b0e1a, #11142d);
           color: #f0f0f0;
-          font-family: 'Segoe UI', sans-serif;
-          margin: 0;
-          padding: 0;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-          min-height: 100vh;
+          text-align: center;
+          padding: 2rem;
         }
-        .lesson-container {
-          width: 90%;
-          max-width: 1200px;
-          margin: 4rem auto;
-          background: rgba(20, 24, 40, 0.97);
-          padding: 2.5rem 3rem;
-          border-radius: 1.5rem;
-          box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
-        }
-        h1, h2, h3 {
+
+        h1 {
           color: #00f2ff;
         }
-        p, li {
-          line-height: 1.6;
+
+        .welcome-text {
+          font-size: 1.2rem;
+          margin-bottom: 2rem;
+          color: #ccc;
         }
-        pre, code {
-          background-color: #1f223a;
-          padding: 0.6rem 1rem;
-          border-radius: 0.5rem;
-          display: block;
-          overflow-x: auto;
+
+        .tab-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 1rem;
+          margin-bottom: 2rem;
         }
-        textarea {
-          width: 100%;
-          padding: 1rem;
-          font-family: monospace;
-          font-size: 1rem;
-          border-radius: 0.5rem;
-          background-color: #1a1e33;
-          color: white;
-          border: none;
-          margin-top: 1rem;
-        }
-        .btn {
-          margin-top: 1rem;
-          padding: 0.8rem 1.5rem;
-          background-color: #8b5cf6;
-          color: white;
-          border: none;
-          border-radius: 1rem;
+
+        .tab-buttons button {
+          background: #1a1e33;
+          border: 2px solid #00f2ff;
+          color: #00f2ff;
+          padding: 0.8rem 1.6rem;
+          border-radius: 2rem;
           cursor: pointer;
           font-weight: bold;
-          box-shadow: 0 0 15px #8b5cf670;
+          font-size: 1rem;
           transition: all 0.3s ease;
         }
-        .btn:hover {
-          background-color: #a78bfa;
-          transform: scale(1.03);
+
+        .tab-buttons button.active {
+          background: #00f2ff;
+          color: #11142d;
+          transform: scale(1.05);
         }
-        .btn-secondary {
-          display: inline-block;
-          background-color: #2d2f45;
-          color: #e0e0e0;
-          padding: 0.6rem 1.2rem;
-          border-radius: 0.6rem;
-          text-decoration: none;
-          font-weight: 500;
-          margin-top: 1rem;
-        }
-        .feedback {
-          margin-top: 1rem;
-          font-weight: bold;
-        }
-        .hidden {
+
+        .lesson-content {
+          background: #1c1f35;
+          padding: 2.5rem;
+          border-radius: 1rem;
+          max-width: 800px;
+          margin: 2rem auto;
           display: none;
+          text-align: left;
+          line-height: 1.8;
+          font-size: 1.05rem;
         }
-        @media (min-width: 992px) {
-          .lesson-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-          }
-          .lesson-container > *:first-child {
-            grid-column: 1 / -1;
-          }
-          .feedback, .btn {
-            grid-column: 1 / -1;
-          }
+
+        .lesson-content h2 {
+          color: #00f2ff;
+        }
+
+        .lesson-content ul {
+          margin-top: 1.5rem;
+          margin-bottom: 2rem;
+          padding-left: 1.5rem;
+          list-style-type: disc;
+        }
+
+        .lesson-content li {
+          margin-bottom: 0.8rem;
+        }
+
+        iframe {
+          width: 100%;
+          height: 450px;
+          border: none;
+          border-radius: 1rem;
         }
     </style>
 </head>
 <body>
-<div class="lesson-container">
-    <h1>Lektion 2: Das Relationenmodell – Struktur und Integrität</h1>
 
-    <div>
-        <h2>Was ist eine Relation?</h2>
-        <p>Eine Relation ist die abstrakte Bezeichnung für eine Tabelle in einer relationalen Datenbank. Sie besteht aus:</p>
-        <ul>
-            <li><strong>Attributen</strong>: Spaltenbezeichnungen (z. B. Name, Gehalt)</li>
-            <li><strong>Tupeln</strong>: Zeilen der Tabelle – einzelne Datensätze</li>
-        </ul>
-        <p>Die Werte eines Attributs entstammen einem sogenannten <strong>Domänen- oder Wertebereich</strong>. Jeder Attributwert in einer Relation muss <em>atomar</em> sein, also unteilbar. Mehrwertige oder strukturierte Werte sind in relationalen Tabellen nicht erlaubt.</p>
+<h1>Kapitel 2: Das Relationenmodell</h1>
+<p class="welcome-text">Wähle ein Unterkapitel, um zu starten:</p>
 
-        <h2>Relationenschema & Beispiel</h2>
-        <p>Ein Relationenschema legt die Struktur einer Tabelle fest. Beispiel:</p>
-        <pre><code>Lieferant(LNr, Name, Ort)
-Artikel(ANr, Bezeichnung, Preis)</code></pre>
-        <p>Dazu passende Beispielrelationen:</p>
-        <pre><code>Lieferant
-+------+----------+-----------+
-| LNr  | Name     | Ort       |
-+------+----------+-----------+
-| 101  | Müller   | Hamburg   |
-| 102  | Schulz   | Berlin    |
-+------+----------+-----------+</code></pre>
-
-        <h2>Kardinalität & Grad</h2>
-        <ul>
-            <li><strong>Kardinalität</strong>: Anzahl der Tupel (Zeilen)</li>
-            <li><strong>Grad</strong>: Anzahl der Attribute (Spalten)</li>
-        </ul>
-
-        <h2>Schlüsselkonzepte</h2>
-        <ul>
-            <li><strong>Primärschlüssel</strong>: Identifiziert ein Tupel eindeutig</li>
-            <li><strong>Kandidaten-/Alternativschlüssel</strong>: Weitere mögliche eindeutige Schlüssel</li>
-            <li><strong>Superschlüssel</strong>: Beliebige Kombination zur eindeutigen Identifikation</li>
-        </ul>
-
-        <h2>Fremdschlüssel & Integrität</h2>
-        <p>Ein Fremdschlüssel verweist auf einen Primärschlüssel einer anderen Tabelle.</p>
-        <pre><code>Bestellung(BNr, LNr, ANr)
-Lieferant(LNr, Name, Ort)</code></pre>
-        <p>Hier ist <code>Bestellung.LNr</code> ein Fremdschlüssel und verweist auf <code>Lieferant.LNr</code>.</p>
-
-        <h3>Integritätsregeln</h3>
-        <ul>
-            <li><strong>Entitätsintegrität</strong>: Primärschlüssel darf nicht NULL sein</li>
-            <li><strong>Referenzielle Integrität</strong>: Fremdschlüssel muss gültigen Wert besitzen</li>
-        </ul>
-
-        <h2>Zusatz: Relationale Algebra (Teaser für Lektion 3)</h2>
-        <p>In der relationalen Algebra beschreibt man Operationen auf Relationen, z. B.:</p>
-        <ul>
-            <li><strong>Projektion</strong> (π): Auswahl von Spalten</li>
-            <li><strong>Selektion</strong> (σ): Auswahl von Zeilen</li>
-            <li><strong>Vereinigung</strong> (∪), <strong>Schnitt</strong> (∩), <strong>Differenz</strong> (−)</li>
-        </ul>
-    </div>
-
-    <div>
-        <h3>Aufgabe 1</h3>
-        <p>Was bezeichnet man als <strong>Kardinalität</strong> einer Relation?</p>
-        <textarea id="answer1"></textarea>
-        <button class="btn" onclick="checkAnswer1()">Antwort prüfen</button>
-        <div class="feedback" id="feedback1"></div>
-
-        <h3>Aufgabe 2</h3>
-        <p>Welche Regel sorgt dafür, dass ein Fremdschlüssel gültig ist?</p>
-        <textarea id="answer2"></textarea>
-        <button class="btn" onclick="checkAnswer2()">Antwort prüfen</button>
-        <div class="feedback" id="feedback2"></div>
-
-        <h3>Aufgabe 3</h3>
-        <p>Was ist ein Superschlüssel? Gib ein Beispiel aus einer Kundentabelle.</p>
-        <textarea id="answer3"></textarea>
-        <button class="btn" onclick="checkAnswer3()">Antwort prüfen</button>
-        <div class="feedback" id="feedback3"></div>
-
-        <h3>Aufgabe 4</h3>
-        <p>Multiple Choice: Welche Aussagen über Primärschlüssel sind korrekt?</p>
-        <ul>
-            <li><input type="checkbox" id="mc1"> Ein Primärschlüssel darf NULL-Werte enthalten</li>
-            <li><input type="checkbox" id="mc2"> Jeder Primärschlüssel ist auch ein Superschlüssel</li>
-            <li><input type="checkbox" id="mc3"> Es kann mehrere Primärschlüssel in einer Relation geben</li>
-        </ul>
-        <button class="btn" onclick="checkMC()">Antwort prüfen</button>
-        <div class="feedback" id="feedback4"></div>
-
-        <a href="dashboard.html" class="btn-secondary">← Zurück zum Dashboard</a>
-    </div>
+<div class="tab-buttons">
+    <button data-index="0">🧩 Beispiel zu relationalen Datenbanken</button>
+    <button data-index="1">📊 Relationale Datenstrukturen</button>
+    <button data-index="2">🔑 Primärschlüssel</button>
+    <button data-index="3">🧮 Relationale Integritätsregeln</button>
+    <button data-index="4">∑ Relationale Algebra</button>
 </div>
 
+<div class="lesson-content" id="lessonContent"></div>
+
 <script>
-    const normalize = s => s.trim().toLowerCase();
-
-    function checkAnswer1() {
-      const input = normalize(document.getElementById("answer1").value);
-      const feedback = document.getElementById("feedback1");
-      if (input.includes("anzahl") && input.includes("tupel")) {
-        feedback.textContent = "✅ Richtig! Die Kardinalität beschreibt die Anzahl der Tupel.";
-        feedback.style.color = '#00f2ff';
-      } else {
-        feedback.textContent = "❌ Nicht ganz. Es geht um die Anzahl der Zeilen (Tupel).";
-        feedback.style.color = '#ff6b6b';
+    const lessons = [
+      {
+        title: "Beispiel zu relationalen Datenbanken",
+        description: "Hier siehst du, wie eine typische Tabelle in einer relationalen Datenbank aussieht – und warum ein gutes Design so wichtig ist. Mit einem einfachen Beispiel erkennst du schnell, wie Probleme entstehen und wie man sie vermeiden kann.",
+        list: [
+          "🗂️ **Was ist überhaupt eine Tabelle?**",
+          "  Eine Tabelle ist wie eine große Excel-Liste: Sie besteht aus Zeilen (jede Zeile steht für einen Datensatz) und Spalten (jede Spalte steht für eine Eigenschaft, zum Beispiel Name, Adresse, Produkt usw.).",
+          "",
+          "📝 **Unser Beispiel:** Stell dir vor, du willst speichern, welcher Verkäufer welches Produkt verkauft hat – und wie viel Umsatz dabei entstanden ist. Eine einfache Tabelle könnte so aussehen:",
+          "",
+          " VerkNr | VerkName  | PLZ   | VerkAdresse | Produktname    | Umsatz",
+          " ---------------------------------------------------------------",
+          " V1     | Meier     | 80331 | München     | Waschmaschine  | 11000",
+          " V1     | Meier     | 80331 | München     | Herd           | 5000",
+          " V1     | Meier     | 80331 | München     | Kühlschrank    | 1000",
+          " V2     | Schneider | 70173 | Stuttgart   | Herd           | 4000",
+          " V2     | Schneider | 70173 | Stuttgart   | Kühlschrank    | 3000",
+          " V3     | Müller    | 50667 | Köln        | Staubsauger    | 1000",
+          "",
+          "🔍 **Wo ist das Problem?**",
+          "  - Die Verkäuferdaten (Name, Adresse usw.) werden immer wieder wiederholt. Das nennt man **Redundanz**.",
+          "  - Ändert sich z.B. die Adresse von Herrn Meier, muss man sie an allen Stellen ändern. Passiert das nicht überall, gibt es **Widersprüche (Inkonsistenzen)** in den Daten.",
+          "  - Wenn ein Produkt komplett gelöscht wird (z.B. alle Zeilen mit 'Staubsauger'), verschwindet auch der Verkäufer Müller aus der Datenbank – das ist **Datenverlust**.",
+          "",
+          "❗ **Warum ist das schlecht?**",
+          "  - Mehr Speicherplatz wird verbraucht, weil die gleichen Daten mehrfach gespeichert werden.",
+          "  - Fehler passieren leichter: Adressen oder Namen werden unterschiedlich geschrieben.",
+          "  - Die Datenbank ist schwerer zu pflegen und zu durchsuchen.",
+          "",
+          "💡 **Wie macht man es besser?**",
+          "  - Statt alles in einer einzigen Tabelle zu speichern, teilt man die Infos auf verschiedene, logisch zusammengehörige Tabellen auf.",
+          "  - Beispiel:",
+          "   • Eine Tabelle für Verkäufer (jede Person nur einmal!)",
+          "   • Eine Tabelle für Produkte",
+          "   • Eine Tabelle für die Verkäufe (dort steht dann nur, welcher Verkäufer welches Produkt verkauft hat und wie viel Umsatz gemacht wurde)",
+          "",
+          "➡️ So vermeidest du Wiederholungen, sparst Speicher und schützt deine Daten vor Fehlern.",
+          "",
+          "🏁 **Fazit:**",
+          "  Schon mit diesem kleinen Beispiel merkst du: Ein gutes Datenbank-Design ist wichtig, damit deine Daten sauber, sicher und leicht nutzbar bleiben. In den nächsten Abschnitten lernst du, wie man Tabellen richtig aufbaut!"
+        ],
+        video: "https://www.youtube.com/embed/2RlWxMRYw20"
+      },
+      {
+        title: "Relationale Datenstrukturen – Grundbegriffe & Aufbau",
+        description: "Hier lernst du die wichtigsten Begriffe und Prinzipien kennen, die jede relationale Datenbank ausmachen. Verstehe, warum in der Fachsprache oft von Relationen, Tupeln und Attributen die Rede ist – und warum das mehr ist als nur 'eine Tabelle'.",
+        list: [
+          "🔍 **Wichtige Begriffe in relationalen Datenbanken:**",
+          " • **Relation** = Tabelle (das Grundelement einer relationalen Datenbank)",
+          " • **Tupel** = Eine Zeile (Datensatz) in der Tabelle",
+          " • **Attribut** = Eine Spalte (Feld) in der Tabelle",
+          " • **Kardinalität** = Anzahl der Zeilen (Datensätze)",
+          " • **Grad** = Anzahl der Spalten (Eigenschaften)",
+          " • **Primärschlüssel** = Ein Feld/Attribut, das jeden Datensatz eindeutig identifiziert",
+          " • **Gebiet (Domain)** = Die Menge aller möglichen Werte für ein Attribut (z. B. alle deutschen Städtenamen für das Attribut 'Stadt')",
+          "",
+          "💡 **Beispiel – Lieferanten-Tabelle**",
+          " | LNr | Name     | Stadt      | PLZ   |",
+          " |-----|----------|------------|-------|",
+          " | 1   | Müller   | München    | 81724 |",
+          " | 2   | Schmidt  | Regensburg | 93055 |",
+          " | 3   | Maier    | Hamburg    | 20543 |",
+          " | 4   | Schwarz  | Köln       | 50087 |",
+          " | 5   | Weiß     | Berlin     | 11168 |",
+          "",
+          " • **Relation:** Diese gesamte Tabelle",
+          " • **Tupel:** z. B. die Zeile mit Müller",
+          " • **Attribut:** z. B. 'Stadt' oder 'PLZ'",
+          " • **Kardinalität:** 5 (es gibt 5 Zeilen)",
+          " • **Grad:** 4 (es gibt 4 Spalten)",
+          "",
+          "📋 **Wichtige Regeln für Relationen**",
+          " 1. Es gibt **keine doppelten Zeilen** (jedes Tupel ist einzigartig)",
+          " 2. **Keine Reihenfolge:** Die Reihenfolge der Zeilen und Spalten ist nicht fest – es ist egal, ob zuerst Müller oder Weiß in der Tabelle steht",
+          " 3. **Alle Werte sind 'atomar'**: In jedem Feld steht immer nur EIN Wert, z. B. genau EIN Städtename, nicht mehrere",
+          " 4. Jedes Attribut hat einen festen 'Datentyp' oder Wertbereich ('Gebiet')",
+          "",
+          "⚡ **Warum diese Regeln?**",
+          " • Sie sorgen dafür, dass die Datenbank einfach und eindeutig bleibt",
+          " • Einfache physische Speicherung: Alle Zeilen sind gleich lang, neue Zeilen können einfach eingefügt/gelöscht werden",
+          " • Kein Durcheinander mit doppelten Daten oder Listen in Zellen",
+          " • SQL-Abfragen werden dadurch klar und vorhersehbar (z. B. gibt es kein 'zweites' oder 'siebtes' Element – Reihenfolge ist egal!)",
+          "",
+          "🚩 **Beispiel für eine schlechte (nicht-atomare) Tabelle:**",
+          " | VerkNr | VerkName | Produkte                        | Umsatz |",
+          " |--------|----------|---------------------------------|--------|",
+          " | V1     | Meier    | Waschmaschine, Herd, Kühlschrank| 17000  |",
+          "",
+          " • **Problem:** In der Spalte 'Produkte' stehen mehrere Werte. Das ist nicht erlaubt, weil jeder Eintrag atomar sein muss.",
+          " • Konsequenz: Solche Tabellen sind schwer zu verwalten und führen zu Fehlern!",
+          "",
+          "🏛️ **Was ist eine relationale Datenbank?**",
+          " • Eine Sammlung von mehreren Relationen (also Tabellen), die zusammenarbeiten und sich logisch ergänzen",
+          " • Nicht jede 'normale' Tabelle ist automatisch eine Relation!",
+          "",
+          "📚 **Arten von Relationen:**",
+          " • **Basisrelation (Basistabelle):** Die eigentlichen, dauerhaft gespeicherten Tabellen (z. B. 'Kunden', 'Lieferanten')",
+          " • **Sicht (View):** Eine virtuelle Tabelle, die nur aus einer oder mehreren Basistabellen abgeleitet wird – existiert nicht dauerhaft, sondern wird bei der Abfrage erzeugt",
+          " • **Abfrageergebnis:** Temporäre Tabelle, die nur für die Dauer einer SQL-Abfrage entsteht",
+          " • **Temporäre Relation:** Kurzfristig erzeugte Tabelle, meist nach dem Logout wieder gelöscht",
+          "",
+          "✅ **SQL-Befehle, um Relationen zu erstellen oder abzufragen:**",
+          " • `CREATE TABLE ...` – neue Basistabelle anlegen",
+          " • `CREATE VIEW ...` – neue Sicht anlegen",
+          " • `SELECT ...` – Abfrage ausführen (ergibt temporäre Relation)",
+          " • `CREATE TEMPORARY TABLE ...` – temporäre Relation erzeugen",
+          "",
+          "🎯 **Fazit:** Relationale Datenstrukturen sind klar geregelt – das sorgt für Übersicht, verhindert Fehler und macht SQL so mächtig und leicht verständlich!"
+        ],
+        video: "https://www.youtube.com/embed/UZiVj6nKSM8"
+      },
+      {
+        title: "Primärschlüssel – Das Rückgrat jeder Tabelle",
+        description: "Jede Zeile in einer Datenbanktabelle muss eindeutig identifizierbar sein – sonst gibt es Chaos! Der sogenannte Primärschlüssel ist dafür verantwortlich. Hier erfährst du, was ein Primärschlüssel ist, warum er so wichtig ist und wie man ihn auswählt.",
+        list: [
+          "🔑 **Was ist ein Primärschlüssel?**",
+          " • Der Primärschlüssel ist ein Feld (oder eine Kombination mehrerer Felder), das jeden Datensatz einer Tabelle eindeutig macht.",
+          " • Beispiel: In einer Lieferantentabelle kann die Spalte 'Lieferantennummer' (LNr) der Primärschlüssel sein – jede LNr kommt nur einmal vor.",
+          "",
+          "🧮 **Warum braucht jede Tabelle einen Primärschlüssel?**",
+          " • Damit keine doppelten Datensätze entstehen.",
+          " • Damit das Suchen, Ändern und Löschen von Einträgen gezielt und eindeutig funktioniert.",
+          " • Der Primärschlüssel ist Voraussetzung für viele SQL-Operationen und Beziehungen zwischen Tabellen.",
+          "",
+          "👩‍🔬 **Praxisbeispiel: Chemische Elemente**",
+          " | Protonen | Atomgewicht | Name        | Symbol |",
+          " |----------|-------------|-------------|--------|",
+          " | 1        | 1,0079      | Wasserstoff | H      |",
+          " | 2        | 4,0026      | Helium      | He     |",
+          "",
+          " • Hier könnten 'Protonen', 'Name' oder 'Symbol' als Primärschlüssel dienen, weil sie jeweils eindeutig sind.",
+          "",
+          " • **Achtung:** Nicht jeder Wert ist geeignet. Z. B. könnte das 'Atomgewicht' in Zukunft bei neuen Elementen doppelt vorkommen – unsicher als Schlüssel!",
+          "",
+          "🔎 **Fachbegriffe rund um Schlüssel**",
+          " • **Superschlüssel:** Jede Kombination von Attributen, die eine Zeile eindeutig identifiziert (oft mehr, als nötig wäre).",
+          " • **Schlüsselkandidat:** Ein minimaler Superschlüssel (so klein wie möglich, aber immer noch eindeutig).",
+          " • **Primärschlüssel:** Einer der Schlüsselkandidaten, der als Haupt-Identifikator gewählt wird.",
+          " • **Alternative Schlüssel:** Die übrigen Schlüsselkandidaten (können auch genutzt werden, aber nicht als Hauptschlüssel).",
+          "",
+          "🎯 **Regeln für einen guten Primärschlüssel:**",
+          " 1. Muss Eindeutigkeit garantieren (keine doppelten Werte im Schlüssel-Feld!)",
+          " 2. Möglichst stabil (ändert sich nie oder sehr selten)",
+          " 3. So wenige Attribute wie möglich (je kürzer, desto besser für Performance und Übersicht!)",
+          " 4. Wenn möglich, ein einzelnes Feld verwenden (z. B. laufende Nummer, Kundennummer)",
+          "",
+          "🧩 **Beispiel für zusammengesetzten Primärschlüssel:**",
+          " | Produktname  | Produkttyp | Bestand | Preis |",
+          " |--------------|------------|---------|-------|",
+          " | Staubsauger  | T06        | 25      | 498   |",
+          " | Staubsauger  | T17        | 17      | 219   |",
+          "",
+          " • Hier reicht 'Produktname' allein nicht, weil es mehrere Typen gibt. Aber die Kombination aus 'Produktname' und 'Produkttyp' ist eindeutig → **zusammengesetzter Primärschlüssel**.",
+          "",
+          "⚠️ **Vorsicht bei zusätzlichen Spalten:**",
+          " • Einfach eine 'Produktnummer' hinzufügen? Geht, aber erhöht die Redundanz, wenn die Kombination schon eindeutig wäre.",
+          " • Oft muss man abwägen: Eindeutigkeit vs. Einfachheit vs. Speicherbedarf.",
+          "",
+          "💡 **SQL-Praxis:**",
+          " • Der Primärschlüssel wird beim Erstellen einer Tabelle festgelegt: z. B. `PRIMARY KEY (Produktname, Produkttyp)`",
+          " • Bei einer Suche nach dem Primärschlüssel (z. B. Produktname = 'Staubsauger', Produkttyp = 'T06') gibt es maximal **eine** passende Zeile – das macht viele Operationen effizient!",
+          "",
+          "✅ **Fazit:** Der Primärschlüssel ist das Herzstück jeder Relation. Gut gewählt, sorgt er für Ordnung, Performance und saubere Datenbankanwendungen!"
+        ],
+        video: "https://www.youtube.com/embed/wSEK8C0N9UQ"
+      },
+      {
+        title: "Relationale Integritätsregeln – Saubere Daten garantiert!",
+        description: "Datenbanken sollen nicht nur Daten speichern, sondern auch dafür sorgen, dass die gespeicherten Informationen korrekt und widerspruchsfrei sind. Damit das klappt, gibt es zwei zentrale Regeln für jede relationale Datenbank: die Entitäts- und die Referenz-Integrität.",
+        list: [
+          "🧩 **Was ist Integrität?**",
+          " • Integrität heißt: Die Daten in der Datenbank sind immer korrekt und stimmen mit der Realität überein.",
+          "",
+          "Es gibt vier Arten von Integrität:",
+          " • **Physische Integrität:** Die Daten sind auf der Festplatte vollständig und unverfälscht gespeichert.",
+          " • **Ablaufintegrität:** Programme, die auf die Datenbank zugreifen, arbeiten korrekt (z. B. keine Überlappung bei mehreren Benutzern).",
+          " • **Zugriffsberechtigung:** Nur berechtigte Personen dürfen bestimmte Daten sehen oder ändern.",
+          " • **Semantische Integrität:** Die gespeicherten Werte sind sinnvoll (z. B. kein Gehalt = -1000 oder 500 Stunden/Woche).",
+          "",
+          "Aber in relationalen Datenbanken sind vor allem zwei Integritätsregeln wichtig:",
+          "",
+          "🔒 **1. Entitäts-Integrität (Regel für Primärschlüssel)**",
+          " • Jeder Datensatz (Tupel) braucht einen gültigen Primärschlüssel.",
+          " • Kein Feld im Primärschlüssel darf leer (NULL) sein!",
+          " • Beispiel: Jeder Kunde in einer Kundentabelle braucht eine eindeutige Kundennummer – sonst könnte man ihn nicht mehr eindeutig zuordnen.",
+          " • Auch bei zusammengesetzten Schlüsseln (z. B. [Produktname, Produkttyp]) darf KEIN Teil leer bleiben.",
+          "",
+          "🚦 **2. Referenz-Integrität (Regel für Fremdschlüssel)**",
+          " • Ein Fremdschlüssel ist ein Feld, das auf einen Primärschlüssel in einer anderen Tabelle verweist.",
+          " • **Wichtig:** Jeder Wert im Fremdschlüssel-Feld muss es wirklich als Primärschlüssel in der Zieltabelle geben (oder leer sein).",
+          " • Beispiel: In einer Auftragstabelle steht die Kundennummer. Die Nummer muss es auch wirklich in der Kundentabelle geben!",
+          "",
+          " • Wenn du zum Beispiel einen Auftrag auf einen Kunden verweist, der gelöscht wurde, ist die Referenz-Integrität verletzt.",
+          " • SQL und moderne Datenbanken sorgen automatisch dafür, dass so etwas nicht passiert.",
+          "",
+          "💡 **Was passiert beim Löschen oder Ändern von Daten?**",
+          " • Wenn z. B. ein Kunde gelöscht wird, auf den noch Aufträge verweisen, gibt es verschiedene Möglichkeiten (SQL-Einstellungen):",
+          "  - **NO ACTION:** Das Löschen wird nicht erlaubt, solange noch Fremdschlüssel auf diesen Kunden zeigen.",
+          "  - **CASCADE:** Alle Aufträge, die zu diesem Kunden gehören, werden automatisch mit gelöscht.",
+          "  - **SET NULL:** Im Auftrag wird der Kundenschlüssel auf NULL gesetzt (nur erlaubt, wenn das Feld NULL akzeptiert).",
+          "",
+          "📦 **Fazit:**",
+          " • Ohne diese Regeln könnte man Daten nicht mehr zuverlässig finden, zuordnen oder kontrollieren.",
+          " • Sie sorgen für Ordnung und schützen vor Datenchaos – egal wie groß die Datenbank wird.",
+          "",
+          "✅ **Merke:** Integrität ist das Fundament für vertrauenswürdige und nutzbare Datenbanken!"
+        ],
+        video: "https://www.youtube.com/embed/gWkD_1mRFWw"
+      },
+      {
+        title: "Relationale Algebra – Das Werkzeug für Datenbank-Abfragen",
+        description: "Die relationale Algebra ist das mathematische Fundament hinter SQL-Abfragen. Mit ihr lassen sich Daten aus mehreren Tabellen auf unterschiedlichste Weise kombinieren, filtern und anzeigen – wie mit einem Baukasten für Daten!",
+        list: [
+          "🔬 **Was ist die relationale Algebra?**",
+          " • Eine Sammlung von Rechen-Regeln (Operatoren), um mit Tabellen (Relationen) zu arbeiten.",
+          " • Vergleichbar mit Mathe-Operatoren wie +, -, ×, ÷, aber für Tabellen statt Zahlen.",
+          " • Die Grundlage für moderne Datenbanksprachen wie SQL.",
+          "",
+          "🛠️ **Warum brauche ich das?**",
+          " • Mit den Operatoren der relationalen Algebra kann man jede Datenbankabfrage bauen – egal wie komplex!",
+          " • Hilft zu verstehen, was SQL intern macht und wie Daten optimal verarbeitet werden.",
+          "",
+          "👾 **Die wichtigsten Operatoren – Einfach erklärt**",
+          "",
+          "1️⃣ **Vereinigung (∪)** – „Alles zusammen!“",
+          " • Kombiniert zwei Tabellen zu einer – alle Datensätze aus beiden, aber doppelte nur einmal.",
+          " • Beispiel: Alle Kunden aus Berlin ODER Hamburg = KundenBerlin ∪ KundenHamburg",
+          "",
+          "2️⃣ **Schnitt (∩)** – „Was haben beide gemeinsam?“",
+          " • Zeigt nur die Datensätze, die in beiden Tabellen vorkommen.",
+          " • Beispiel: Wer ist Kunde in Berlin UND Hamburg?",
+          "",
+          "3️⃣ **Differenz (∖)** – „Was ist nur hier drin?“",
+          " • Zeigt alle Datensätze, die in Tabelle 1 stehen, aber NICHT in Tabelle 2.",
+          " • Beispiel: Kunden aus Berlin, die NICHT aus Hamburg sind = KundenBerlin ∖ KundenHamburg",
+          "",
+          "4️⃣ **Projektion (π)** – „Spalten aussuchen“",
+          " • Wählt bestimmte Spalten (Attribute) aus einer Tabelle aus.",
+          " • Beispiel: Nur die Namen und PLZ aller Kunden anzeigen = π{Name, PLZ}(Kunden)",
+          "",
+          "5️⃣ **Restriktion (σ)** – „Zeilen filtern“",
+          " • Filtert Zeilen nach einer Bedingung (z.B. nur alle Kunden in Berlin).",
+          " • Beispiel: Nur Kunden aus München = σ{Ort='München'}(Kunden)",
+          "",
+          "6️⃣ **Kreuzprodukt (×)** – „Alles mit allem kombinieren“",
+          " • Kombiniert JEDE Zeile aus Tabelle 1 mit JEDE Zeile aus Tabelle 2 – selten sinnvoll allein, aber Basis für Verbindungen.",
+          "",
+          "7️⃣ **Verbund (⨝) – auch Join genannt**",
+          " • Verbindet zwei Tabellen, die ein gemeinsames Feld haben (z. B. Kunden und Bestellungen über Kundennummer).",
+          " • Beispiel: Zeige zu jeder Bestellung auch den Kundennamen.",
+          "",
+          "8️⃣ **Division (÷)** – „Wer erfüllt ALLE Bedingungen?“",
+          " • Spezialoperator, um z. B. Lieferanten zu finden, die ALLE gesuchten Teile liefern können.",
+          "",
+          "9️⃣ **Umbenennung (ρ)**",
+          " • Gibt Tabellen oder Spalten neue Namen, damit sie besser kombiniert werden können.",
+          "",
+          "💡 **Gut zu wissen:**",
+          " • Mit diesen 9 Operatoren kann man alle Datenbankabfragen mathematisch beschreiben.",
+          " • Ergebnis jeder Operation ist immer wieder eine Tabelle – man kann sie beliebig kombinieren.",
+          "",
+          "🎓 **Kleine Beispiele:**",
+          " • Kunden aus Berlin ODER Hamburg: KundenBerlin ∪ KundenHamburg",
+          " • Nur die Namen aus der Kundentabelle: π{Name}(Kunden)",
+          " • Nur Kunden mit PLZ 80331: σ{PLZ=80331}(Kunden)",
+          "",
+          "🚦 **Fazit:**",
+          " • Die relationale Algebra ist die Theorie hinter SQL und gibt uns die Werkzeuge an die Hand, um Daten flexibel zu verknüpfen, filtern und auszugeben.",
+          " • Mit diesen Werkzeugen kann man aus einer Datenbank fast alles herausholen – der Fantasie sind kaum Grenzen gesetzt!",
+          "",
+          "🌐 **Mehr zu SQL und wie das praktisch aussieht, kommt in den nächsten Kapiteln!**"
+        ],
+        video: "https://www.youtube.com/embed/9PpWZ8gKa8c"
       }
-    }
+    ];
 
-    function checkAnswer2() {
-      const input = normalize(document.getElementById("answer2").value);
-      const feedback = document.getElementById("feedback2");
-      if (input.includes("referenzielle integrit")) {
-        feedback.textContent = "✅ Genau! Die referenzielle Integrität schützt Fremdschlüssel.";
-        feedback.style.color = '#00f2ff';
-      } else {
-        feedback.textContent = "❌ Nicht korrekt. Tipp: Es ist eine Integritätsregel.";
-        feedback.style.color = '#ff6b6b';
-      }
-    }
+    const buttons = document.querySelectorAll(".tab-buttons button");
+    const lessonBox = document.getElementById("lessonContent");
 
-    function checkAnswer3() {
-      const input = normalize(document.getElementById("answer3").value);
-      const feedback = document.getElementById("feedback3");
-      if (input.includes("mehrere") && input.includes("eindeutig")) {
-        feedback.textContent = "✅ Sehr gut! Superschlüssel sind Kombinationen zur eindeutigen Identifikation.";
-        feedback.style.color = '#00f2ff';
-      } else {
-        feedback.textContent = "❌ Nicht ganz. Ein Superschlüssel identifiziert eindeutig – oft mit mehreren Attributen.";
-        feedback.style.color = '#ff6b6b';
-      }
-    }
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const index = parseInt(btn.dataset.index);
+        const lesson = lessons[index];
 
-    function checkMC() {
-      const correct = document.getElementById("mc2").checked &&
-                      !document.getElementById("mc1").checked &&
-                      !document.getElementById("mc3").checked;
-      const feedback = document.getElementById("feedback4");
-      if (correct) {
-        feedback.textContent = "✅ Richtig! Nur Aussage 2 ist korrekt.";
-        feedback.style.color = '#00f2ff';
-      } else {
-        feedback.textContent = "❌ Leider falsch. Nur Aussage 2 ist korrekt.";
-        feedback.style.color = '#ff6b6b';
-      }
-    }
+        lessonBox.innerHTML = `
+          <h2>${lesson.title}</h2>
+          <p>${lesson.description}</p>
+          <ul>${lesson.list.map(item => `<li>${item}</li>`).join("")}</ul>
+          <p><strong>Kurzes Video zum Einstieg:</strong></p>
+          <iframe src="${lesson.video}" allowfullscreen></iframe>
+        `;
+        lessonBox.style.display = "block";
+
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
 </script>
+
 </body>
 </html>
