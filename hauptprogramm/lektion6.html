@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Lektion 6: Cloud-Datenbank mit Supabase & PostgreSQL aufsetzen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0b0e1a, #11142d 80%);
+      color: #f0f0f0;
+      padding: 2rem;
+      text-align: center;
+      min-height: 100vh;
+      position: relative;
+    }
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: 0;
+      opacity: 0.3;
+    }
+    body::before {
+      width: 340px; height: 340px;
+      background: #00f2ff;
+      top: -100px; left: -120px;
+    }
+    body::after {
+      width: 270px; height: 270px;
+      background: #23d2ff;
+      bottom: -80px; right: -60px;
+    }
+    h1 {
+      color: #00f2ff;
+      margin-bottom: 0.3em;
+      font-size: 2.6rem;
+      letter-spacing: 0.02em;
+      z-index: 2;
+      position: relative;
+    }
+    .welcome-text {
+      font-size: 1.23rem;
+      margin-bottom: 2.2rem;
+      color: #b8c3d3;
+      z-index: 2;
+      position: relative;
+    }
+    .tab-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.3rem;
+      margin-bottom: 2.3rem;
+      z-index: 2;
+      position: relative;
+    }
+    .tab-buttons button {
+      background: #1a1e33;
+      border: 2.2px solid #00f2ff;
+      color: #00f2ff;
+      padding: 0.95rem 2.1rem;
+      border-radius: 2.2rem;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.13rem;
+      letter-spacing: 0.02em;
+      transition: background 0.25s, color 0.22s, border-color 0.23s, box-shadow 0.28s, transform 0.19s;
+      box-shadow: 0 1px 12px 0 rgba(0,242,255,0.04);
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .tab-buttons button.active,
+    .tab-buttons button:focus-visible {
+      background: linear-gradient(90deg,#00f2ff 60%,#38f8ff 100%);
+      color: #11142d;
+      border-color: #c6f9ff;
+      transform: scale(1.07);
+      box-shadow: 0 2px 18px 0 #00f2ff40, 0 2px 6px 0 #0002;
+    }
+    .tab-buttons button:hover:not(.active) {
+      box-shadow: 0 0 0 2px #00f2ff70;
+      border-color: #00f2ff;
+      background: #212755;
+      color: #fff;
+    }
+    .lesson-content {
+      background: #1c1f35ea;
+      padding: 2.8rem 2.2rem;
+      border-radius: 1.4rem;
+      max-width: 880px;
+      margin: 2.5rem auto 0 auto;
+      box-shadow: 0 8px 38px 0 #00f2ff18, 0 3px 12px 0 #0003;
+      text-align: left;
+      line-height: 1.8;
+      font-size: 1.09rem;
+      position: relative;
+      border: 1.5px solid rgba(0,242,255,0.11);
+      opacity: 0;
+      transform: translateY(24px) scale(0.99);
+      pointer-events: none;
+      transition: opacity 0.45s cubic-bezier(.42,1.35,.49,1), transform 0.33s cubic-bezier(.42,1.25,.54,1.12);
+      z-index: 2;
+    }
+    .lesson-content.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    .lesson-content h2 {
+      color: #00f2ff;
+      font-size: 1.6rem;
+      margin-bottom: 0.7em;
+    }
+    .lesson-content ul {
+      margin-top: 1.5rem;
+      margin-bottom: 2rem;
+      padding-left: 1.5rem;
+      list-style-type: disc;
+    }
+    .lesson-content li {
+      margin-bottom: 0.8rem;
+    }
+    .screenshot-box {
+      background: #172135;
+      border: 2px solid #00f2ff70;
+      padding: 1rem;
+      margin: 2em 0 1.5em 0;
+      border-radius: 1.1em;
+      text-align: center;
+      box-shadow: 0 2px 20px #00f2ff14;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .screenshot-box img {
+      max-width: 100%;
+      border-radius: 0.7em;
+      box-shadow: 0 2px 18px #00f2ff12;
+      margin: 0.4em 0;
+    }
+    .hint {
+      background: #243455;
+      border-left: 5px solid #00f2ff;
+      color: #aaf6ff;
+      border-radius: 0.6em;
+      padding: 1em 1.3em;
+      margin: 1.8em 0 1.6em 0;
+      font-size: 1.02em;
+    }
+    .quiz-box {
+      background: #18293a;
+      border: 2px solid #ffdb57;
+      color: #ffd700;
+      border-radius: 0.8em;
+      padding: 1em 1.3em;
+      margin: 2.1em 0;
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      .lesson-content { padding: 1.2rem 0.7rem; }
+      .tab-buttons { gap: 0.4rem; }
+      .tab-buttons button { padding: 0.5rem 0.9rem; font-size: 0.98rem; }
+    }
+  </style>
+</head>
+<body>
+<h1>Lektion 6: Cloud-Datenbank mit Supabase & PostgreSQL aufsetzen</h1>
+<p class="welcome-text">Lerne, in wenigen Minuten eine eigene Cloud-Datenbank für ein Autohaus zu erstellen und direkt zu verwenden!</p>
+<div class="tab-buttons">
+  <button data-index="0">6.1 Einführung</button>
+  <button data-index="1">6.2 Supabase-Konto & Projekt anlegen</button>
+  <button data-index="2">6.3 Datenbankmodell Autohaus</button>
+  <button data-index="3">6.4 Tabellen in Supabase anlegen</button>
+  <button data-index="4">6.5 Praxis: Testdaten einfügen</button>
+  <button data-index="5">6.6 API & Zugriffsschlüssel</button>
+  <button data-index="6">6.7 Tipps & Sicherheit</button>
+  <button data-index="7">Quiz & Zusammenfassung</button>
+</div>
+<div class="lesson-content" id="lessonContent"></div>
+<script>
+const sections = [
+  {
+    title: "6.1 Einführung: Warum Cloud & Supabase?",
+    description: "",
+    content: `
+      <h2>6.1 Einführung: Warum Cloud & Supabase?</h2>
+      <p>
+        Datenbanken in der Cloud bieten dir <b>jederzeit und von überall</b> Zugriff, automatische Backups und einfache Zusammenarbeit. <br>
+        <b>Supabase</b> macht das Ganze besonders einfach: Es basiert auf <b>PostgreSQL</b> (Standard in vielen Unternehmen) und bietet ein modernes Web-Interface, automatische APIs und einen kostenlosen Start.
+      </p>
+      <div class="hint"><b>Praxis-Vorteil:</b> Im Gegensatz zu klassischen SQL-Servern brauchst du keine lokale Installation und keine komplexe Einrichtung. <br>
+      <b>Deine Datenbank ist direkt im Internet erreichbar!</b></div>
+      <ul>
+        <li>Einfaches Anlegen und Verwalten von Tabellen</li>
+        <li>Teilen der Datenbank mit deinem Team</li>
+        <li>Direkter Zugriff per API auf alle Daten</li>
+        <li>Start kostenlos, keine Kreditkarte nötig</li>
+      </ul>
+      <div class="screenshot-box">
+        <img src="supabase-home.png" alt="Supabase Startseite" />
+        <div>Supabase Startseite</div>
+      </div>
+    `
+  },
+  {
+    title: "6.2 Supabase-Konto & Projekt anlegen",
+    description: "",
+    content: `
+      <h2>6.2 Supabase-Konto & Projekt anlegen</h2>
+      <ol>
+        <li>Gehe auf <a href="https://supabase.com" target="_blank" style="color:#00f2ff;font-weight:bold;">supabase.com</a> und klicke auf <b>Start your project</b>.</li>
+        <li>Melde dich mit GitHub, Google oder E-Mail an.</li>
+        <li>Erstelle ein neues Projekt. Gib einen Namen wie <b>autohaus-db</b> ein.</li>
+        <li>Wähle ein Passwort für deine Datenbank (am besten ein sicheres!)</li>
+        <li>Region auswählen (z.B. EU/Frankfurt, wenn du in Deutschland bist).</li>
+        <li>Warten, bis das Projekt eingerichtet ist (dauert ca. 1 Minute).</li>
+      </ol>
+      <div class="screenshot-box">
+        <img src="supabase-create-project.png" alt="Projekt erstellen" />
+        <div>Projekt in Supabase erstellen</div>
+      </div>
+      <div class="hint">Notiere dir dein Datenbank-Passwort gut! Es wird <b>nur einmal</b> angezeigt.</div>
+    `
+  },
+  {
+    title: "6.3 Datenbankmodell Autohaus",
+    description: "",
+    content: `
+      <h2>6.3 Das Datenmodell für dein Autohaus</h2>
+      <p>
+        Überlege dir vor dem Anlegen: <b>Welche Tabellen brauchst du?</b> Für ein Autohaus reichen oft diese drei:
+      </p>
+      <ul>
+        <li><b>fahrzeuge</b> (alle Autos im Bestand)</li>
+        <li><b>kunden</b> (alle Kundendaten)</li>
+        <li><b>verkaeufe</b> (wann welches Fahrzeug an wen verkauft wurde)</li>
+      </ul>
+      <div class="screenshot-box">
+        <img src="autohaus-erd.png" alt="ER-Diagramm" />
+        <div>ER-Diagramm für das Autohaus (Platzhalter, kannst du später ersetzen)</div>
+      </div>
+      <div class="hint">Tipp: Du kannst auch mit nur einer Tabelle („fahrzeuge“) starten und später erweitern!</div>
+    `
+  },
+  {
+    title: "6.4 Tabellen in Supabase anlegen",
+    description: "",
+    content: `
+      <h2>6.4 Tabellen in Supabase anlegen</h2>
+      <ol>
+        <li>Im Supabase Dashboard auf <b>Table editor</b> gehen.</li>
+        <li>Klicke auf <b>Create a new table</b>.</li>
+        <li>Gib z.B. den Namen <code>fahrzeuge</code> ein und erstelle die Spalten:</li>
+      </ol>
+      <table style="margin:1.5em auto;background:#191e2e;border-radius:0.7em;color:#00f2ff;box-shadow:0 1px 8px #00f2ff25;">
+        <tr><th>Spalte</th><th>Typ</th><th>Not Null</th><th>Beschreibung</th></tr>
+        <tr><td>id</td><td>bigint</td><td>✓</td><td>Primärschlüssel, Autowert</td></tr>
+        <tr><td>marke</td><td>varchar</td><td>✓</td><td>z.B. „Audi“</td></tr>
+        <tr><td>modell</td><td>varchar</td><td>✓</td><td>z.B. „A3“</td></tr>
+        <tr><td>preis</td><td>integer</td><td>✓</td><td>in Euro</td></tr>
+        <tr><td>baujahr</td><td>integer</td><td>✓</td><td>z.B. 2022</td></tr>
+        <tr><td>bild_url</td><td>varchar</td><td> </td><td>Pfad zum Foto</td></tr>
+      </table>
+      <div class="screenshot-box">
+        <img src="supabase-table-create.png" alt="Tabelle anlegen" />
+        <div>Neue Tabelle im Table Editor von Supabase anlegen</div>
+      </div>
+      <div class="hint">Vergiss nicht: <b>id</b> als <b>Primary Key</b> markieren und „Identity“ aktivieren, damit die Nummer automatisch vergeben wird.</div>
+    `
+  },
+  {
+    title: "6.5 Praxis: Testdaten einfügen",
+    description: "",
+    content: `
+      <h2>6.5 Praxis: Testdaten einfügen</h2>
+      <ol>
+        <li>Wähle im Table Editor die Tabelle <code>fahrzeuge</code> aus.</li>
+        <li>Klicke auf <b>Insert row</b> und trage die Daten für ein Beispielauto ein:</li>
+      </ol>
+      <table style="margin:1.2em auto;background:#191e2e;border-radius:0.7em;color:#00f2ff;">
+        <tr><th>marke</th><th>modell</th><th>preis</th><th>baujahr</th><th>bild_url</th></tr>
+        <tr><td>Audi</td><td>A3</td><td>25900</td><td>2022</td><td>audi-a3.jpg</td></tr>
+        <tr><td>BMW</td><td>320i</td><td>28800</td><td>2021</td><td>bmw-320i.jpg</td></tr>
+      </table>
+      <div class="screenshot-box">
+        <img src="supabase-insert-data.png" alt="Testdaten einfügen" />
+        <div>Testdaten einfügen im Supabase Table Editor</div>
+      </div>
+      <div class="quiz-box">Quick-Quiz: <br> <b>Welche Spalte ist der Primärschlüssel?<br><small>Tipp: Siehe Schritt 6.4!</small></b></div>
+    `
+  },
+  {
+    title: "6.6 API & Zugriffsschlüssel",
+    description: "",
+    content: `
+      <h2>6.6 Zugriff von außen: API & Schlüssel</h2>
+      <ol>
+        <li>Gehe links im Dashboard auf <b>API</b>.</li>
+        <li>Hier findest du die <b>REST-URL</b> deiner Datenbank (z.B. <code>https://xyz.supabase.co/rest/v1/</code>).</li>
+        <li>Notiere dir deinen <b>anon key</b> (öffentlich, reicht für Lesezugriffe), um per Web-App oder Script Daten zu lesen.</li>
+        <li>Mit diesem Key kannst du z.B. per <b>fetch()</b> in JavaScript auf die Fahrzeugdaten zugreifen!</li>
+      </ol>
+      <div class="screenshot-box">
+        <img src="supabase-api.png" alt="API-Keys" />
+        <div>API-Keys und Endpunkte im Supabase Dashboard</div>
+      </div>
+      <div class="hint">Dein <b>Service-Role-Key</b> ist für Admin-Zugriffe – halte ihn geheim!</div>
+      <pre style="background:#181e32;border-radius:0.7em;padding:1.1em 1.3em;color:#b8c3d3;">
+fetch('https://xyz.supabase.co/rest/v1/fahrzeuge', {
+  headers: { apikey: 'DEIN_ANON_KEY' }
+})
+.then(res => res.json())
+.then(data => console.log(data));
+      </pre>
+    `
+  },
+  {
+    title: "6.7 Tipps & Sicherheit",
+    description: "",
+    content: `
+      <h2>6.7 Tipps & Sicherheit</h2>
+      <ul>
+        <li>Vergebe Rollen: Wer darf Daten ändern, wer nur lesen?</li>
+        <li>Aktiviere <b>Row Level Security</b> (RLS) für sensible Tabellen</li>
+        <li>Erstelle regelmäßig Backups (geht direkt im Dashboard)</li>
+        <li>Setze das Datenbank-Passwort komplex genug!</li>
+        <li>Dokumentiere alle API-Keys sicher – gib sie nie weiter!</li>
+      </ul>
+      <div class="hint">Praxis: In Uni-Projekten reicht meist der „anon key“ – produktive Projekte sollten immer mit RLS & Zugriffskontrolle arbeiten.</div>
+    `
+  },
+  {
+    title: "Quiz & Zusammenfassung",
+    description: "",
+    content: `
+      <h2>Quiz & Zusammenfassung</h2>
+      <div class="quiz-box">
+        <b>Quiz</b><br>
+        1. Was ist der Vorteil von Cloud-Datenbanken wie Supabase?<br>
+        2. Welche Tabelle speichert beim Autohaus die Fahrzeugdaten?<br>
+        3. Wie heißt der Zugangscode für externe API-Zugriffe?<br>
+        4. Warum ist Row Level Security (RLS) wichtig?
+      </div>
+      <ul>
+        <li>Mit Supabase kannst du in wenigen Minuten eine voll funktionsfähige, echte Datenbank aufsetzen – <b>ohne Installation</b>.</li>
+        <li>Der Table Editor macht das Modellieren von Tabellen so einfach wie nie.</li>
+        <li>API-Zugriff und Schlüssel machen deine Anwendung direkt onlinefähig.</li>
+        <li>Sicherheit und Rollenverwaltung sorgen für Datenschutz – auch im Team.</li>
+      </ul>
+      <div class="hint">Probiere jetzt direkt, eine eigene Tabelle mit echten Testdaten anzulegen. Das ist der beste Weg, um SQL wirklich zu lernen!</div>
+    `
+  }
+];
+// Tab-Steuerung
+const mainButtons = document.querySelectorAll('.tab-buttons button');
+const lessonContent = document.getElementById('lessonContent');
+function showContent(idx) {
+  const section = sections[idx];
+  lessonContent.innerHTML = section.content;
+  lessonContent.classList.remove('visible');
+  setTimeout(() => lessonContent.classList.add('visible'), 60);
+}
+mainButtons.forEach((btn, idx) => {
+  btn.addEventListener('click', () => {
+    mainButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    showContent(idx);
+  });
+});
+showContent(0);
+mainButtons[0].classList.add('active');
+</script>
+</body>
+</html>
