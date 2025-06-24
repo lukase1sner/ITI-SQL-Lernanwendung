@@ -20,6 +20,7 @@
 <div class="container">
     <h1>Registrieren</h1>
     <form id="signupForm">
+        <input type="text" name="firstName" placeholder="Vorname" required />
         <input type="email" name="email" placeholder="E-Mail" required />
         <input type="password" name="password" placeholder="Passwort" required />
         <button type="submit">Registrieren</button>
@@ -66,6 +67,7 @@
     document.getElementById("signupForm").addEventListener("submit", async function (e) {
       e.preventDefault(); // Standardverhalten (Seitenreload) verhindern
 
+      const firstName = e.target.firstName.value;
       const email = e.target.email.value;
       const password = e.target.password.value;
 
@@ -73,7 +75,7 @@
       const res = await fetch("http://localhost:3001/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ firstName, email, password })
       });
 
       const data = await res.json();
@@ -92,6 +94,7 @@
           // ✅ Token speichern & Weiterleitung ins Dashboard
           localStorage.setItem("token", loginData.token);
           localStorage.setItem("userId", loginData.userId);
+          localStorage.setItem("firstName", loginData.firstName);
           alert("Registrierung & Login erfolgreich!");
           window.location.href = "../hauptprogramm/dashboard.html";
         } else {

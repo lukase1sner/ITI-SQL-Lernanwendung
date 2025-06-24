@@ -26,4 +26,13 @@ async function ladeStatistiken() {
 }
 
 // Automatisch beim Seitenladen
-document.addEventListener('DOMContentLoaded', ladeStatistiken);
+function begruesse() {
+  const name = localStorage.getItem('firstName') || 'Held';
+  const el = document.getElementById('greeting');
+  if (el) el.textContent = `Willkommen zurück, ${name}!`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ladeStatistiken();
+  begruesse();
+});

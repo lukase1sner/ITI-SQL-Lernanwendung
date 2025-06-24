@@ -21,6 +21,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 db.run(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Eindeutige ID
+    first_name TEXT,                       -- Vorname des Nutzers
     email TEXT UNIQUE,                     -- E-Mail muss eindeutig sein
     password TEXT                          -- Gespeichertes (gehashtes) Passwort
   )

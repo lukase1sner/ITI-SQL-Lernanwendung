@@ -82,6 +82,8 @@
         // ✅ Login erfolgreich → Token speichern & weiterleiten
         alert("Login erfolgreich!");
         localStorage.setItem("token", data.token);
+        localStorage.setItem("firstName", data.firstName);
+        localStorage.setItem("userId", data.userId);
         window.location.href = "../hauptprogramm/dashboard.html"; // Weiterleitung ins Dashboard
       } else {
         // ❌ Fehlerhafte Anmeldung

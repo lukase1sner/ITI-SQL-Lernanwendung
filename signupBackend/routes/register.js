@@ -14,11 +14,11 @@ const router = express.Router(); // Neuer Router für Registrierungs-Endpunkt
  * - Initialisiert einen Eintrag in `user_stats`
  */
 router.post('/register', async (req, res) => {
-  const { email, password } = req.body;
+  const { firstName, email, password } = req.body;
 
   // Validierung: Beide Felder müssen ausgefüllt sein
-  if (!email || !password) {
-    return res.status(400).json({ message: 'E-Mail und Passwort erforderlich.' });
+  if (!firstName || !email || !password) {
+    return res.status(400).json({ message: 'Vorname, E-Mail und Passwort erforderlich.' });
   }
 
   try {
@@ -26,9 +26,9 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Schritt 1: Benutzer in Datenbank einfügen
-    const insertUser = `INSERT INTO users (email, password) VALUES (?, ?)`;
+    const insertUser = `INSERT INTO users (first_name, email, password) VALUES (?, ?, ?)`;
 
-    db.run(insertUser, [email, hashedPassword], function (err) {
+    db.run(insertUser, [firstName, email, hashedPassword], function (err) {
       if (err) {
         // Fehler z. B. bei doppelter E-Mail (UNIQUE constraint)
         console.error('❌ Fehler bei Registrierung:', err.message);
@@ -55,6 +55,7 @@ router.post('/register', async (req, res) => {
           message: '✅ Registrierung erfolgreich!',
           user: {
             id: userId,
+            first_name: firstName,
             email
           }
         });
