@@ -24,6 +24,16 @@ async function ladeStatistiken() {
     console.error('❌ Fehler beim Laden der Statistiken:', err);
   }
 }
+function setzeUsername() {
+  const el = document.getElementById('username');
+  if (!el) return;
+  const email = localStorage.getItem('email');
+  if (email) el.textContent = email;
+}
+
 
 // Automatisch beim Seitenladen
-document.addEventListener('DOMContentLoaded', ladeStatistiken);
+document.addEventListener('DOMContentLoaded', () => {
+  setzeUsername();
+  ladeStatistiken();
+});

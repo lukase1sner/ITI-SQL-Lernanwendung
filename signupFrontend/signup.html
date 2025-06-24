@@ -89,9 +89,10 @@
         const loginData = await loginRes.json();
 
         if (loginRes.ok) {
-          // ✅ Token speichern & Weiterleitung ins Dashboard
+         // ✅ Token & E-Mail speichern und weiterleiten
           localStorage.setItem("token", loginData.token);
           localStorage.setItem("userId", loginData.userId);
+          localStorage.setItem("email", email);
           alert("Registrierung & Login erfolgreich!");
           window.location.href = "../hauptprogramm/dashboard.html";
         } else {

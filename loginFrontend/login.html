@@ -79,10 +79,12 @@
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Login erfolgreich → Token speichern & weiterleiten
+       // ✅ Login erfolgreich → Token & E-Mail speichern und weiterleiten
         alert("Login erfolgreich!");
         localStorage.setItem("token", data.token);
+        localStorage.setItem("email", e.target.email.value);
         window.location.href = "../hauptprogramm/dashboard.html"; // Weiterleitung ins Dashboard
+
       } else {
         // ❌ Fehlerhafte Anmeldung
         alert(data.message || "Login fehlgeschlagen");

@@ -83,6 +83,23 @@
           border: none;
           border-radius: 1rem;
         }
+        /* Zurück-zum-Dashboard-Button */
+        .btn-dashboard {
+          display: inline-block;
+          background-color: #8b5cf6;
+          color: white;
+          padding: 0.8rem 1.5rem;
+          border-radius: 1.2rem;
+          font-weight: bold;
+          text-decoration: none;
+          transition: background 0.3s, transform 0.2s;
+          margin-top: 2rem;
+        }
+
+        .btn-dashboard:hover {
+          background-color: #a78bfa;
+          transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -286,6 +303,11 @@
       });
     });
 </script>
+
+<footer style="text-align: center;">
+    <a href="dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
+</footer>
+
 
 </body>
 </html>
