@@ -100,11 +100,16 @@
           background-color: #a78bfa;
           transform: scale(1.05);
         }
+          .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+  .header-row .btn-dashboard{margin-top:0;}
     </style>
 </head>
 <body>
 
-<h1>Willkommen zur Datenbank-Grundlagen-Reise 🚀</h1>
+<header class="header-row">
+    <h1>Willkommen zur Datenbank-Grundlagen-Reise 🚀</h1>
+    <a href="dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
+</header>
 <p class="welcome-text">Wähle eine Lektion, um zu starten:</p>
 
 <div class="tab-buttons">

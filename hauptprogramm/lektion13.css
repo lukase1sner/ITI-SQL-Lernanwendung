@@ -4,7 +4,8 @@ body {
     background: linear-gradient(135deg, #0b0e1a, #11142d);
     color: #f0f0f0;
   }
-  
+  .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+  .header-row .btn-dashboard{margin-top:0;}
   .container {
     max-width: 900px;
     margin: 0 auto;
