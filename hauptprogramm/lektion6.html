@@ -165,10 +165,17 @@
       .tab-buttons { gap: 0.4rem; }
       .tab-buttons button { padding: 0.5rem 0.9rem; font-size: 0.98rem; }
     }
+     .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+  .btn-dashboard{display:inline-block;background-color:#8b5cf6;color:#fff;padding:0.6rem 1.5rem;border-radius:1.2rem;font-weight:bold;text-decoration:none;transition:background 0.3s,transform 0.2s;}
+  .btn-dashboard:hover{background-color:#a78bfa;transform:scale(1.05);}
+  .header-row .btn-dashboard{margin-top:0;}
   </style>
 </head>
 <body>
-<h1>Lektion 6: Cloud-Datenbank mit Supabase & PostgreSQL aufsetzen</h1>
+<header class="header-row">
+  <h1>Lektion 6: Cloud-Datenbank mit Supabase & PostgreSQL aufsetzen</h1>
+  <a href="dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
+</header>
 <p class="welcome-text">Lerne, in wenigen Minuten eine eigene Cloud-Datenbank für ein Autohaus zu erstellen und direkt zu verwenden!</p>
 <div class="tab-buttons">
   <button data-index="0">6.1 Einführung</button>
