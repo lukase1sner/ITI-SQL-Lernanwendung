@@ -24,7 +24,8 @@ app.use(express.static(__dirname));
 let db;
 const initDB = async () => {
   db = await open({
-    filename: path.join(__dirname, 'database.sqlite'),
+   // Gleiche SQLite-Datei wie das Login-Backend verwenden
+       filename: path.join(__dirname, '../loginBackend/database.sqlite'),
     driver: sqlite3.Database
   });
 

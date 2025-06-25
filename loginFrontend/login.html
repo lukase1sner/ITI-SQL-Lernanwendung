@@ -79,10 +79,10 @@
       const data = await res.json();
 
       if (res.ok) {
-       // ✅ Login erfolgreich → Token & E-Mail speichern und weiterleiten
+       // ✅ Login erfolgreich → Token & Vorname speichern und weiterleiten
         alert("Login erfolgreich!");
         localStorage.setItem("token", data.token);
-        localStorage.setItem("email", e.target.email.value);
+        localStorage.setItem("firstName", data.firstName);
         window.location.href = "../hauptprogramm/dashboard.html"; // Weiterleitung ins Dashboard
 
       } else {

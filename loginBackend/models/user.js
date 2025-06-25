@@ -5,17 +5,19 @@ const db = require('../db');
  * Erstellt einen neuen Benutzer in der Datenbank.
  *
  * @param {string} email            - Die E-Mail-Adresse des neuen Nutzers
+  * @param {string} firstName        - Vorname des Nutzers
  * @param {string} hashedPassword   - Der gehashte Passwort-String (z. B. bcrypt)
  * @param {function} callback       - Callback-Funktion für Fehler oder Rückgabe des neuen Benutzers
  */
-const createUser = (email, hashedPassword, callback) => {
-  const query = `INSERT INTO users (email, password) VALUES (?, ?)`;
+const createUser = (email, firstName, hashedPassword, callback) => {
+  const query = `INSERT INTO users (email, first_name, password) VALUES (?, ?, ?)`;
 
-  db.run(query, [email, hashedPassword], function (err) {
+  db.run(query, [email, firstName, hashedPassword], function (err) {
+
     if (err) return callback(err); // Fehler weiterleiten (z. B. bei doppelter E-Mail)
 
     // Rückgabe des neu erstellten Benutzers mit generierter ID
-    callback(null, { id: this.lastID, email });
+    callback(null, { id: this.lastID, email, first_name: firstName });
   });
 };
 

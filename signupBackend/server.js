@@ -10,7 +10,7 @@ const registerRoute = require('./routes/register'); // Registrierung + user_stat
 const statsRoutes = require('./routes/stats');      // Statistiken abrufen (authentifiziert)
 
 const app = express();       // Express-Instanz erstellen
-const PORT = 3001;           // Port, auf dem der Server läuft
+const PORT = 3002;           // Port, auf dem der Server läuft
 
 // --------------------- Middleware ---------------------
 

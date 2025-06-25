@@ -27,8 +27,8 @@ async function ladeStatistiken() {
 function setzeUsername() {
   const el = document.getElementById('username');
   if (!el) return;
-  const email = localStorage.getItem('email');
-  if (email) el.textContent = email;
+  const firstName = localStorage.getItem('firstName');
+    if (firstName) el.textContent = firstName;
 }
 
 

@@ -13,7 +13,7 @@ const JWT_SECRET = 'dein_geheimer_token_schlüssel';
 // --------------------- Registrierung ---------------------
 
 router.post('/register', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, firstName } = req.body;
 
   // Prüfen, ob die E-Mail bereits registriert ist
   getUserByEmail(email, async (err, user) => {
@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Benutzer anlegen
-      createUser(email, hashedPassword, (err, newUser) => {
+       createUser(email, firstName, hashedPassword, (err, newUser) => {
         if (err) {
           return res.status(500).json({ message: 'Fehler bei Registrierung' });
         }
@@ -68,8 +68,8 @@ router.post('/login', (req, res) => {
         { expiresIn: '1h' }
       );
 
-      // Token und userId senden
-      res.status(200).json({ token, userId: user.id });
+       // Token, userId und Vorname senden
+            res.status(200).json({ token, userId: user.id, firstName: user.first_name });
     } catch (compareErr) {
       res.status(500).json({ message: 'Fehler beim Verifizieren des Passworts' });
     }
