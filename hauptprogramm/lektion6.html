@@ -160,15 +160,53 @@
       margin: 2.1em 0;
       font-weight: 500;
     }
+    .quiz-question {
+      margin-bottom: 1em;
+    }
+    .quiz-question input {
+      width: 100%;
+      margin-top: 0.4em;
+      padding: 0.4em 0.6em;
+      border-radius: 0.4em;
+      border: 1px solid #00f2ff;
+      background: #1a1e33;
+      color: #fff;
+    }
+    .quiz-question button {
+      margin-top: 0.5em;
+      padding: 0.5em 1em;
+      background-color: #00f2ff;
+      border: none;
+      color: #11142d;
+      font-weight: bold;
+      border-radius: 0.4em;
+      cursor: pointer;
+    }
+    .quiz-question button:hover {
+      background-color: #1cd7ff;
+    }
+    .feedback {
+      margin-top: 0.3em;
+      font-weight: bold;
+    }
     @media (max-width: 600px) {
       .lesson-content { padding: 1.2rem 0.7rem; }
       .tab-buttons { gap: 0.4rem; }
       .tab-buttons button { padding: 0.5rem 0.9rem; font-size: 0.98rem; }
     }
-     .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
-  .btn-dashboard{display:inline-block;background-color:#8b5cf6;color:#fff;padding:0.6rem 1.5rem;border-radius:1.2rem;font-weight:bold;text-decoration:none;transition:background 0.3s,transform 0.2s;}
-  .btn-dashboard:hover{background-color:#a78bfa;transform:scale(1.05);}
-  .header-row .btn-dashboard{margin-top:0;}
+    .header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+    .btn-dashboard {
+      display:inline-block;
+      background-color:#8b5cf6;
+      color:#fff;
+      padding:0.6rem 1.5rem;
+      border-radius:1.2rem;
+      font-weight:bold;
+      text-decoration:none;
+      transition:background 0.3s,transform 0.2s;
+    }
+    .btn-dashboard:hover { background-color:#a78bfa; transform:scale(1.05); }
+    .header-row .btn-dashboard { margin-top:0; }
   </style>
 </head>
 <body>
@@ -340,11 +378,31 @@ fetch('https://xyz.supabase.co/rest/v1/fahrzeuge', {
     content: `
       <h2>Quiz & Zusammenfassung</h2>
       <div class="quiz-box">
-        <b>Quiz</b><br>
-        1. Was ist der Vorteil von Cloud-Datenbanken wie Supabase?<br>
-        2. Welche Tabelle speichert beim Autohaus die Fahrzeugdaten?<br>
-        3. Wie heißt der Zugangscode für externe API-Zugriffe?<br>
-        4. Warum ist Row Level Security (RLS) wichtig?
+        <b>Quiz</b>
+        <div class="quiz-question">
+          1. Was ist der Vorteil von Cloud-Datenbanken wie Supabase?<br>
+          <input id="q1" type="text" />
+          <button onclick="checkSingle('q1', ['installation', 'von überall'], 'Zugriff von überall, keine lokale Installation')">Antwort prüfen</button>
+          <div class="feedback" id="f1"></div>
+        </div>
+        <div class="quiz-question">
+          2. Welche Tabelle speichert beim Autohaus die Fahrzeugdaten?<br>
+          <input id="q2" type="text" />
+          <button onclick="checkSingle('q2', ['fahrzeuge'], 'fahrzeuge')">Antwort prüfen</button>
+          <div class="feedback" id="f2"></div>
+        </div>
+        <div class="quiz-question">
+          3. Wie heißt der Zugangscode für externe API-Zugriffe?<br>
+          <input id="q3" type="text" />
+          <button onclick="checkSingle('q3', ['anon key', 'zugangscode'], 'anon key')">Antwort prüfen</button>
+          <div class="feedback" id="f3"></div>
+        </div>
+        <div class="quiz-question">
+          4. Warum ist Row Level Security (RLS) wichtig?<br>
+          <input id="q4" type="text" />
+          <button onclick="checkSingle('q4', ['sicherheit', 'zugriff'], 'Schützt sensible Daten durch Zugriffskontrolle')">Antwort prüfen</button>
+          <div class="feedback" id="f4"></div>
+        </div>
       </div>
       <ul>
         <li>Mit Supabase kannst du in wenigen Minuten eine voll funktionsfähige, echte Datenbank aufsetzen – <b>ohne Installation</b>.</li>
@@ -364,6 +422,17 @@ function showContent(idx) {
   lessonContent.innerHTML = section.content;
   lessonContent.classList.remove('visible');
   setTimeout(() => lessonContent.classList.add('visible'), 60);
+}
+function checkSingle(id, keywords, solution) {
+  const input = document.getElementById(id).value.toLowerCase().trim();
+  const feedback = document.getElementById('f' + id.substring(1));
+  if (keywords.some(k => input.includes(k))) {
+    feedback.textContent = '✅ Richtig';
+    feedback.style.color = '#00f2ff';
+  } else {
+    feedback.innerHTML = `❌ Falsch<br><span style="font-weight:normal;color:#ccc;">Lösung: ${solution}</span>`;
+    feedback.style.color = '#ff6b6b';
+  }
 }
 mainButtons.forEach((btn, idx) => {
   btn.addEventListener('click', () => {
