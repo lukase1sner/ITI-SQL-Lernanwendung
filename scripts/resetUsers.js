@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-// 👉 zentrale DB im Projekt-Root:
+// 👉 zentrale DB im Root:
 const dbPath = path.resolve(__dirname, '../database.sqlite');
 
 const db = new sqlite3.Database(dbPath, (err) => {
@@ -13,14 +13,16 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
-// Tabelle: users
-db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        first_name TEXT,
-        email TEXT UNIQUE,
-        password TEXT
-    )
-`);
+db.serialize(() => {
+    db.run('DELETE FROM users', function (err) {
+        if (err) {
+            console.error('❌ Fehler beim Löschen:', err.message);
+        } else {
+            console.log(`✅ ${this.changes} User gelöscht.`);
+        }
+    });
+});
 
-module.exports = db;
+db.close(() => {
+    console.log('✅ DB-Verbindung geschlossen.');
+});
