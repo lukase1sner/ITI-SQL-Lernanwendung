@@ -7,7 +7,7 @@ const path = require('path');                // Für spätere Dateioperationen (
 
 // 👉 Routenmodule einbinden
 const registerRoute = require('./routes/register'); // Registrierung + user_stats
-const statsRoutes = require('./routes/stats');      // Statistiken abrufen (authentifiziert)
+
 
 const app = express();       // Express-Instanz erstellen
 const PORT = 3002;           // Port, auf dem der Server läuft
@@ -23,7 +23,7 @@ app.use(bodyParser.json());  // Parst JSON-Bodies → req.body verfügbar
 app.use('/api/auth', registerRoute);
 
 // Statistiken: GET /api/stats (z. B. für Dashboard)
-app.use('/api', statsRoutes);
+// (Route entfernt)
 
 // --------------------- Test-Endpunkt ---------------------
 
