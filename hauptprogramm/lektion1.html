@@ -4,118 +4,7 @@
     <meta charset="UTF-8">
     <title>Datenbank-Grundlagen</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-          margin: 0;
-          font-family: 'Segoe UI', sans-serif;
-          background: linear-gradient(135deg, #0b0e1a, #11142d);
-          color: #f0f0f0;
-          text-align: center;
-          padding: 2rem;
-        }
-        h1 { color: #00f2ff; }
-        .welcome-text { font-size: 1.2rem; margin-bottom: 2rem; color: #ccc; }
-        .tab-buttons {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 1rem;
-          margin-bottom: 2rem;
-        }
-        .tab-buttons button {
-          background: #1a1e33;
-          border: 2px solid #00f2ff;
-          color: #00f2ff;
-          padding: 0.8rem 1.6rem;
-          border-radius: 2rem;
-          cursor: pointer;
-          font-weight: bold;
-          font-size: 1rem;
-          transition: all 0.3s ease;
-        }
-        .tab-buttons button.active {
-          background: #00f2ff;
-          color: #11142d;
-          transform: scale(1.05);
-        }
-        .lesson-content {
-          background: #1c1f35;
-          padding: 2.5rem;
-          border-radius: 1rem;
-          max-width: 800px;
-          margin: 2rem auto;
-          display: none;
-          text-align: left;
-          line-height: 1.8;
-          font-size: 1.05rem;
-        }
-        .lesson-content h2 { color: #00f2ff; }
-        .lesson-content ul {
-          margin-top: 1.5rem;
-          margin-bottom: 2rem;
-          padding-left: 1.5rem;
-          list-style-type: disc;
-        }
-        .lesson-content li { margin-bottom: 0.8rem; }
-        .quiz-container {
-          margin: 2rem auto;
-          max-width: 600px;
-          text-align: left;
-        }
-        .answer-label {
-          display: block;
-          margin: 0.3rem 0;
-          padding: 0.2rem 0.4rem;
-          border-radius: 0.3rem;
-          cursor: pointer;
-        }
-        .answer-label.correct { background-color: #2e7d32; color: #fff; }
-        .answer-label.incorrect { background-color: #c62828; color: #fff; }
-        iframe {
-          width: 100%;
-          height: 450px;
-          border: none;
-          border-radius: 1rem;
-        }
-        .btn-dashboard {
-          display: inline-block;
-          background-color: #8b5cf6;
-          color: white;
-          padding: 0.8rem 1.5rem;
-          border-radius: 1.2rem;
-          font-weight: bold;
-          text-decoration: none;
-          transition: background 0.3s, transform 0.2s;
-          margin-top: 2rem;
-        }
-        .btn-dashboard:hover {
-          background-color: #a78bfa;
-          transform: scale(1.05);
-        }
-        .exercise-btn {
-          display: inline-block;
-          background-color: #00f2ff;
-          color: #11142d;
-          padding: 0.8rem 1.5rem;
-          border: none;
-          border-radius: 1.2rem;
-          font-weight: bold;
-          cursor: pointer;
-          transition: background 0.3s, transform 0.2s;
-          margin-top: 1.5rem;
-        }
-        .exercise-btn:hover {
-          background-color: #3be9ff;
-          transform: scale(1.05);
-        }
-        .header-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1.5rem;
-        }
-        .header-row .btn-dashboard { margin-top: 0; }
-    </style>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material-darker.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
@@ -127,6 +16,7 @@
     <h1>Willkommen zur Datenbank-Grundlagen-Reise 🚀</h1>
     <a href="dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
 </header>
+
 <p class="welcome-text">Wähle eine Lektion, um zu starten:</p>
 <div class="progress-container">
     <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
@@ -145,6 +35,7 @@
 <div class="lesson-content" id="lessonContent"></div>
 
 <div class="lesson-content" id="exerciseContent" style="display: none;">
+    <!-- Inhalte von aufgaben.html werden hier eingefügt -->
     <h2>📝 Aufgaben zu Lektion 1: Grundlagen relationaler Datenbanken</h2>
 
     <div class="quiz-container">
@@ -166,280 +57,63 @@
         <p id="result-q2" style="margin-top:1rem;font-weight:bold;"></p>
     </div>
 
+    <div class="quiz-container">
+        <p><strong>Aufgabe 3:</strong> Gib an, was die folgenden SQL-Befehle bewirken:</p>
+        <ul>
+            <li>GRANT → <input type="text" id="a3-1" placeholder="..."></li>
+            <li>CREATE TABLE → <input type="text" id="a3-2" placeholder="..."></li>
+            <li>SELECT → <input type="text" id="a3-3" placeholder="..."></li>
+            <li>INSERT → <input type="text" id="a3-4" placeholder="..."></li>
+        </ul>
+        <button class="exercise-btn" onclick="checkA3()">Antwort prüfen</button>
+        <p id="result-a3" style="margin-top:1rem;font-weight:bold;"></p>
+    </div>
+
+    <div class="quiz-container">
+        <p><strong>Aufgabe 4:</strong> Gib das passende Datenbankmodell an:</p>
+        <ul>
+            <li>Speichert Daten als Knoten und Kanten → <input type="text" id="a4-1" placeholder="..."></li>
+            <li>Daten werden als Objekte gespeichert → <input type="text" id="a4-2" placeholder="..."></li>
+            <li>Tabellen, Fremdschlüssel, SQL → <input type="text" id="a4-3" placeholder="..."></li>
+            <li>Baumstruktur mit einer Wurzel → <input type="text" id="a4-4" placeholder="..."></li>
+        </ul>
+        <button class="exercise-btn" onclick="checkA4()">Antwort prüfen</button>
+        <p id="result-a4" style="margin-top:1rem;font-weight:bold;"></p>
+    </div>
+
+    <div class="quiz-container">
+        <p><strong>Aufgabe 5:</strong> Fülle die Lücken:</p>
+        <p>Eine Transaktion ist <input type="text" id="a5-1" placeholder="..."> und sorgt für <input type="text" id="a5-2" placeholder="...">e Daten. Wenn ein Fehler auftritt, erfolgt ein <input type="text" id="a5-3" placeholder="...">, sonst ein <input type="text" id="a5-4" placeholder="...">.</p>
+        <button class="exercise-btn" onclick="checkA5()">Antwort prüfen</button>
+        <p id="result-a5" style="margin-top:1rem;font-weight:bold;"></p>
+    </div>
+    <div class="quiz-container">
+        <p><strong>Aufgabe 6:</strong> Was bedeutet ACID in Datenbanken?</p>
+        <label class="answer-label"><input type="checkbox" name="q6" value="a"> Atomarität</label>
+        <label class="answer-label"><input type="checkbox" name="q6" value="b"> Konsistenz</label>
+        <label class="answer-label"><input type="checkbox" name="q6" value="c"> Isolation</label>
+        <label class="answer-label"><input type="checkbox" name="q6" value="d"> Dauerhaftigkeit</label>
+        <label class="answer-label"><input type="checkbox" name="q6" value="e"> Zufälligkeit</label>
+        <button class="exercise-btn" onclick="checkQ6()">Antwort prüfen</button>
+        <p id="result-q6" style="margin-top:1rem;font-weight:bold;"></p>
+    </div>
+
+
+
 
 
 
 
 </div>
 
-<script>
-    const lessons = [
-      {
-        title: "Einführung in Datenbanken – Warum sie unverzichtbar sind",
-        description: "Datenbanken ermöglichen effiziente, strukturierte und sichere Datenverwaltung – insbesondere im Mehrbenutzerbetrieb. Hier lernst du, was eine Datenbank ist, warum sie besser als klassische Dateisysteme ist, und wie SQL dabei hilft.",
-        list: [
-          "📌 Eine Datenbank ist eine logisch strukturierte Sammlung von Daten, die durch ein Datenbankmanagementsystem (DBMS) verwaltet wird.",
-          "👥 Im Mehrbenutzerbetrieb greifen mehrere Programme und Benutzer gleichzeitig auf dieselben Daten zu – z. B. bei Flugbuchungen.",
-          "🧱 Klassische Dateiverwaltung erfordert, dass jedes Programm die physische Struktur der Daten kennt – Änderungen daran verursachen viel Aufwand.",
-          "🔒 Ein DBMS kapselt die physische Datenstruktur und stellt eine logische, standardisierte Schnittstelle bereit – das macht Anwendungen einfacher, portabler und weniger fehleranfällig.",
-          "💬 SQL (Structured Query Language) ist der internationale Standard für den Zugriff auf relationale Datenbanken – entwickelt seit 1970 und heute weit verbreitet (Oracle, PostgreSQL, MySQL usw.).",
-          "📄 SQL ist deklarativ: Man beschreibt, *was* man möchte – nicht, *wie* es umgesetzt wird.",
-          "📋 Grundlegende SQL-Befehle:",
-          "  • SELECT – Daten abfragen",
-          "  • INSERT – Neue Daten hinzufügen",
-          "  • UPDATE – Vorhandene Daten ändern",
-          "  • DELETE – Daten löschen",
-          "🍻 Beispiel: Ein Getränkehändler verwaltet sein Lager in einer SQL-Tabelle:",
-          "  • SELECT Sorte, Hersteller, Anzahl FROM Bierdepot WHERE Sorte = 'Weißbier'; → gibt alle Weißbiere aus",
-          "  • INSERT INTO Bierdepot VALUES (43, 'Pils', 'Dortmunder Union', 'Kasten', 6); → neue Biersorte hinzufügen",
-          "  • UPDATE Bierdepot SET Anzahl = Anzahl + 2 WHERE Nr = 11; → Lagerbestand erhöhen",
-          "  • DELETE FROM Bierdepot WHERE Nr = 47; → Bier löschen",
-          "🏢 Skalierung: Sobald mehrere Geschäftsbereiche oder Filialen hinzukommen, braucht es auch Kunden-, Personal- und Verkaufsdatenbanken – mit Benutzerrechten und parallelem Zugriff.",
-          "✅ Fazit: Datenbanken lösen viele technische und organisatorische Probleme der Datenhaltung – sie sind das Rückgrat moderner Anwendungen."
-        ],
-        video: "https://www.youtube.com/embed/k0GfZyol66M"
-      },
-      {
-        title: "Anforderungen an eine Datenbank – Was sie leisten muss",
-        description: "Datenbanken sollen nicht nur Daten speichern, sondern auch viele Herausforderungen lösen. Diese Lektion zeigt dir die wichtigsten Anforderungen an moderne Datenbanksysteme.",
-        list: [
-          "🔗 Daten sollen logisch zusammengehören und strukturiert gespeichert werden.",
-          "🌐 Daten können verteilt gespeichert sein (auch über mehrere Server oder Cloud) – das DBMS verwaltet das transparent.",
-          "🧹 Möglichst wenig Redundanz – also keine mehrfach gespeicherten Daten ohne Notwendigkeit.",
-          "📦 Redundanzen, die notwendig sind (z. B. Lagerbestand), müssen automatisch mit aktualisiert werden.",
-          "⚡ Abfragen und Änderungen müssen schnell erfolgen (unter 2 Sekunden Antwortzeit).",
-          "🔒 Zugriff auf Daten erfolgt über eine logische Schnittstelle – der Nutzer sieht nicht, wo die Daten physisch liegen.",
-          "📊 Das DBMS organisiert die Daten intern optimal und kann bei Bedarf neu strukturieren – ohne Auswirkung auf Programme.",
-          "🔐 Schutz auf Feldebene (nicht nur Datei): Nur berechtigte Personen sehen z. B. Gehaltsdaten.",
-          "🔑 Rollen, Passwörter und Sichten (z. B. nur Teilzugriff auf Daten) sind Pflicht.",
-          "🧠 Integrität: Daten müssen korrekt, widerspruchsfrei und plausibel sein (400h/Woche = Fehler).",
-          "🤝 Gleichzeitiger Zugriff (Concurrency): mehrere Nutzer dürfen gleichzeitig arbeiten, ohne Konflikte.",
-          "🧾 Jede Änderung muss protokolliert werden (Audit-Funktion) – z. B. bei Verdacht auf Manipulation.",
-          "🧯 Ausfallsicherheit: Schutz gegen Datenverlust bei Systemfehler, Brand usw.",
-          "📈 Kontrolle und Monitoring: Anzahl Nutzer, Auslastung, Netzwerke – alles muss messbar sein.",
-          "✅ Fazit: Eine Datenbank ist ein komplexes, sicheres, intelligentes System – mehr als nur Speicher."
-        ],
-        video: "https://www.youtube.com/embed/O9T6d1ZcHgo"
-      },
-      {
-  title: "DBA: Aufgaben und Rolle des Datenbank-Administrators",
-  description: "Hier erfährst du, warum ein Datenbank-Administrator (DBA) für eine moderne Datenbank so wichtig ist und was zu seinen Aufgaben gehört.",
-  list: [
-    "🛠️ Der DBA richtet die Datenbank ein (Tabellen, Indizes, interne Strukturen, Partitionierung, Verteilung der Daten).",
-    "🔍 Er kontrolliert und verwaltet die Datenbank im laufenden Betrieb: Benutzerverwaltung, Zugriffsrechte, Überwachung, Fehlerbehandlung.",
-    "🔑 Nur der DBA hat alle Rechte auf die Datenbank (Vollzugriff).",
-    "👤 Normale Benutzer können Daten abfragen und ändern, aber nicht die Datenbankstruktur verändern.",
-    "📑 Der DBA teilt die Rechte zu: Wer darf was? (z. B. Abfragen, Ändern, Löschen, Struktur anlegen)",
-    "🔒 Aufgaben- und Rollentrennung ist wichtig für Sicherheit und Übersichtlichkeit.",
-    "📋 Die Datenbankschnittstelle ist in drei Teile unterteilt:",
-    "  • DDL (Data Description Language): Struktur-Befehle wie CREATE TABLE, DROP TABLE, CREATE VIEW, GRANT. Wird vom DBA genutzt.",
-    "  • Kontrollsprache (oft Teil der DDL): Rechteverwaltung und Zugriffskontrolle.",
-    "  • DML (Data Manipulation Language): Daten abfragen/verändern (SELECT, INSERT, UPDATE, DELETE). Wird von normalen Benutzern genutzt.",
-    "⚡ Der DBA reagiert auf Performance-Probleme, hilft Anwendern und optimiert bei Bedarf das System.",
-    "🎯 Fazit: Der DBA ist der technische Kopf hinter der Datenbank und sorgt für reibungslosen, sicheren und leistungsfähigen Betrieb."
-  ],
-  video: "https://www.youtube.com/embed/BmDhbELOu60"
-},
-
-     {
-  title: "Modelle: Die wichtigsten Datenbankmodelle im Überblick",
-  description: "Lerne die vier klassischen Datenbankmodelle und moderne Entwicklungen wie NoSQL kennen. Verstehe ihre Struktur, Vor- und Nachteile sowie typische Einsatzgebiete.",
-  list: [
-    "📚 **Relationale Datenbanken**: Das wohl bekannteste Modell. Alle Daten werden in Tabellen („Relationen“) organisiert. Tabellen können über Beziehungen (z. B. Fremdschlüssel) miteinander verbunden sein. Die Struktur ist mathematisch fundiert (relationale Algebra) und flexibel: Neue Tabellen können leicht hinzugefügt oder entfernt werden.",
-    "  - **Vorteile:** Einfach zu ändern, leicht programmierbar und verwaltbar, sehr weit verbreitet. Die meisten modernen Datenbanken (z. B. Oracle, MySQL, PostgreSQL, MS SQL Server) sind relational.",
-    "  - **Nachteile:** Komplexe Abfragen benötigen oft Daten aus mehreren Tabellen, was viele Ein-/Ausgaben und hohe Rechnerleistung erfordert. Teilweise kommt es zu Redundanzen.",
-    "",
-    "🧩 **Objektorientierte Datenbanken**: Hier werden Daten als Objekte gespeichert, ähnlich wie in objektorientierter Programmierung (mit Klassen, Vererbung und Kapselung). Ein Objekt kann z. B. eine Person, eine Adresse oder eine Rechnung sein.",
-    "  - Objektorientierte Ansätze machen es einfach, komplexe reale Strukturen direkt abzubilden – besonders für technische oder multimediale Anwendungen.",
-    "  - In der Praxis gibt es oft **objektrelationale Datenbanken**, die relationale Tabellen um objektorientierte Elemente erweitern. Bekannte Vertreter: Oracle, DB2, PostgreSQL.",
-    "  - **Vorteile:** Realitätstreue Abbildung, universell einsetzbar, oft (teilweise) aufwärtskompatibel zu relationalen DBs.",
-    "  - **Nachteile:** Komplexerer Aufbau, mehr Aufwand für Entwurf und Pflege, tendenziell höhere Rechneranforderungen.",
-    "",
-    "🌳 **Hierarchische Datenbanken**: Eines der ältesten Modelle (seit den 1960ern). Die Datenstruktur entspricht einem Baum: Es gibt eine Wurzel, von der alle anderen Knoten abzweigen. Der Zugriff erfolgt immer von der Wurzel zum gewünschten Blatt.",
-    "  - **Vorteile:** Extrem kurze Zugriffszeiten und minimale Redundanz, da die Struktur sehr direkt ist.",
-    "  - **Nachteile:** Sehr unflexibel: Änderungen an der Struktur sind aufwendig oder kaum möglich. Komplexe Programmierung.",
-    "  - Typischer Vertreter: IMS von IBM.",
-    "",
-    "🌐 **Netzwerkartige Datenbanken**: Entstanden als flexiblere Alternative zu hierarchischen DBs. Hier können Datenpunkte beliebig über ein Netz miteinander verbunden sein – nicht nur wie in einem Baum.",
-    "  - **Vorteile:** Mehr Flexibilität bei der Strukturierung der Daten, kurze Zugriffszeiten, geringe Redundanz.",
-    "  - **Nachteile:** Die Programmierung ist noch komplexer und Änderungen an der Struktur sind trotzdem aufwendig.",
-    "  - Bekannte Vertreter: IDMS (Computer Associates), UDS (Fujitsu).",
-    "",
-    "🚀 **Moderne Entwicklungen – NoSQL und mehr**: Für riesige Datenmengen (wie sie z. B. im Internet bei Google, Amazon, Facebook entstehen) reichen klassische Modelle oft nicht aus. Hier sind neue Konzepte entstanden, die unter dem Begriff **NoSQL** oder „Not Only SQL“ zusammengefasst werden.",
-    "  - NoSQL-Systeme verzichten meist auf das strenge Tabellen-/Relationenschema und bieten damit mehr Flexibilität, Skalierbarkeit und Performance.",
-    "  - Konsistenz wird zugunsten von Geschwindigkeit teilweise aufgeweicht (z. B. eventual consistency).",
-    "",
-    "  **NoSQL-Typen im Überblick:**",
-    "  • **Key/Value- und dokumentenbasierte Modelle:** Sehr flexibel, keine feste Struktur, für unterschiedlichste Dokumente geeignet. Beispiele: MongoDB, CouchDB, Berkley-DB.",
-    "  • **Spaltenorientierte Modelle:** Speichern Daten nicht zeilenweise, sondern spaltenweise. Das ermöglicht schnelle Abfragen auf einzelne Eigenschaften. Beispiele: Google BigTable, HBase, Cassandra.",
-    "  • **Graphdatenbanken:** Speichern Daten als Knoten und Kanten eines Graphen, optimal für komplexe Beziehungen (z. B. soziale Netzwerke, Routenfindung). Beispiele: Neo4j, Sones.",
-    "",
-    "✅ **Fazit:** Das relationale Modell dominiert klassische Datenbanksysteme, aber je nach Anwendung gewinnen NoSQL-Lösungen an Bedeutung – vor allem für große, heterogene oder hochvernetzte Datenmengen."
-  ],
-  video: "https://www.youtube.com/embed/Z5PciTwU6ro"
-},
-
-      {
-  title: "Transaktionen: Was ist das und warum sind sie so wichtig?",
-  description: "Erfahre, warum Transaktionen das Herzstück sicherer Datenbankanwendungen sind – und was sie von einfachen Abfragen unterscheidet.",
-  list: [
-    "🟢 In einer Datenbank gibt es drei Arten von Zugriffen:",
-    "  • **Abfrage (Query):** Nur Lesen der Daten, keine Änderung (z. B. SELECT-Befehl in SQL).",
-    "  • **Mutation:** Verändern, Löschen oder Einfügen von Daten (z. B. UPDATE, DELETE, INSERT in SQL).",
-    "  • **Transaktion:** Eine Zusammenfassung mehrerer Abfragen und/oder Mutationen zu einer einzigen, konsistenzwahrenden Operation.",
-    "",
-    "💡 **Was ist eine Transaktion?**",
-    "  • Eine Transaktion besteht oft aus mehreren Einzelschritten.",
-    "  • Sie stellt sicher, dass die Datenbank immer konsistent bleibt – auch wenn zwischendurch Fehler auftreten.",
-    "",
-    "🧾 **Beispiel:** Überweisung innerhalb einer Bank:",
-    "  1. Vom Konto A wird Geld abgebucht.",
-    "  2. Dem Konto B wird Geld gutgeschrieben.",
-    "  → Nur wenn beide Aktionen zusammen erfolgreich sind, bleibt die Datenbank konsistent.",
-    "",
-    "⚠️ **Warum reicht eine Mutation nicht?**",
-    "  • Wenn nur das Abbuchen klappt, aber das Gutschreiben nicht, entsteht eine falsche Gesamtsumme – die Datenbank wäre inkonsistent.",
-    "",
-    "🔒 **Eigenschaften von Transaktionen:**",
-    "  • Eine Transaktion ist **atomar**: Sie wird ganz oder gar nicht ausgeführt.",
-    "  • Sie sorgt dafür, dass die Datenbank immer widerspruchsfrei bleibt (Konsistenz).",
-    "  • Besonders wichtig bei gleichzeitigen Zugriffen und Systemfehlern.",
-    "",
-    "💡 **Kommerzielle Datenbanken verlangen für alle Änderungen Transaktionen – das garantiert Datensicherheit.**"
-  ],
-  video: "https://www.youtube.com/embed/qcPJtik203M"
-},
-
-    {
-  title: "ACID: Das Rückgrat jeder stabilen Datenbank",
-  description: "ACID steht für die vier wichtigsten Prinzipien, damit Transaktionen in Datenbanken sicher und zuverlässig ablaufen. Ohne ACID gäbe es keine Datensicherheit bei Mehrbenutzerbetrieb!",
-  list: [
-    "🔹 **ACID** ist ein Konsistenzmodell für Transaktionen in Datenbanken. Die vier Buchstaben stehen für:",
-    "  • **A** – Atomarität: Eine Transaktion wird entweder ganz oder gar nicht ausgeführt. Es gibt keine halben Änderungen.",
-    "  • **C** – Konsistenz: Nach einer Transaktion ist die Datenbank weiterhin widerspruchsfrei. Alle Geschäftsregeln bleiben erhalten.",
-    "  • **I** – Isolation: Transaktionen laufen unabhängig voneinander ab. Es sieht so aus, als hätte jede Transaktion das System für sich alleine.",
-    "  • **D** – Dauerhaftigkeit (Durability): Ist eine Transaktion einmal abgeschlossen (COMMIT), bleiben die Daten dauerhaft erhalten – auch nach Stromausfall oder Absturz.",
-    "",
-    "✅ In SQL gibt es zwei wichtige Befehle im Zusammenhang mit ACID:",
-    "  • **COMMIT:** Bestätigt alle Änderungen einer Transaktion – sie sind jetzt dauerhaft gespeichert.",
-    "  • **ROLLBACK:** Macht alle Änderungen einer Transaktion rückgängig, falls etwas schiefgeht.",
-    "",
-    "💡 **Warum ist ACID so wichtig?**",
-    "  • Schützt die Datenbank bei Fehlern, Systemausfällen oder gleichzeitigen Zugriffen mehrerer Benutzer.",
-    "  • Sorgt dafür, dass große Unternehmen, Banken und Versicherungen ihre Daten korrekt und sicher verwalten können.",
-    "",
-    "🚦 **Fazit:** ACID ist kein bloßes Schlagwort, sondern ein Muss für jede professionelle Datenbankanwendung."
-  ],
-  video: "https://www.youtube.com/embed/PnnOXFZJiDo"
-},
-
-];
-
-    const buttons = document.querySelectorAll(".tab-buttons button");
-    const lessonBox = document.getElementById("lessonContent");
-    const exerciseBox = document.getElementById("exerciseContent");
-
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const index = parseInt(btn.dataset.index);
-        if (index === 6) {
-          exerciseBox.style.display = "block";
-          lessonBox.style.display = "none";
-        } else {
-          const lesson = lessons[index];
-          lessonBox.innerHTML = `
-            <h2>${lesson.title}</h2>
-            <p>${lesson.description}</p>
-            <ul>${lesson.list.map(item => `<li>${item}</li>`).join("")}</ul>
-            <p><strong>Kurzes Video zum Einstieg:</strong></p>
-            <iframe src="${lesson.video}" allowfullscreen></iframe>
-          `;
-          lessonBox.style.display = "block";
-          exerciseBox.style.display = "none";
-        }
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-      });
-    });
-
-   function checkQ1() {
-  const radios = document.querySelectorAll('input[name="q1"]');
-  const labels = document.querySelectorAll('.answer-label');
-  const result = document.getElementById('result-q1');
-
-  labels.forEach(l => l.classList.remove('correct', 'incorrect'));
-  let selected;
-  radios.forEach(r => {
-    if (r.checked) selected = r;
-    r.disabled = true;
-  });
-
-  if (!selected) {
-    result.textContent = "❗ Bitte wähle eine Antwort aus.";
-    result.style.color = "#ffaa00";
-    return;
-  }
-
-  const label = selected.closest('label');
-  if (selected.value === 'a') {
-    label.classList.add('correct');
-    result.textContent = "✅ Richtig! SQL steht für Structured Query Language.";
-    result.style.color = "#00f2ff";
-    confetti(); // 🎉 Optional, falls du canvas-confetti nutzt
-  } else {
-    label.classList.add('incorrect');
-    result.textContent = "❌ Falsch. SQL steht für Structured Query Language.";
-    result.style.color = "#ff6b6b";
-  }
-}
-
-
- function checkQ2() {
-  const checkboxes = document.querySelectorAll('input[name="q2"]');
-  const labels = document.querySelectorAll('#q2-container .answer-label');
-  const result = document.getElementById('result-q2');
-
-  const correct = ['a', 'b'];
-  let selectedValues = [];
-
-  labels.forEach(l => l.classList.remove('correct', 'incorrect'));
-
-  checkboxes.forEach(cb => {
-    cb.disabled = true;
-    if (cb.checked) selectedValues.push(cb.value);
-  });
-
-  const isCorrect = correct.every(v => selectedValues.includes(v)) &&
-                    selectedValues.every(v => correct.includes(v));
-
-  if (isCorrect) {
-    checkboxes.forEach(cb => {
-      if (correct.includes(cb.value)) {
-        cb.closest('label').classList.add('correct');
-      }
-    });
-    result.textContent = "✅ Sehr gut! Du hast alle richtigen Aussagen erkannt.";
-    result.style.color = "#00f2ff";
-    confetti();
-  } else {
-    checkboxes.forEach(cb => {
-      if (cb.checked) {
-        cb.closest('label').classList.add(correct.includes(cb.value) ? 'correct' : 'incorrect');
-      }
-    });
-    result.textContent = "❌ Nicht ganz richtig. SQL ist deklarativ und wird in relationalen Datenbanken verwendet.";
-    result.style.color = "#ff6b6b";
-  }
-}
-
-
-</script>
 
 <footer style="text-align: center;">
     <a href="dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script src="lektion1.js"></script>
+<script src="lessons.js"></script>
+<script src="aufgaben.js"></script>
+<script src="main.js"></script>
 </body>
 </html>

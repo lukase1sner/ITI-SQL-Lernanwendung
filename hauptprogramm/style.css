@@ -1,24 +1,27 @@
 /* ======== Basis-Layout ======== */
 body {
-  background-color: #0b0e1a; /* Dunkler Hintergrund für Kontrast */
-  color: #e0e0e0;            /* Standard-Textfarbe */
-  font-family: 'Segoe UI', sans-serif; /* Lesbare, moderne Schriftart */
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0b0e1a, #11142d);
+  color: #f0f0f0;
+  text-align: center;
+  padding: 2rem;
 }
 
 /* ======== Sidebar / Navigationsleiste ======== */
 .sidebar {
   width: 250px;
-  background-color: #14172b;       /* Dunkles Blau-Violett als Hintergrund */
-  height: 100vh;                   /* Volle Bildschirmhöhe */
+  background-color: #14172b;
+  height: 100vh;
   padding: 2rem 1rem;
-  box-shadow: 4px 0 20px rgba(0, 242, 255, 0.1); /* Leuchtende Seitenkante */
+  box-shadow: 4px 0 20px rgba(0, 242, 255, 0.1);
   position: fixed;
   top: 0;
   left: 0;
 }
 
 .sidebar h2 {
-  color: #00f2ff;                  /* Türkis-Akzentfarbe */
+  color: #00f2ff;
   font-weight: bold;
   text-align: center;
   margin-bottom: 2rem;
@@ -37,17 +40,17 @@ body {
 }
 
 .sidebar a:hover {
-  background-color: #202336;       /* Hover-Hintergrund */
-  color: #00f2ff;                  /* Hover-Farbe: Akzent */
+  background-color: #202336;
+  color: #00f2ff;
 }
 
 .sidebar i {
-  filter: brightness(1.3);         /* Icons leicht heller dargestellt */
+  filter: brightness(1.3);
 }
 
 /* ======== Hauptinhalt ======== */
 .main-content {
-  margin-left: 270px;              /* Platz für Sidebar schaffen */
+  margin-left: 270px;
   padding: 2rem;
   max-width: calc(100% - 270px);
 }
@@ -66,10 +69,10 @@ body {
 }
 
 .dashboard-header h1::before {
-  content: '🧠 '; /* Emoji als visuelles Element */
+  content: '🧠 ';
 }
 
-/* ======== Karten-Komponenten (z. B. Status, Lektionen) ======== */
+/* ======== Karten-Komponenten ======== */
 .card {
   background-color: #1a1e33;
   border: none;
@@ -81,11 +84,10 @@ body {
 }
 
 .card:hover {
-  transform: scale(1.02);          /* Leichter Zoom beim Hover */
+  transform: scale(1.02);
   box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
 }
 
-/* Spezielle Karten für Lektionen */
 .lesson-card {
   background-color: #2a2e4a;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -93,7 +95,7 @@ body {
 }
 
 .lesson-card:hover {
-  transform: translateY(-4px) scale(1.02); /* leichter Aufwärts-Hovereffekt */
+  transform: translateY(-4px) scale(1.02);
   box-shadow: 0 0 25px rgba(0, 242, 255, 0.2);
 }
 
@@ -104,13 +106,13 @@ body {
 
 /* ======== Buttons mit Leuchteffekt ======== */
 .btn-glow {
-  background-color: #8b5cf6;         /* Violett */
+  background-color: #8b5cf6;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 1rem;
   font-weight: bold;
-  box-shadow: 0 0 15px #8b5cf670;    /* Leuchteffekt */
+  box-shadow: 0 0 15px #8b5cf670;
   transition: all 0.3s ease-in-out;
 }
 
@@ -120,7 +122,7 @@ body {
   box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
 }
 
-/* ======== Statistiken (Level, XP, Zeit etc.) ======== */
+/* ======== Statistiken ======== */
 .card-stats {
   display: flex;
   gap: 2rem;
@@ -133,7 +135,7 @@ body {
   border-radius: 1rem;
   padding: 1rem;
   text-align: center;
-  box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.05); /* innerer Glow */
+  box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.05);
 }
 
 .stat h5 {
@@ -141,7 +143,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
-/* ======== Fortschrittsbalken für Lektionen ======== */
+/* ======== Fortschrittsbalken ======== */
 .progress {
   height: 8px;
   background-color: #2d2f40;
@@ -150,11 +152,10 @@ body {
 }
 
 .progress-bar {
-  background-color: #00f2ff; /* Akzentfarbe für Fortschritt */
-  transition: width 0.6s ease; /* fließende Animation */
+  background-color: #00f2ff;
+  transition: width 0.6s ease;
 }
 
-/* ======== Text unter Lektionen & Fortschrittsanzeige ======== */
 .small.text-muted {
   color: #cfd4ff !important;
   font-size: 0.95rem;
@@ -175,5 +176,146 @@ body {
   font-weight: 500;
   margin-top: 0.4rem;
   display: block;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.6); /* Lesbarkeit auf dunklem Hintergrund */
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+/* ======== Lektionen & Quiz-Styling ======== */
+h1 {
+  color: #00f2ff;
+}
+
+.welcome-text {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #ccc;
+}
+
+.tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tab-buttons button {
+  background: #1a1e33;
+  border: 2px solid #00f2ff;
+  color: #00f2ff;
+  padding: 0.8rem 1.6rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.tab-buttons button.active {
+  background: #00f2ff;
+  color: #11142d;
+  transform: scale(1.05);
+}
+
+.lesson-content {
+  background: #1c1f35;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  max-width: 800px;
+  margin: 2rem auto;
+  display: none;
+  text-align: left;
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+.lesson-content h2 {
+  color: #00f2ff;
+}
+
+.lesson-content ul {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.lesson-content li {
+  margin-bottom: 0.8rem;
+}
+
+.quiz-container {
+  margin: 2rem auto;
+  max-width: 600px;
+  text-align: left;
+}
+
+.answer-label {
+  display: block;
+  margin: 0.3rem 0;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.answer-label.correct {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.answer-label.incorrect {
+  background-color: #c62828;
+  color: #fff;
+}
+
+iframe {
+  width: 100%;
+  height: 450px;
+  border: none;
+  border-radius: 1rem;
+}
+
+.btn-dashboard {
+  display: inline-block;
+  background-color: #8b5cf6;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 2rem;
+}
+
+.btn-dashboard:hover {
+  background-color: #a78bfa;
+  transform: scale(1.05);
+}
+
+.exercise-btn {
+  display: inline-block;
+  background-color: #00f2ff;
+  color: #11142d;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 1.5rem;
+}
+
+.exercise-btn:hover {
+  background-color: #3be9ff;
+  transform: scale(1.05);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.header-row .btn-dashboard {
+  margin-top: 0;
 }
