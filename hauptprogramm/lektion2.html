@@ -4,82 +4,7 @@
     <meta charset="UTF-8">
     <title>Das Relationenmodell</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-          margin: 0;
-          font-family: 'Segoe UI', sans-serif;
-          background: linear-gradient(135deg, #0b0e1a, #11142d);
-          color: #f0f0f0;
-          text-align: center;
-          padding: 2rem;
-        }
-        h1 { color: #00f2ff; }
-        .welcome-text {
-          font-size: 1.2rem;
-          margin-bottom: 2rem;
-          color: #ccc;
-        }
-        .tab-buttons {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 1rem;
-          margin-bottom: 2rem;
-        }
-        .tab-buttons button {
-          background: #1a1e33;
-          border: 2px solid #00f2ff;
-          color: #00f2ff;
-          padding: 0.8rem 1.6rem;
-          border-radius: 2rem;
-          cursor: pointer;
-          font-weight: bold;
-          font-size: 1rem;
-          transition: all 0.3s ease;
-        }
-        .tab-buttons button.active {
-          background: #00f2ff;
-          color: #11142d;
-          transform: scale(1.05);
-        }
-        .lesson-content, .exercise-content {
-          background: #1c1f35;
-          padding: 2.5rem;
-          border-radius: 1rem;
-          max-width: 800px;
-          margin: 2rem auto;
-          display: none;
-          text-align: left;
-          line-height: 1.8;
-          font-size: 1.05rem;
-        }
-        .lesson-content h2, .exercise-content h2 {
-          color: #00f2ff;
-        }
-        .lesson-content ul {
-          margin-top: 1.5rem;
-          margin-bottom: 2rem;
-          padding-left: 1.5rem;
-          list-style-type: disc;
-        }
-        .lesson-content li {
-          margin-bottom: 0.8rem;
-        }
-        iframe {
-          width: 100%;
-          height: 450px;
-          border: none;
-          border-radius: 1rem;
-        }
-        .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
-        .btn-dashboard{display:inline-block;background-color:#8b5cf6;color:#fff;padding:0.6rem 1.5rem;border-radius:1.2rem;font-weight:bold;text-decoration:none;transition:background 0.3s,transform 0.2s;}
-        .btn-dashboard:hover{background-color:#a78bfa;transform:scale(1.05);}
-        .header-row .btn-dashboard{margin-top:0;}
-        .aufgaben-btn { background: #26c6da; color: #fff !important; border: none !important; }
-        .frage-block {margin-bottom:2rem;}
-        .frage-block button {margin-top:0.7em;}
-        .feedback {margin-top:0.4em;font-weight:bold;}
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -102,6 +27,7 @@
 <div class="exercise-content" id="exerciseContent"></div>
 
 <!-- Achte auf die Reihenfolge! -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="lessons2.js"></script>
 <script src="aufgaben2.js"></script>
 <script src="main2.js"></script>

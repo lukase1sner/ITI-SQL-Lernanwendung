@@ -79,30 +79,98 @@ document.addEventListener("DOMContentLoaded", () => {
 // === Eigene Quiz-Funktionen für aufgaben2.html (optional, je nach Aufbau der Aufgaben) ===
 // Beispiel: (Belass es so, falls du eigene Aufgaben-HTML weiter benutzt.)
 function checkQ1() {
-  const q = document.querySelectorAll('input[name="q1"]');
+    const inputs = document.querySelectorAll('input[name="q1"]');
+    const feedback = document.getElementById('feedbackQ1');
+    const labels = Array.from(inputs).map(i => i.closest('label'));
+    labels.forEach(l => l.classList.remove('correct', 'incorrect'));
   let correct = false;
-  q.forEach(r => { if(r.checked && r.dataset.solution) correct = true; });
-  document.getElementById('feedbackQ1').textContent = correct ? "✅ Richtig!" : "❌ Leider falsch.";
+
+  inputs.forEach(inp => {
+    if (inp.checked) {
+      correct = !!inp.dataset.solution;
+      inp.closest('label').classList.add(correct ? 'correct' : 'incorrect');
+    }
+    inp.disabled = true;
+  });
+
+  feedback.textContent = correct ? '✅ Richtig!' : '❌ Leider falsch.';
+  if (correct && window.confetti) window.confetti();
 }
+
 function checkQ2() {
-  const q = document.querySelectorAll('input[name="q2"]');
-  let correct = q[0].checked && !q[1].checked && q[2].checked && !q[3].checked;
-  document.getElementById('feedbackQ2').textContent = correct ? "✅ Richtig!" : "❌ Leider falsch.";
+   const inputs = document.querySelectorAll('input[name="q2"]');
+   const feedback = document.getElementById('feedbackQ2');
+   const labels = Array.from(inputs).map(i => i.closest('label'));
+   labels.forEach(l => l.classList.remove('correct', 'incorrect'));
+
+   let allCorrect = true;
+   inputs.forEach(inp => {
+     if (inp.dataset.solution) {
+       if (!inp.checked) allCorrect = false;
+     } else {
+       if (inp.checked) allCorrect = false;
+     }
+   });
+
+   inputs.forEach(inp => {
+     const label = inp.closest('label');
+     if (inp.checked) {
+       label.classList.add(inp.dataset.solution ? 'correct' : 'incorrect');
+     } else if (allCorrect && inp.dataset.solution) {
+       label.classList.add('correct');
+     }
+     inp.disabled = true;
+   });
+
+   feedback.textContent = allCorrect ? '✅ Richtig!' : '❌ Leider falsch.';
+   if (allCorrect && window.confetti) window.confetti();
 }
+
 function checkQ3() {
-  const val = document.getElementById('q3input').value.trim().toLowerCase();
-  document.getElementById('feedbackQ3').textContent =
-    (val === "tupel") ? "✅ Richtig!" : "❌ Leider falsch. (Richtig: Tupel)";
+   const input = document.getElementById('q3input');
+    const feedback = document.getElementById('feedbackQ3');
+    const val = input.value.trim().toLowerCase();
+    const correct = val === 'tupel';
+    input.disabled = true;
+    feedback.textContent = correct ? '✅ Richtig!' : '❌ Leider falsch. (Richtig: Tupel)';
+    if (correct && window.confetti) window.confetti();
 }
+
 function checkQ4() {
-  const q = document.querySelectorAll('input[name="q4"]');
+ const inputs = document.querySelectorAll('input[name="q4"]');
+  const feedback = document.getElementById('feedbackQ4');
+  const labels = Array.from(inputs).map(i => i.closest('label'));
+  labels.forEach(l => l.classList.remove('correct', 'incorrect'));
   let correct = false;
-  q.forEach(r => { if(r.checked && r.dataset.solution) correct = true; });
-  document.getElementById('feedbackQ4').textContent = correct ? "✅ Richtig!" : "❌ Leider falsch.";
+
+
+  inputs.forEach(inp => {
+    if (inp.checked) {
+      correct = !!inp.dataset.solution;
+      inp.closest('label').classList.add(correct ? 'correct' : 'incorrect');
+    }
+    inp.disabled = true;
+  });
+
+  feedback.textContent = correct ? '✅ Richtig!' : '❌ Leider falsch.';
+  if (correct && window.confetti) window.confetti();
 }
+
 function checkQ5() {
-  const q = document.querySelectorAll('input[name="q5"]');
+  const inputs = document.querySelectorAll('input[name="q5"]');
+   const feedback = document.getElementById('feedbackQ5');
+   const labels = Array.from(inputs).map(i => i.closest('label'));
+   labels.forEach(l => l.classList.remove('correct', 'incorrect'));
   let correct = false;
-  q.forEach(r => { if(r.checked && r.dataset.solution) correct = true; });
-  document.getElementById('feedbackQ5').textContent = correct ? "✅ Richtig!" : "❌ Leider falsch.";
+
+  inputs.forEach(inp => {
+    if (inp.checked) {
+      correct = !!inp.dataset.solution;
+      inp.closest('label').classList.add(correct ? 'correct' : 'incorrect');
+    }
+    inp.disabled = true;
+  });
+
+  feedback.textContent = correct ? '✅ Richtig!' : '❌ Leider falsch.';
+  if (correct && window.confetti) window.confetti();
 }
