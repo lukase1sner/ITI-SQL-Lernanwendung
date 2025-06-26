@@ -13,17 +13,12 @@
           text-align: center;
           padding: 2rem;
         }
-
-        h1 {
-          color: #00f2ff;
-        }
-
+        h1 { color: #00f2ff; }
         .welcome-text {
           font-size: 1.2rem;
           margin-bottom: 2rem;
           color: #ccc;
         }
-
         .tab-buttons {
           display: flex;
           flex-wrap: wrap;
@@ -31,7 +26,6 @@
           gap: 1rem;
           margin-bottom: 2rem;
         }
-
         .tab-buttons button {
           background: #1a1e33;
           border: 2px solid #00f2ff;
@@ -43,14 +37,12 @@
           font-size: 1rem;
           transition: all 0.3s ease;
         }
-
         .tab-buttons button.active {
           background: #00f2ff;
           color: #11142d;
           transform: scale(1.05);
         }
-
-        .lesson-content {
+        .lesson-content, .exercise-content {
           background: #1c1f35;
           padding: 2.5rem;
           border-radius: 1rem;
@@ -61,32 +53,32 @@
           line-height: 1.8;
           font-size: 1.05rem;
         }
-
-        .lesson-content h2 {
+        .lesson-content h2, .exercise-content h2 {
           color: #00f2ff;
         }
-
         .lesson-content ul {
           margin-top: 1.5rem;
           margin-bottom: 2rem;
           padding-left: 1.5rem;
           list-style-type: disc;
         }
-
         .lesson-content li {
           margin-bottom: 0.8rem;
         }
-
         iframe {
           width: 100%;
           height: 450px;
           border: none;
           border-radius: 1rem;
         }
-         .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
-  .btn-dashboard{display:inline-block;background-color:#8b5cf6;color:#fff;padding:0.6rem 1.5rem;border-radius:1.2rem;font-weight:bold;text-decoration:none;transition:background 0.3s,transform 0.2s;}
-  .btn-dashboard:hover{background-color:#a78bfa;transform:scale(1.05);}
-  .header-row .btn-dashboard{margin-top:0;}
+        .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+        .btn-dashboard{display:inline-block;background-color:#8b5cf6;color:#fff;padding:0.6rem 1.5rem;border-radius:1.2rem;font-weight:bold;text-decoration:none;transition:background 0.3s,transform 0.2s;}
+        .btn-dashboard:hover{background-color:#a78bfa;transform:scale(1.05);}
+        .header-row .btn-dashboard{margin-top:0;}
+        .aufgaben-btn { background: #26c6da; color: #fff !important; border: none !important; }
+        .frage-block {margin-bottom:2rem;}
+        .frage-block button {margin-top:0.7em;}
+        .feedback {margin-top:0.4em;font-weight:bold;}
     </style>
 </head>
 <body>
@@ -103,11 +95,14 @@
     <button data-index="2">🔑 Primärschlüssel</button>
     <button data-index="3">🧮 Relationale Integritätsregeln</button>
     <button data-index="4">∑ Relationale Algebra</button>
+    <button data-index="5" class="aufgaben-btn">📚 Aufgaben zu Lektion 2</button>
 </div>
 
 <div class="lesson-content" id="lessonContent"></div>
+<div class="exercise-content" id="exerciseContent"></div>
 
 <script>
+    // ----- Deine Lektionen wie gehabt -----
     const lessons = [
       {
         title: "Beispiel zu relationalen Datenbanken",
@@ -384,26 +379,114 @@
       }
     ];
 
+    // ----- Aufgaben für Lektion 2 -----
+    const aufgaben2 = `
+      <h2>📚 Aufgaben zu Lektion 2: Relationale Datenstrukturen</h2>
+      <div class="frage-block">
+        <strong>1. Was ist in einer relationalen Datenbank eine "Relation"?</strong><br>
+        <label><input type="radio" name="q1"> Ein Datenbankbenutzer</label><br>
+        <label><input type="radio" name="q1"> Eine Spalte</label><br>
+        <label><input type="radio" name="q1" data-solution="1"> Eine Tabelle</label><br>
+        <label><input type="radio" name="q1"> Eine Verbindung zwischen zwei Datenbanken</label><br>
+        <button onclick="checkQ1()">Antwort prüfen</button>
+        <div class="feedback" id="feedbackQ1"></div>
+      </div>
+      <div class="frage-block">
+        <strong>2. Welche Aussagen treffen auf "atomare Werte" zu? (Mehrfachauswahl)</strong><br>
+        <label><input type="checkbox" name="q2" data-solution="1"> In jedem Feld steht nur ein einzelner Wert</label><br>
+        <label><input type="checkbox" name="q2"> Ein Feld kann beliebig viele Werte enthalten</label><br>
+        <label><input type="checkbox" name="q2" data-solution="1"> Dient der Klarheit und Vermeidung von Fehlern</label><br>
+        <label><input type="checkbox" name="q2"> Es dürfen mehrere Städte in einer Zelle stehen</label><br>
+        <button onclick="checkQ2()">Antworten prüfen</button>
+        <div class="feedback" id="feedbackQ2"></div>
+      </div>
+      <div class="frage-block">
+        <strong>3. Ergänze: Wie nennt man eine einzelne Zeile einer Tabelle?</strong><br>
+        <input type="text" id="q3input" style="width:220px;"> <button onclick="checkQ3()">Antwort prüfen</button>
+        <div class="feedback" id="feedbackQ3"></div>
+      </div>
+      <div class="frage-block">
+        <strong>4. Welche Aussage zu Relationen ist <u>falsch</u>?</strong><br>
+        <label><input type="radio" name="q4"> Die Reihenfolge der Zeilen ist nicht festgelegt</label><br>
+        <label><input type="radio" name="q4"> Es gibt keine doppelten Zeilen</label><br>
+        <label><input type="radio" name="q4" data-solution="1"> In einem Feld dürfen mehrere Werte stehen</label><br>
+        <label><input type="radio" name="q4"> Jede Relation hat einen festen Datentyp je Attribut</label><br>
+        <button onclick="checkQ4()">Antwort prüfen</button>
+        <div class="feedback" id="feedbackQ4"></div>
+      </div>
+      <div class="frage-block">
+        <strong>5. Wofür steht der Begriff "Kardinalität"?</strong><br>
+        <label><input type="radio" name="q5"> Die Anzahl der Spalten</label><br>
+        <label><input type="radio" name="q5" data-solution="1"> Die Anzahl der Zeilen</label><br>
+        <label><input type="radio" name="q5"> Die Anzahl der Schlüssel</label><br>
+        <label><input type="radio" name="q5"> Die Anzahl der Tabellen</label><br>
+        <button onclick="checkQ5()">Antwort prüfen</button>
+        <div class="feedback" id="feedbackQ5"></div>
+      </div>
+    `;
+
+    // ---- Tab-Button-Logik ----
     const buttons = document.querySelectorAll(".tab-buttons button");
     const lessonBox = document.getElementById("lessonContent");
+    const exerciseBox = document.getElementById("exerciseContent");
 
-    buttons.forEach(btn => {
+    buttons.forEach((btn, idx) => {
       btn.addEventListener("click", () => {
-        const index = parseInt(btn.dataset.index);
-        const lesson = lessons[index];
-
-        lessonBox.innerHTML = `
-          <h2>${lesson.title}</h2>
-          <p>${lesson.description}</p>
-          <ul>${lesson.list.map(item => `<li>${item}</li>`).join("")}</ul>
-          <p><strong>Kurzes Video zum Einstieg:</strong></p>
-          <iframe src="${lesson.video}" allowfullscreen></iframe>
-        `;
-        lessonBox.style.display = "block";
-
+        if(idx === 5) {
+          lessonBox.style.display = "none";
+          exerciseBox.innerHTML = aufgaben2;
+          exerciseBox.style.display = "block";
+        } else {
+          const lesson = lessons[idx];
+          lessonBox.innerHTML = `
+            <h2>${lesson.title}</h2>
+            <p>${lesson.description}</p>
+            <ul>${lesson.list.map(item => `<li>${item}</li>`).join("")}</ul>
+            <p><strong>Kurzes Video zum Einstieg:</strong></p>
+            <iframe src="${lesson.video}" allowfullscreen></iframe>
+          `;
+          lessonBox.style.display = "block";
+          exerciseBox.style.display = "none";
+        }
         buttons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
       });
+    });
+
+    // ---- Aufgaben-Auswertung (Mini-Quiz JS) ----
+    function checkQ1() {
+      const q = document.querySelectorAll('input[name="q1"]');
+      let correct = false;
+      q.forEach(r => { if(r.checked && r.dataset.solution) correct = true; });
+      document.getElementById('feedbackQ1').textContent = correct ? "✅ Richtig!" : "❌ Leider falsch.";
+    }
+    function checkQ2() {
+      const q = document.querySelectorAll('input[name="q2"]');
+      let correct = q[0].checked && !q[1].checked && q[2].checked && !q[3].checked;
+      document.getElementById('feedbackQ2').textContent = correct ? "✅ Richtig!" : "❌ Leider falsch.";
+    }
+    function checkQ3() {
+      const val = document.getElementById('q3input').value.trim().toLowerCase();
+      document.getElementById('feedbackQ3').textContent =
+        (val === "tupel") ? "✅ Richtig!" : "❌ Leider falsch. (Richtig: Tupel)";
+    }
+    function checkQ4() {
+      const q = document.querySelectorAll('input[name="q4"]');
+      let correct = false;
+      q.forEach(r => { if(r.checked && r.dataset.solution) correct = true; });
+      document.getElementById('feedbackQ4').textContent = correct ? "✅ Richtig!" : "❌ Leider falsch.";
+    }
+    function checkQ5() {
+      const q = document.querySelectorAll('input[name="q5"]');
+      let correct = false;
+      q.forEach(r => { if(r.checked && r.dataset.solution) correct = true; });
+      document.getElementById('feedbackQ5').textContent = correct ? "✅ Richtig!" : "❌ Leider falsch.";
+    }
+
+    // Optional: Beim Laden Standardanzeige
+    document.addEventListener("DOMContentLoaded", () => {
+      // Standard: erste Lektion
+      buttons[0].click();
     });
 </script>
 
