@@ -1,4 +1,5 @@
 window.lessons = [
+  // --- Ursprüngliche Lektionen ---
   {
     title: "Einführung in Datenbanken – Grundlagen und Nutzen",
     description:
@@ -157,7 +158,7 @@ window.lessons = [
         "Hierarchisch = Schneller Zugriff, aber unflexibel.",
         "Objektorientiert = Gut für komplexe Strukturen, z.B. CAD."
       ],
-      solution: [0, 1, 2, 3] // Hier ggf. Renderer anpassen, aktuell nur als Info!
+      solution: [0, 1, 2, 3]
     },
     prerequisites: ["Die Rolle des Datenbankadministrators (DBA)"],
     nextLesson: "Transaktionen in Datenbanksystemen",
@@ -237,5 +238,6 @@ window.lessons = [
     prerequisites: ["Transaktionen in Datenbanksystemen"],
     nextLesson: null,
     video: "https://www.youtube.com/embed/PnnOXFZJiDo"
-  }
+  },
+
 ];
