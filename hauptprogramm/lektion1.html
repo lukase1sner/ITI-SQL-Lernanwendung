@@ -13,17 +13,8 @@
           text-align: center;
           padding: 2rem;
         }
-
-        h1 {
-          color: #00f2ff;
-        }
-
-        .welcome-text {
-          font-size: 1.2rem;
-          margin-bottom: 2rem;
-          color: #ccc;
-        }
-
+        h1 { color: #00f2ff; }
+        .welcome-text { font-size: 1.2rem; margin-bottom: 2rem; color: #ccc; }
         .tab-buttons {
           display: flex;
           flex-wrap: wrap;
@@ -31,7 +22,6 @@
           gap: 1rem;
           margin-bottom: 2rem;
         }
-
         .tab-buttons button {
           background: #1a1e33;
           border: 2px solid #00f2ff;
@@ -43,13 +33,11 @@
           font-size: 1rem;
           transition: all 0.3s ease;
         }
-
         .tab-buttons button.active {
           background: #00f2ff;
           color: #11142d;
           transform: scale(1.05);
         }
-
         .lesson-content {
           background: #1c1f35;
           padding: 2.5rem;
@@ -61,29 +49,34 @@
           line-height: 1.8;
           font-size: 1.05rem;
         }
-
-        .lesson-content h2 {
-          color: #00f2ff;
-        }
-
+        .lesson-content h2 { color: #00f2ff; }
         .lesson-content ul {
           margin-top: 1.5rem;
           margin-bottom: 2rem;
           padding-left: 1.5rem;
           list-style-type: disc;
         }
-
-        .lesson-content li {
-          margin-bottom: 0.8rem;
+        .lesson-content li { margin-bottom: 0.8rem; }
+        .quiz-container {
+          margin: 2rem auto;
+          max-width: 600px;
+          text-align: left;
         }
-
+        .answer-label {
+          display: block;
+          margin: 0.3rem 0;
+          padding: 0.2rem 0.4rem;
+          border-radius: 0.3rem;
+          cursor: pointer;
+        }
+        .answer-label.correct { background-color: #2e7d32; color: #fff; }
+        .answer-label.incorrect { background-color: #c62828; color: #fff; }
         iframe {
           width: 100%;
           height: 450px;
           border: none;
           border-radius: 1rem;
         }
-        /* Zurück-zum-Dashboard-Button */
         .btn-dashboard {
           display: inline-block;
           background-color: #8b5cf6;
@@ -95,14 +88,38 @@
           transition: background 0.3s, transform 0.2s;
           margin-top: 2rem;
         }
-
         .btn-dashboard:hover {
           background-color: #a78bfa;
           transform: scale(1.05);
         }
-          .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
-  .header-row .btn-dashboard{margin-top:0;}
+        .exercise-btn {
+          display: inline-block;
+          background-color: #00f2ff;
+          color: #11142d;
+          padding: 0.8rem 1.5rem;
+          border: none;
+          border-radius: 1.2rem;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background 0.3s, transform 0.2s;
+          margin-top: 1.5rem;
+        }
+        .exercise-btn:hover {
+          background-color: #3be9ff;
+          transform: scale(1.05);
+        }
+        .header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+        .header-row .btn-dashboard { margin-top: 0; }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material-darker.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/sql/sql.min.js"></script>
 </head>
 <body>
 
@@ -111,6 +128,9 @@
     <a href="dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
 </header>
 <p class="welcome-text">Wähle eine Lektion, um zu starten:</p>
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+</div>
 
 <div class="tab-buttons">
     <button data-index="0">📘 Einführung</button>
@@ -119,9 +139,38 @@
     <button data-index="3">📚 Modelle</button>
     <button data-index="4">🔁 Transaktionen</button>
     <button data-index="5">🔬 ACID</button>
+    <button data-index="6">📝 Aufgaben</button>
 </div>
 
 <div class="lesson-content" id="lessonContent"></div>
+
+<div class="lesson-content" id="exerciseContent" style="display: none;">
+    <h2>📝 Aufgaben zu Lektion 1: Grundlagen relationaler Datenbanken</h2>
+
+    <div class="quiz-container">
+        <p><strong>Quizfrage:</strong> Wofür steht SQL?</p>
+        <label class="answer-label"><input type="radio" name="q1" value="a"> Structured Query Language</label>
+        <label class="answer-label"><input type="radio" name="q1" value="b"> Stylish Question Language</label>
+        <label class="answer-label"><input type="radio" name="q1" value="c"> Simple Queue Language</label>
+        <button class="exercise-btn" onclick="checkQ1()">Antwort prüfen</button>
+        <p id="result-q1" style="margin-top:1rem;font-weight:bold;"></p>
+    </div>
+
+    <div class="quiz-container" id="q2-container">
+        <p><strong>Quizfrage 1.2:</strong> Was trifft auf SQL zu? (Mehrfachauswahl)</p>
+        <label class="answer-label"><input type="checkbox" name="q2" value="a"> SQL ist deklarativ</label>
+        <label class="answer-label"><input type="checkbox" name="q2" value="b"> SQL wird in relationalen Datenbanken verwendet</label>
+        <label class="answer-label"><input type="checkbox" name="q2" value="c"> SQL ist eine prozedurale Programmiersprache</label>
+        <label class="answer-label"><input type="checkbox" name="q2" value="d"> SQL ist veraltet</label>
+        <button class="exercise-btn" onclick="checkQ2()">Antworten prüfen</button>
+        <p id="result-q2" style="margin-top:1rem;font-weight:bold;"></p>
+    </div>
+
+
+
+
+
+</div>
 
 <script>
     const lessons = [
@@ -283,36 +332,114 @@
   ],
   video: "https://www.youtube.com/embed/PnnOXFZJiDo"
 },
-];
 
+];
 
     const buttons = document.querySelectorAll(".tab-buttons button");
     const lessonBox = document.getElementById("lessonContent");
+    const exerciseBox = document.getElementById("exerciseContent");
 
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         const index = parseInt(btn.dataset.index);
-        const lesson = lessons[index];
-
-        lessonBox.innerHTML = `
-          <h2>${lesson.title}</h2>
-          <p>${lesson.description}</p>
-          <ul>${lesson.list.map(item => `<li>${item}</li>`).join("")}</ul>
-          <p><strong>Kurzes Video zum Einstieg:</strong></p>
-          <iframe src="${lesson.video}" allowfullscreen></iframe>
-        `;
-        lessonBox.style.display = "block";
-
+        if (index === 6) {
+          exerciseBox.style.display = "block";
+          lessonBox.style.display = "none";
+        } else {
+          const lesson = lessons[index];
+          lessonBox.innerHTML = `
+            <h2>${lesson.title}</h2>
+            <p>${lesson.description}</p>
+            <ul>${lesson.list.map(item => `<li>${item}</li>`).join("")}</ul>
+            <p><strong>Kurzes Video zum Einstieg:</strong></p>
+            <iframe src="${lesson.video}" allowfullscreen></iframe>
+          `;
+          lessonBox.style.display = "block";
+          exerciseBox.style.display = "none";
+        }
         buttons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
       });
     });
+
+   function checkQ1() {
+  const radios = document.querySelectorAll('input[name="q1"]');
+  const labels = document.querySelectorAll('.answer-label');
+  const result = document.getElementById('result-q1');
+
+  labels.forEach(l => l.classList.remove('correct', 'incorrect'));
+  let selected;
+  radios.forEach(r => {
+    if (r.checked) selected = r;
+    r.disabled = true;
+  });
+
+  if (!selected) {
+    result.textContent = "❗ Bitte wähle eine Antwort aus.";
+    result.style.color = "#ffaa00";
+    return;
+  }
+
+  const label = selected.closest('label');
+  if (selected.value === 'a') {
+    label.classList.add('correct');
+    result.textContent = "✅ Richtig! SQL steht für Structured Query Language.";
+    result.style.color = "#00f2ff";
+    confetti(); // 🎉 Optional, falls du canvas-confetti nutzt
+  } else {
+    label.classList.add('incorrect');
+    result.textContent = "❌ Falsch. SQL steht für Structured Query Language.";
+    result.style.color = "#ff6b6b";
+  }
+}
+
+
+ function checkQ2() {
+  const checkboxes = document.querySelectorAll('input[name="q2"]');
+  const labels = document.querySelectorAll('#q2-container .answer-label');
+  const result = document.getElementById('result-q2');
+
+  const correct = ['a', 'b'];
+  let selectedValues = [];
+
+  labels.forEach(l => l.classList.remove('correct', 'incorrect'));
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+    if (cb.checked) selectedValues.push(cb.value);
+  });
+
+  const isCorrect = correct.every(v => selectedValues.includes(v)) &&
+                    selectedValues.every(v => correct.includes(v));
+
+  if (isCorrect) {
+    checkboxes.forEach(cb => {
+      if (correct.includes(cb.value)) {
+        cb.closest('label').classList.add('correct');
+      }
+    });
+    result.textContent = "✅ Sehr gut! Du hast alle richtigen Aussagen erkannt.";
+    result.style.color = "#00f2ff";
+    confetti();
+  } else {
+    checkboxes.forEach(cb => {
+      if (cb.checked) {
+        cb.closest('label').classList.add(correct.includes(cb.value) ? 'correct' : 'incorrect');
+      }
+    });
+    result.textContent = "❌ Nicht ganz richtig. SQL ist deklarativ und wird in relationalen Datenbanken verwendet.";
+    result.style.color = "#ff6b6b";
+  }
+}
+
+
 </script>
 
 <footer style="text-align: center;">
     <a href="dashboard.html" class="btn-dashboard">← Zurück zum Dashboard</a>
 </footer>
 
-
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="lektion1.js"></script>
 </body>
 </html>
