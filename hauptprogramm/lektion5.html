@@ -1418,24 +1418,27 @@ CREATE SCHEMA Bike
     lessonContent.classList.remove('visible');
     setTimeout(() => lessonContent.classList.add('visible'), 60);
 
-   if (subBtns.length && subContent) {
-  subBtns.forEach((sb, i) => {
-    sb.addEventListener('click', () => {
-      subBtns.forEach(x => x.classList.remove('active'));
-      sb.classList.add('active');
-      subContent.innerHTML = section.subsections[i].content;
-      addVerstandenButton(subContent);
-    });
-  });
-  // <<<<<<<<<<<<<<< FEHLTE IN MANCHEN KAPITELN >>>>>>>>>>>>>>>
-  // Erstes Subkapitel sofort anzeigen:
-  subBtns[0].click();
-} else {
-  // Wenn KEINE Subsections da sind (ganz normale Kapitel), Verstanden-Button ins lessonContent.
-  addVerstandenButton(lessonContent);
+  const subBtns = lessonContent.querySelectorAll('.subsection-buttons button');
+    const subContent = document.getElementById('subContent');
+
+    if (subBtns.length && subContent) {
+      subBtns.forEach((sb, i) => {
+        sb.addEventListener('click', () => {
+          subBtns.forEach(x => x.classList.remove('active'));
+          sb.classList.add('active');
+          subContent.innerHTML = section.subsections[i].content;
+          addVerstandenButton(subContent);
+        });
+      });
+      // <<<<<<<<<<<<<<< FEHLTE IN MANCHEN KAPITELN >>>>>>>>>>>>>>>
+      // Erstes Subkapitel sofort anzeigen:
+      subBtns[0].click();
+    } else {
+      // Wenn KEINE Subsections da sind (ganz normale Kapitel), Verstanden-Button ins lessonContent.
+      addVerstandenButton(lessonContent);
 }
 
-    }
+
   }
 
   mainButtons.forEach((btn, idx) => {
