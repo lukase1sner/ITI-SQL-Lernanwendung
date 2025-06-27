@@ -32,9 +32,9 @@ router.post('/', authenticateToken, (req, res) => {
     const xpToAdd = 20;
 
     const query = `INSERT INTO user_stats (user_id, xp) VALUES (?, ?)
-                       ON CONFLICT(user_id) DO UPDATE SET xp = xp + excluded.xp`;
+                   ON CONFLICT(user_id) DO UPDATE SET xp = xp + excluded.xp`;
 
-       db.run(query, [userId, xpToAdd], (xpErr) => {
+    db.run(query, [userId, xpToAdd], (xpErr) => {
       if (xpErr) {
         console.error('❌ Fehler beim Hinzufügen von XP:', xpErr.message);
         return res.status(500).json({ message: 'Fortschritt gespeichert, aber XP nicht erhöht' });
@@ -49,28 +49,21 @@ router.post('/', authenticateToken, (req, res) => {
   });
 });
 
-
 // 🔴 Fortschritt pro Lektion ermitteln
 router.get('/lesson/:id', authenticateToken, (req, res) => {
   const lessonId = req.params.id;
   const userId = req.user.id;
 
-  const totalQuery = `SELECT COUNT(DISTINCT button_id) AS cnt FROM button_progress WHERE lesson_id = ?`;
-  const doneQuery = `SELECT COUNT(*) AS cnt FROM button_progress WHERE lesson_id = ? AND user_id = ?`;
+  const query = 'SELECT percent FROM progress WHERE user_id = ? AND lesson_id = ?';
 
-  db.get(totalQuery, [lessonId], (err, totalRow) => {
-    if (err) return res.status(500).json({ message: 'Fehler beim Abrufen' });
-    db.get(doneQuery, [lessonId, userId], (err2, doneRow) => {
-      if (err2) return res.status(500).json({ message: 'Fehler beim Abrufen' });
-      const total = totalRow?.cnt || 0;
-      const done = doneRow?.cnt || 0;
-      const percent = total ? Math.round((done / total) * 100) : 0;
-      res.json({ percent });
-    });
+  db.get(query, [userId, lessonId], (err, row) => {
+    if (err) {
+      return res.status(500).json({ message: 'Fehler beim Abrufen' });
+    }
+    const percent = row ? row.percent : 0;
+    res.json({ percent });
   });
 });
-
-
 
 // 🟡 Fortschritt abrufen
 router.get('/', authenticateToken, (req, res) => {
@@ -81,12 +74,13 @@ router.get('/', authenticateToken, (req, res) => {
     res.status(200).json(data);
   });
 });
+
 // 🟢 Verstanden-Button speichern und XP vergeben
 router.post('/button', authenticateToken, (req, res) => {
   const { buttonId, lessonId } = req.body;
   const userId = req.user.id;
 
-   const insertSql = `INSERT INTO button_progress (user_id, button_id, lesson_id) VALUES (?, ?, ?)
+  const insertSql = `INSERT INTO button_progress (user_id, button_id, lesson_id) VALUES (?, ?, ?)
                      ON CONFLICT(user_id, button_id) DO NOTHING`;
   const updateStatsSql = `INSERT INTO user_stats (user_id, xp) VALUES (?, ?)
                           ON CONFLICT(user_id) DO UPDATE SET xp = xp + ?`;
@@ -131,6 +125,5 @@ router.get('/stats', authenticateToken, (req, res) => {
     res.json({ level, currentXp, progressPercent });
   });
 });
-
 
 module.exports = router;

@@ -46,6 +46,7 @@ function normalize(s) {
       f.textContent = '✅ Super! Die Datenbank "Autohaus" wurde korrekt erstellt.';
       f.style.color = '#00f2ff';
       updateProgress(20);
+       if (typeof saveProgress === 'function') saveProgress(LESSON_ID, 20);
       confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
     } else {
       f.textContent = '❌ Hinweis: CREATE DATABASE Autohaus;';
@@ -68,6 +69,7 @@ function normalize(s) {
       f.textContent = '✅ Richtig! Die Tabelle "Fahrzeuge" wurde korrekt erstellt.';
       f.style.color = '#00f2ff';
       updateProgress(40);
+        if (typeof saveProgress === 'function') saveProgress(LESSON_ID, 40);
       confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
     } else {
       f.textContent = '❌ Beispiel: CREATE TABLE Fahrzeuge (ID INT PRIMARY KEY, Marke VARCHAR(50), Modell VARCHAR(50), Preis INT);';
@@ -90,6 +92,7 @@ function normalize(s) {
       f.textContent = '✅ Super! Das Fahrzeug wurde korrekt eingefügt.';
       f.style.color = '#00f2ff';
       updateProgress(60);
+      if (typeof saveProgress === 'function') saveProgress(LESSON_ID, 60);
       confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
     } else {
       f.textContent = "❌ Beispiel: INSERT INTO Fahrzeuge (ID, Marke, Modell, Preis) VALUES (1, 'Audi', 'A3', 23990);";
@@ -110,6 +113,7 @@ function normalize(s) {
       f.textContent = '✅ Richtig! Du hast das Fahrzeug mit ID 1 korrekt abgefragt.';
       f.style.color = '#00f2ff';
       updateProgress(80);
+       if (typeof saveProgress === 'function') saveProgress(LESSON_ID, 80);
       confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
     } else {
       f.textContent = '❌ Beispiel: SELECT * FROM Fahrzeuge WHERE ID = 1;';
