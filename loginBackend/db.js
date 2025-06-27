@@ -38,6 +38,7 @@ db.run(`
     CREATE TABLE IF NOT EXISTS button_progress (
         user_id INTEGER,
         button_id TEXT,
+         lesson_id INTEGER,
         PRIMARY KEY(user_id, button_id)
     )
 `);

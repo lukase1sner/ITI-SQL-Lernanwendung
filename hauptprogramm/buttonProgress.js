@@ -28,7 +28,7 @@ function addVerstandenButton(container, lessonId) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ buttonId })
+          body: JSON.stringify({ buttonId, lessonId })
       });
     } catch (e) {
       console.error('Fehler beim Senden des Fortschritts', e);

@@ -213,6 +213,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="progressFrontend.js"></script>
+    <script src="buttonProgress.js"></script>
 
 </head>
 <body>
@@ -1510,7 +1511,7 @@ CREATE TABLE Verkaeufer (
         fb.textContent = ok ? '✅ Richtig!' : '❌ Falsch';
         if (ok) {
           if (typeof updateProgress === 'function') updateProgress(100);
-          if (typeof saveProgress === 'function') saveProgress();
+          if (typeof saveProgress === 'function') saveProgress(LESSON_ID, 100);
         }
       };
       qDiv.appendChild(btn);
@@ -1547,7 +1548,7 @@ CREATE TABLE Verkaeufer (
             sb.classList.add('active');
             // Inhalt anzeigen
             subContent.innerHTML = section.subsections[i].content;
-            addVerstandenButton(subContent); // <-- HIER Eingebaut
+             addVerstandenButton(subContent, LESSON_ID); // <-- HIER Eingebaut
             renderChallenge(section.subsections[i], subContent); // falls Quiz
           });
         });

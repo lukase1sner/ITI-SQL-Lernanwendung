@@ -83,15 +83,15 @@ router.get('/', authenticateToken, (req, res) => {
 });
 // 🟢 Verstanden-Button speichern und XP vergeben
 router.post('/button', authenticateToken, (req, res) => {
-  const { buttonId } = req.body;
+  const { buttonId, lessonId } = req.body;
   const userId = req.user.id;
 
-  const insertSql = `INSERT INTO button_progress (user_id, button_id) VALUES (?, ?)
+   const insertSql = `INSERT INTO button_progress (user_id, button_id, lesson_id) VALUES (?, ?, ?)
                      ON CONFLICT(user_id, button_id) DO NOTHING`;
   const updateStatsSql = `INSERT INTO user_stats (user_id, xp) VALUES (?, ?)
                           ON CONFLICT(user_id) DO UPDATE SET xp = xp + ?`;
 
-  db.run(insertSql, [userId, buttonId], function (err) {
+  db.run(insertSql, [userId, buttonId, lessonId], function (err) {
     if (err) {
       console.error('❌ Fehler beim Speichern des Buttons:', err.message);
       return res.status(500).json({ message: 'Fehler beim Speichern des Buttons' });
