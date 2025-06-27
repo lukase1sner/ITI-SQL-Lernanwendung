@@ -1392,7 +1392,7 @@ CREATE SCHEMA Bike
           subBtns.forEach(x => x.classList.remove('active'));
           sb.classList.add('active');
           subContent.innerHTML = section.subsections[i].content;
-          addVerstandenButton(lessonContent, LESSON_ID);
+            addVerstandenButton(subContent, LESSON_ID);
         });
       });
       // <<<<<<<<<<<<<<< FEHLTE IN MANCHEN KAPITELN >>>>>>>>>>>>>>>
@@ -1400,7 +1400,7 @@ CREATE SCHEMA Bike
       subBtns[0].click();
     } else {
       // Wenn KEINE Subsections da sind (ganz normale Kapitel), Verstanden-Button ins lessonContent.
-       addVerstandenButton(subContent, LESSON_ID);
+       addVerstandenButton(lessonContent, LESSON_ID);
 }
 
 

@@ -1548,7 +1548,7 @@ CREATE TABLE Verkaeufer (
             sb.classList.add('active');
             // Inhalt anzeigen
             subContent.innerHTML = section.subsections[i].content;
-             addVerstandenButton(subContent, LESSON_ID); // <-- HIER Eingebaut
+            addVerstandenButton(lessonContent, LESSON_ID); // <-- HIER Eingebaut
             renderChallenge(section.subsections[i], subContent); // falls Quiz
           });
         });
