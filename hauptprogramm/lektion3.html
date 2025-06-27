@@ -177,6 +177,29 @@
           color: #00f2ff;
           font-size: 1.22rem;
         }
+             .btn-verstanden {
+          margin-top: 1.4rem;
+          background: #181e32;
+          border: 2px solid #00f2ff;
+          color: #00f2ff;
+          padding: 0.6rem 1.2rem;
+          border-radius: 1.2rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition:
+            background 0.21s,
+            color 0.22s,
+            border-color 0.23s,
+            box-shadow 0.28s,
+            transform 0.19s;
+          box-shadow: 0 1px 8px 0 #00f2ff20;
+        }
+        .btn-verstanden:hover {
+          background: #00f2ff22;
+          color: #fff;
+          border-color: #38f8ff;
+          box-shadow: 0 0 0 2px #00f2ff40;
+        }
         /* Responsive für kleine Screens */
         @media (max-width: 600px) {
           .lesson-content { padding: 1.2rem 0.7rem; }
@@ -188,6 +211,8 @@
   .btn-dashboard:hover{background-color:#a78bfa;transform:scale(1.05);}
   .header-row .btn-dashboard{margin-top:0;}
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 </head>
 <body>
 <header class="header-row">
@@ -196,10 +221,10 @@
 </header>
 <p class="welcome-text">Wähle einen Bereich, um zu starten:</p>
 <div class="tab-buttons">
-    <button data-index="0">📐 3.1 Normalformen</button>
-    <button data-index="1">🧩 3.2 Entity-Relationship-Modell</button>
-    <button data-index="2">📝 3.3 Übungsaufgaben</button>
-    <button data-index="3">📚 Literatur</button>
+    <button data-index="0"> 3.1 Normalformen</button>
+    <button data-index="1"> 3.2 Entity-Relationship-Modell</button>
+    <button data-index="2"> 3.3 Übungsaufgaben</button>
+    <button data-index="3"> Literatur</button>
 </div>
 <div class="lesson-content" id="lessonContent"></div>
 
@@ -242,7 +267,18 @@
               <p>
                 <b>Fazit:</b> Die erste Normalform ist nur ein Einstieg. Weitere Normalformen sind nötig, um die Qualität der Relationen zu verbessern.
               </p>
-            `
+                `,
+            challenge: {
+              type: "mc",
+              question: "Wann befindet sich eine Tabelle in der ersten Normalform?",
+              options: [
+                "Wenn alle Attribute nur atomare Werte enthalten",
+                "Wenn alle Daten redundant gespeichert werden",
+                "Wenn jeder Datensatz einen Fremdschlüssel besitzt",
+                "Sobald mindestens ein Primärschlüssel definiert ist"
+              ],
+              solution: 0
+            }
           },
            {
         name: "3.1.2 Funktionale Abhängigkeit",
@@ -1444,12 +1480,66 @@ CREATE TABLE Verkaeufer (
     const mainButtons = document.querySelectorAll('.tab-buttons button');
     const lessonContent = document.getElementById('lessonContent');
 
+  function addVerstandenButton(container) {
+  const wrap = document.createElement('div');
+  const btn = document.createElement('button');
+  btn.textContent = 'Verstanden';
+  btn.className = 'btn-verstanden';
+  wrap.appendChild(btn);
+  container.appendChild(wrap);
+  btn.addEventListener('click', () => {
+    confetti({
+      particleCount: 90,
+      spread: 90,
+      origin: { y: 0.75 }
+    });
+  });
+}
+
+    function renderChallenge(sub, container) {
+      if (!sub.challenge) return;
+      const c = sub.challenge;
+      const qDiv = document.createElement('div');
+      qDiv.innerHTML = `<p><strong>Quiz:</strong> ${c.question}</p>`;
+      c.options.forEach((opt, idx) => {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = Array.isArray(c.solution) ? 'checkbox' : 'radio';
+        input.name = 'q';
+        input.value = idx;
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(opt));
+        qDiv.appendChild(label);
+        qDiv.appendChild(document.createElement('br'));
+      });
+      const btn = document.createElement('button');
+      btn.textContent = 'Prüfen';
+      const fb = document.createElement('div');
+      btn.onclick = () => {
+        const checked = Array.from(qDiv.querySelectorAll('input:checked')).map(i => parseInt(i.value));
+        let ok;
+        if (Array.isArray(c.solution)) {
+          ok = checked.length === c.solution.length && c.solution.every(v => checked.includes(v));
+        } else {
+          ok = checked[0] === c.solution;
+        }
+        fb.textContent = ok ? '✅ Richtig!' : '❌ Falsch';
+        if (ok) {
+          if (typeof updateProgress === 'function') updateProgress(100);
+          if (typeof saveProgress === 'function') saveProgress();
+        }
+      };
+      qDiv.appendChild(btn);
+      qDiv.appendChild(fb);
+      container.appendChild(qDiv);
+    }
+
     function showContent(idx) {
       const section = sections[idx];
       let html = `<h2>${section.title}</h2><p>${section.description}</p>`;
       if (section.content) {
-  html += section.content;
-}
+        html += section.content;
+      }
 
       if (section.subsections) {
         html += `<div class="subsection-buttons">`;
@@ -1473,10 +1563,15 @@ CREATE TABLE Verkaeufer (
             sb.classList.add('active');
             // Inhalt anzeigen
             subContent.innerHTML = section.subsections[i].content;
+            addVerstandenButton(subContent); // <-- HIER Eingebaut
+            renderChallenge(section.subsections[i], subContent); // falls Quiz
           });
         });
         // Beim Laden: direkt erstes Unterkapitel anzeigen
         subBtns[0].click();
+      } else if (!section.subsections) {
+        // Für reine Sections ohne Subsections (optional)
+        addVerstandenButton(lessonContent);
       }
     }
 
