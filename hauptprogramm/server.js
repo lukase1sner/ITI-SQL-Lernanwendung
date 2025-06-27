@@ -40,15 +40,7 @@ const initDB = async () => {
     );
   `);
 
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS progress (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER,
-      lesson_id INTEGER,
-      percent INTEGER,
-      FOREIGN KEY(user_id) REFERENCES users(id)
-    );
-  `);
+
 };
 
 // --------------------- Routen ---------------------
@@ -88,16 +80,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Fortschritt abrufen
-app.get('/api/progress', async (req, res) => {
-  try {
-    const rows = await db.all('SELECT * FROM progress');
-    res.json(rows);
-  } catch (err) {
-    console.error('❌ Fehler beim Laden des Fortschritts:', err);
-    res.status(500).json({ error: 'Interner Serverfehler' });
-  }
-});
+
 
 // --------------------- Server starten ---------------------
 const startServer = async () => {
