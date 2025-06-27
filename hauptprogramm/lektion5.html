@@ -169,9 +169,36 @@
          border-color: #38f8ff;
          box-shadow: 0 0 0 2px #00f2ff40;
        }
-       .sub-content {
-         margin-top: 2rem;
-       }
+         .sub-content {
+          margin-top: 2rem;
+        }
+        .sub-content h3 {
+          color: #00f2ff;
+          font-size: 1.22rem;
+        }
+        .btn-verstanden {
+          margin-top: 1.4rem;
+          background: #181e32;
+          border: 2px solid #00f2ff;
+          color: #00f2ff;
+          padding: 0.6rem 1.2rem;
+          border-radius: 1.2rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition:
+            background 0.21s,
+            color 0.22s,
+            border-color 0.23s,
+            box-shadow 0.28s,
+            transform 0.19s;
+          box-shadow: 0 1px 8px 0 #00f2ff20;
+        }
+        .btn-verstanden:hover {
+          background: #00f2ff22;
+          color: #fff;
+          border-color: #38f8ff;
+          box-shadow: 0 0 0 2px #00f2ff40;
+        }
        .sub-content h3 {
          color: #00f2ff;
          font-size: 1.22rem;
@@ -187,6 +214,7 @@
   .btn-dashboard:hover{background-color:#a78bfa;transform:scale(1.05);}
   .header-row .btn-dashboard{margin-top:0;}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 <header class="header-row">
@@ -1351,6 +1379,22 @@ CREATE SCHEMA Bike
       content: `<h2>Literatur</h2><ul><li>Platzhalter für Literatur...</li></ul>`
     }
   ];
+    function addVerstandenButton(container) {
+    const wrap = document.createElement('div');
+    const btn = document.createElement('button');
+    btn.textContent = 'Verstanden';
+    btn.className = 'btn-verstanden';
+    wrap.appendChild(btn);
+    container.appendChild(wrap);
+    btn.addEventListener('click', () => {
+      confetti({
+        particleCount: 90,
+        spread: 90,
+        origin: { y: 0.75 }
+      });
+    });
+  }
+
 
   // === Script: Buttons & Content-Logik (wie Kapitel 4) ===
   const mainButtons = document.querySelectorAll('.tab-buttons button');
@@ -1374,18 +1418,23 @@ CREATE SCHEMA Bike
     lessonContent.classList.remove('visible');
     setTimeout(() => lessonContent.classList.add('visible'), 60);
 
-    // Subkapitel Buttons
-    const subBtns = lessonContent.querySelectorAll('.subsection-buttons button');
-    const subContent = document.getElementById('subContent');
-    if (subBtns.length && subContent) {
-      subBtns.forEach((sb, i) => {
-        sb.addEventListener('click', () => {
-          subBtns.forEach(x => x.classList.remove('active'));
-          sb.classList.add('active');
-          subContent.innerHTML = section.subsections[i].content;
-        });
-      });
-      subBtns[0].click();
+   if (subBtns.length && subContent) {
+  subBtns.forEach((sb, i) => {
+    sb.addEventListener('click', () => {
+      subBtns.forEach(x => x.classList.remove('active'));
+      sb.classList.add('active');
+      subContent.innerHTML = section.subsections[i].content;
+      addVerstandenButton(subContent);
+    });
+  });
+  // <<<<<<<<<<<<<<< FEHLTE IN MANCHEN KAPITELN >>>>>>>>>>>>>>>
+  // Erstes Subkapitel sofort anzeigen:
+  subBtns[0].click();
+} else {
+  // Wenn KEINE Subsections da sind (ganz normale Kapitel), Verstanden-Button ins lessonContent.
+  addVerstandenButton(lessonContent);
+}
+
     }
   }
 

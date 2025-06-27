@@ -176,6 +176,29 @@
           color: #00f2ff;
           font-size: 1.22rem;
         }
+                .btn-verstanden {
+          margin-top: 1.4rem;
+          background: #181e32;
+          border: 2px solid #00f2ff;
+          color: #00f2ff;
+          padding: 0.6rem 1.2rem;
+          border-radius: 1.2rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition:
+            background 0.21s,
+            color 0.22s,
+            border-color 0.23s,
+            box-shadow 0.28s,
+            transform 0.19s;
+          box-shadow: 0 1px 8px 0 #00f2ff20;
+        }
+        .btn-verstanden:hover {
+          background: #00f2ff22;
+          color: #fff;
+          border-color: #38f8ff;
+          box-shadow: 0 0 0 2px #00f2ff40;
+        }
         /* Responsive für kleine Screens */
         @media (max-width: 600px) {
           .lesson-content { padding: 1.2rem 0.7rem; }
@@ -204,6 +227,7 @@
     <button data-index="6"> Literatur</button>
 </div>
 <div class="lesson-content" id="lessonContent"></div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
     const sections = [
@@ -1432,6 +1456,22 @@ HAVING COUNT(*) = (
 
     const mainButtons = document.querySelectorAll('.tab-buttons button');
     const lessonContent = document.getElementById('lessonContent');
+      function addVerstandenButton(container) {
+      const wrap = document.createElement('div');
+      const btn = document.createElement('button');
+      btn.textContent = 'Verstanden';
+      btn.className = 'btn-verstanden';
+      wrap.appendChild(btn);
+      container.appendChild(wrap);
+      btn.addEventListener('click', () => {
+        confetti({
+          particleCount: 90,
+          spread: 90,
+          origin: { y: 0.75 }
+        });
+      });
+    }
+
 
     function showContent(idx) {
       const section = sections[idx];
@@ -1460,9 +1500,12 @@ HAVING COUNT(*) = (
             subBtns.forEach(x => x.classList.remove('active'));
             sb.classList.add('active');
             subContent.innerHTML = section.subsections[i].content;
+            addVerstandenButton(subContent); // <-- HIER Eingebaut
           });
         });
         subBtns[0].click();
+         } else if (!section.subsections) {
+        addVerstandenButton(lessonContent);
       }
     }
 
