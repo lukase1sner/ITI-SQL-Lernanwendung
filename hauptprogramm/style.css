@@ -319,3 +319,24 @@ iframe {
 .header-row .btn-dashboard {
   margin-top: 0;
 }
+
+.btn-verstanden {
+  margin-top: 1.4rem;
+  background: #181e32;
+  border: 2px solid #00f2ff;
+  color: #00f2ff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.21s, color 0.22s, border-color 0.23s,
+    box-shadow 0.28s, transform 0.19s;
+  box-shadow: 0 1px 8px 0 #00f2ff20;
+}
+
+.btn-verstanden:hover {
+  background: #00f2ff22;
+  color: #fff;
+  border-color: #38f8ff;
+  box-shadow: 0 0 0 2px #00f2ff40;
+}

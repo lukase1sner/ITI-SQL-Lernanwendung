@@ -3,6 +3,24 @@
 // Annahme: window.lessons2 und window.aufgaben2 sind bereits im Projekt definiert!
 
 // === Challenge-Funktion (wie in main.js, übernimmt das Rendering der Quizfragen) ===
+function addVerstandenButton(container) {
+    const wrap = document.createElement("div");
+    const btn = document.createElement("button");
+    btn.textContent = "Verstanden";
+    btn.className = "btn-verstanden";
+    wrap.appendChild(btn);
+    container.appendChild(wrap);
+    btn.addEventListener("click", () => {
+        if (window.confetti) {
+            window.confetti({
+                particleCount: 90,
+                spread: 90,
+                origin: { y: 0.75 }
+            });
+        }
+    });
+}
+
 function renderChallengeNew(lesson, containerId) {
     if (!lesson.challenge) return;
     const c = lesson.challenge;
@@ -47,6 +65,7 @@ function renderLessonContent2(lesson, container) {
         <div id="challengeBox"></div>
     `;
     renderChallengeNew(lesson, "challengeBox");
+        addVerstandenButton(container);
 }
 
 // === Initialisierung & Tabwechsel ===

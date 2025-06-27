@@ -3,6 +3,24 @@ const lessonBox = document.getElementById("lessonContent");
 const exerciseBox = document.getElementById("exerciseContent");
 
 // RENDERT EINE LEKTION MIT Challenge!
+function addVerstandenButton(container) {
+    const wrap = document.createElement("div");
+    const btn = document.createElement("button");
+    btn.textContent = "Verstanden";
+    btn.className = "btn-verstanden";
+    wrap.appendChild(btn);
+    container.appendChild(wrap);
+    btn.addEventListener("click", () => {
+        if (window.confetti) {
+            window.confetti({
+                particleCount: 90,
+                spread: 90,
+                origin: { y: 0.75 }
+            });
+        }
+    });
+}
+
 function renderLessonContent(lesson, container) {
     container.innerHTML = `
         <h2>${lesson.title}</h2>
@@ -14,6 +32,7 @@ function renderLessonContent(lesson, container) {
         <div id="challengeBox"></div>
     `;
     renderChallengeNew(lesson, "challengeBox");
+        addVerstandenButton(container);
 }
 
 // RENDERT Challenge, wenn vorhanden:
