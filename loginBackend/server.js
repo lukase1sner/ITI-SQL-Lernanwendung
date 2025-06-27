@@ -3,6 +3,7 @@
 const express = require('express');              // Express-Framework für Server und Routing
 const cors = require('cors');                    // CORS-Middleware erlaubt Cross-Origin-Anfragen
 const authRoutes = require('./routes/auth');     // Routen für Authentifizierung (Login/Registrierung)
+const progressRoutes = require('./routes/progress'); // Routen für Lernfortschritt & Stats
 
 
 // --------------------- Server-Setup ---------------------
@@ -19,7 +20,7 @@ app.use(express.json());      // Automatische Verarbeitung von JSON-Request-Body
 
 // Authentifizierung: z. B. POST /api/auth/login oder /api/auth/register
 app.use('/api/auth', authRoutes);
-
+app.use('/api/progress', progressRoutes);
 
 
 // --------------------- Serverstart ---------------------

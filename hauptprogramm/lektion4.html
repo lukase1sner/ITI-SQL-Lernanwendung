@@ -228,6 +228,7 @@
 </div>
 <div class="lesson-content" id="lessonContent"></div>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="buttonProgress.js"></script>
 
 <script>
     const sections = [
@@ -1442,35 +1443,14 @@ HAVING COUNT(*) = (
 </div>
 `
       },
-      {
-        title: "4.6 Übungsaufgaben",
-        description: "Teste dein Wissen zu SQL mit diesen Aufgaben.",
-        content: `<h3>Übungsaufgaben</h3><ul><li>Stelle eine SELECT-Abfrage zusammen, die ...</li><li>Führe ein UPDATE durch, bei dem ...</li><li>... (weitere Aufgaben)</li></ul>`
-      },
-      {
-        title: "Literatur",
-        description: "Empfohlene Bücher und Quellen zu SQL.",
-        content: `<h3>Literatur</h3><ul><li>Klassik: SQL for Smarties – Joe Celko</li><li>Modern: Das SQL-Handbuch – R. van der Lans</li></ul>`
-      }
+
+
     ];
+      const LESSON_ID = 4;
 
     const mainButtons = document.querySelectorAll('.tab-buttons button');
     const lessonContent = document.getElementById('lessonContent');
-      function addVerstandenButton(container) {
-      const wrap = document.createElement('div');
-      const btn = document.createElement('button');
-      btn.textContent = 'Verstanden';
-      btn.className = 'btn-verstanden';
-      wrap.appendChild(btn);
-      container.appendChild(wrap);
-      btn.addEventListener('click', () => {
-        confetti({
-          particleCount: 90,
-          spread: 90,
-          origin: { y: 0.75 }
-        });
-      });
-    }
+
 
 
     function showContent(idx) {
@@ -1500,12 +1480,12 @@ HAVING COUNT(*) = (
             subBtns.forEach(x => x.classList.remove('active'));
             sb.classList.add('active');
             subContent.innerHTML = section.subsections[i].content;
-            addVerstandenButton(subContent); // <-- HIER Eingebaut
+           addVerstandenButton(subContent, LESSON_ID); // <-- HIER Eingebaut
           });
         });
         subBtns[0].click();
          } else if (!section.subsections) {
-        addVerstandenButton(lessonContent);
+           addVerstandenButton(lessonContent, LESSON_ID);
       }
     }
 

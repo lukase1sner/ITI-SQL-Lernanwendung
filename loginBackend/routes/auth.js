@@ -4,6 +4,7 @@ const express = require('express');                      // Webframework
 const bcrypt = require('bcrypt');                       // Für Passwort-Hashing
 const jwt = require('jsonwebtoken');                    // Für Token-Generierung
 const { createUser, getUserByEmail } = require('../models/user'); // Datenbankfunktionen
+const db = require('../db');
 
 const router = express.Router();                        // Neuer Router für Auth-Routen
 
@@ -30,6 +31,18 @@ router.post('/register', async (req, res) => {
         if (err) {
           return res.status(500).json({ message: 'Fehler bei Registrierung' });
         }
+
+         // Nach erfolgreicher Erstellung Stats-Datensatz anlegen
+                db.run(
+                  'INSERT INTO user_stats (user_id, xp, total_seconds) VALUES (?, 0, 0)',
+                  [newUser.id],
+                  (statsErr) => {
+                    if (statsErr) {
+                      console.error('❌ Fehler beim Anlegen von user_stats:', statsErr.message);
+                      // Fehler soll Registrierung nicht verhindern
+                    }
+                  }
+                );
 
         // Erfolgreich registriert
         res.status(201).json({

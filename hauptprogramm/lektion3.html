@@ -212,6 +212,7 @@
   .header-row .btn-dashboard{margin-top:0;}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="buttonProgress.js"></script>
 
 </head>
 <body>
@@ -1477,21 +1478,7 @@ CREATE TABLE Verkaeufer (
     const mainButtons = document.querySelectorAll('.tab-buttons button');
     const lessonContent = document.getElementById('lessonContent');
 
-  function addVerstandenButton(container) {
-  const wrap = document.createElement('div');
-  const btn = document.createElement('button');
-  btn.textContent = 'Verstanden';
-  btn.className = 'btn-verstanden';
-  wrap.appendChild(btn);
-  container.appendChild(wrap);
-  btn.addEventListener('click', () => {
-    confetti({
-      particleCount: 90,
-      spread: 90,
-      origin: { y: 0.75 }
-    });
-  });
-}
+    const LESSON_ID = 3;
 
     function renderChallenge(sub, container) {
       if (!sub.challenge) return;
@@ -1568,7 +1555,7 @@ CREATE TABLE Verkaeufer (
         subBtns[0].click();
       } else if (!section.subsections) {
         // Für reine Sections ohne Subsections (optional)
-        addVerstandenButton(lessonContent);
+         addVerstandenButton(subContent, LESSON_ID); // <-- HIER Eingebaut
       }
     }
 

@@ -215,6 +215,7 @@
   .header-row .btn-dashboard{margin-top:0;}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="buttonProgress.js"></script>
 </head>
 <body>
 <header class="header-row">
@@ -1356,21 +1357,7 @@ CREATE SCHEMA Bike
 
 
   ];
-    function addVerstandenButton(container) {
-    const wrap = document.createElement('div');
-    const btn = document.createElement('button');
-    btn.textContent = 'Verstanden';
-    btn.className = 'btn-verstanden';
-    wrap.appendChild(btn);
-    container.appendChild(wrap);
-    btn.addEventListener('click', () => {
-      confetti({
-        particleCount: 90,
-        spread: 90,
-        origin: { y: 0.75 }
-      });
-    });
-  }
+     const LESSON_ID = 5;
 
 
   // === Script: Buttons & Content-Logik (wie Kapitel 4) ===
@@ -1404,7 +1391,7 @@ CREATE SCHEMA Bike
           subBtns.forEach(x => x.classList.remove('active'));
           sb.classList.add('active');
           subContent.innerHTML = section.subsections[i].content;
-          addVerstandenButton(subContent);
+          addVerstandenButton(lessonContent, LESSON_ID);
         });
       });
       // <<<<<<<<<<<<<<< FEHLTE IN MANCHEN KAPITELN >>>>>>>>>>>>>>>
@@ -1412,7 +1399,7 @@ CREATE SCHEMA Bike
       subBtns[0].click();
     } else {
       // Wenn KEINE Subsections da sind (ganz normale Kapitel), Verstanden-Button ins lessonContent.
-      addVerstandenButton(lessonContent);
+       addVerstandenButton(subContent, LESSON_ID);
 }
 
 
