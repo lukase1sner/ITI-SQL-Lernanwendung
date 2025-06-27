@@ -1481,11 +1481,15 @@ HAVING COUNT(*) = (
             subBtns.forEach(x => x.classList.remove('active'));
             sb.classList.add('active');
             subContent.innerHTML = section.subsections[i].content;
+             const oldBtn = subContent.querySelector('.btn-verstanden');
+            if (oldBtn) oldBtn.parentElement.remove();
            addVerstandenButton(subContent, LESSON_ID); // <-- HIER Eingebaut
           });
         });
         subBtns[0].click();
          } else if (!section.subsections) {
+           const oldBtn = lessonContent.querySelector('.btn-verstanden');
+           if (oldBtn) oldBtn.parentElement.remove();
            addVerstandenButton(lessonContent, LESSON_ID);
       }
     }

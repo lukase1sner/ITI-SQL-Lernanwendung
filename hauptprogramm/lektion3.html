@@ -1548,6 +1548,8 @@ CREATE TABLE Verkaeufer (
             sb.classList.add('active');
             // Inhalt anzeigen
             subContent.innerHTML = section.subsections[i].content;
+             const oldBtn = lessonContent.querySelector('.btn-verstanden');
+            if (oldBtn) oldBtn.parentElement.remove();
             addVerstandenButton(lessonContent, LESSON_ID); // <-- HIER Eingebaut
             renderChallenge(section.subsections[i], subContent); // falls Quiz
           });
@@ -1556,7 +1558,9 @@ CREATE TABLE Verkaeufer (
         subBtns[0].click();
       } else if (!section.subsections) {
         // Für reine Sections ohne Subsections (optional)
-         addVerstandenButton(subContent, LESSON_ID); // <-- HIER Eingebaut
+         const oldBtn = lessonContent.querySelector('.btn-verstanden');
+        if (oldBtn) oldBtn.parentElement.remove();
+        addVerstandenButton(lessonContent, LESSON_ID); // <-- HIER Eingebaut
       }
     }
 

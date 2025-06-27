@@ -15,7 +15,19 @@ function addVerstandenButton(container, lessonId) {
   }
   lessonState[lessonId].total += 1;
 
-  const key = `progress_${lessonId}_${buttonId}`;
+   const userId = localStorage.getItem('userId');
+   const key = `progress_${userId}*${lessonId}*${buttonId}`;
+   const oldKey = `progress_${lessonId}_${buttonId}`;
+
+   if (!userId) {
+     // clear outdated entries when no user id is present
+     localStorage.removeItem(oldKey);
+   } else if (localStorage.getItem(oldKey) && !localStorage.getItem(key)) {
+     // migrate progress stored before user-specific keys
+     localStorage.setItem(key, localStorage.getItem(oldKey));
+     localStorage.removeItem(oldKey);
+   }
+
   if (localStorage.getItem(key)) {
     btn.disabled = true;
     lessonState[lessonId].done += 1;

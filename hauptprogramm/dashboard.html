@@ -7,12 +7,9 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Particles.js einbinden -->
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-
   <style>
     html, body {
       font-family: 'Inter', sans-serif;
@@ -42,7 +39,7 @@
     .dashboard-wrapper {
       display: flex;
       flex: 1 0 auto;
-      min-height: calc(100vh - 64px); /* Footer-Höhe unten abziehen */
+      min-height: calc(100vh - 64px);
     }
     .main-content,
     .sidebar,
@@ -57,7 +54,6 @@
       display: flex;
       flex-direction: column;
     }
-    /* Sidebar */
     .sidebar {
       width: 250px;
       background: rgba(255, 255, 255, 0.02);
@@ -89,12 +85,11 @@
       font-weight: bold;
       letter-spacing: 1px;
     }
-    /* Navigation nach unten verschieben */
     .sidebar-nav {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      margin-top: 3rem; /* <-- hier Abstand nach unten */
+      margin-top: 3rem;
     }
     .sidebar-nav a {
       display: flex;
@@ -115,7 +110,6 @@
       font-size: 1.2rem;
       min-width: 20px;
     }
-    /* Karten & Hover-Effekte */
     .card {
       background-color: rgba(255, 255, 255, 0.04);
       padding: 1.5rem;
@@ -146,7 +140,6 @@
     #lessonsContainer { overflow: hidden; transition: max-height 0.5s ease, opacity 0.5s ease; }
     #lessonsContainer.collapsed { max-height: 0; opacity: 0; padding: 0; margin: 0; }
     #lessonsContainer.expanded { max-height: 2000px; opacity: 1; }
-    canvas { margin-top: 1rem; max-width: 50%; height: 300px !important; }
     .footer {
       width: 100%;
       background: rgba(255, 255, 255, 0.02);
@@ -197,7 +190,7 @@
         Zum Chatbot &rarr;
       </button>
     </div>
-    <!-- 🆕 Live-Statistiken -->
+    <!-- Live-Statistiken -->
     <div class="card mb-4">
       <h4>Dein aktueller Status <span style="font-size: 1.5rem;">⚔️</span></h4>
       <div class="card-stats mt-3">
@@ -260,9 +253,9 @@
               <p class="small text-muted">Die Zugriffssprache SQL</p>
               <button class="btn-glow w-100 mt-3" onclick="window.location.href='lektion4.html'">Starten</button>
               <div class="progress mt-2">
-                <div class="progress-bar lesson-progress" data-lesson="5" style="width: 0%"></div>
+                <div class="progress-bar lesson-progress" data-lesson="4" style="width: 0%"></div>
               </div>
-              <small class="lesson-percent" data-lesson="5">0%</small>
+              <small class="lesson-percent" data-lesson="4">0%</small>
             </div>
           </div>
           <div class="col-md-4">
@@ -271,9 +264,9 @@
               <p class="small text-muted">Die Beschreibungssprache SQL</p>
               <button class="btn-glow w-100 mt-3" onclick="window.location.href='lektion5.html'">Starten</button>
               <div class="progress mt-2">
-                <div class="progress-bar lesson-progress" data-lesson="6" style="width: 0%"></div>
+                <div class="progress-bar lesson-progress" data-lesson="5" style="width: 0%"></div>
               </div>
-              <small class="lesson-percent" data-lesson="6">0%</small>
+              <small class="lesson-percent" data-lesson="5">0%</small>
             </div>
           </div>
           <div class="col-md-4">
@@ -288,12 +281,12 @@
     </div>
     <div class="card mt-4">
       <h4>Dein XP-Verlauf</h4>
-      <canvas id="xpChart"></canvas>
+      <canvas id="xpChart" style="width:100%; height:360px; background:rgba(11,14,26,0.95); border-radius:1.2rem; box-shadow:0 6px 24px 0 rgba(0,242,255,0.10);"></canvas>
     </div>
   </div> <!-- Ende .main-content -->
 </div> <!-- Ende .dashboard-wrapper -->
 
-<!-- 🧠 Icons laden -->
+<!-- Icons laden -->
 <script>
   lucide.createIcons();
 </script>
@@ -308,47 +301,100 @@
     toggleBtn.textContent = expanded ? "▼" : "▶";
   });
 </script>
+<canvas id="xpChart" style="width:100%; height:360px; background:rgba(11,14,26,0.95); border-radius:1.2rem; box-shadow:0 6px 24px 0 rgba(0,242,255,0.10);"></canvas>
 <script>
-  const ctx = document.getElementById('xpChart').getContext('2d');
+  const canvas = document.getElementById('xpChart');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, "rgba(0,242,255,0.22)");
+  gradient.addColorStop(1, "rgba(11,14,26,0)");
+
   new Chart(ctx, {
     type: 'line',
     data: {
       labels: ['Tag 1', 'Tag 2', 'Tag 3', 'Heute'],
       datasets: [{
-        label: 'XP',
         data: [50, 120, 220, 310],
-        backgroundColor: 'rgba(0, 242, 255, 0.1)',
-        borderColor: '#00f2ff',
-        borderWidth: 2,
-        tension: 0.4,
         fill: true,
-        pointBackgroundColor: '#00f2ff',
-        pointRadius: 4,
+        backgroundColor: gradient,
+        borderColor: '#00f2ff',
+        borderWidth: 3,
+        tension: 0.38,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#00f2ff',
+        pointRadius: 7,
+        pointHoverRadius: 11,
+        pointBorderWidth: 3,
+        pointStyle: 'circle'
       }]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { color: '#cfd4ff' },
-          grid: { color: 'rgba(255,255,255,0.05)' }
-        },
-        x: {
-          ticks: { color: '#cfd4ff' },
-          grid: { color: 'rgba(255,255,255,0.05)' }
+      responsive: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#111f2a',
+          titleColor: '#00f2ff',
+          bodyColor: '#fff',
+          borderColor: '#00f2ff',
+          borderWidth: 1.2,
+          padding: 10,
+          caretPadding: 5,
+          titleFont: { size: 22, weight: 'bold', family: 'Inter' },
+          bodyFont: { size: 18, family: 'Inter' }
         }
       },
-      plugins: {
-        legend: {
-          labels: { color: '#f0f0f0' }
+      scales: {
+        x: {
+          ticks: {
+            color: '#f7fafc',
+            font: { size: 22, weight: 'bold', family: 'Inter' }, // Größer!
+            padding: 10
+          },
+          grid: { display: false },
+          border: { color: 'rgba(0,0,0,0)' }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#a0b7c8',
+            font: { size: 20, family: 'Inter' }, // Größer!
+            padding: 8,
+            stepSize: 50
+          },
+          grid: { color: 'rgba(0,242,255,0.05)', drawTicks: false },
+          border: { color: 'rgba(0,0,0,0)' }
         }
       }
-    }
+    },
+    plugins: [{
+      afterDraw: chart => {
+        const ctx = chart.ctx;
+        chart.data.datasets.forEach((dataset, i) => {
+          chart.getDatasetMeta(i).data.forEach((point, j) => {
+            ctx.save();
+            ctx.shadowColor = '#00f2ff';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 8, 0, 2 * Math.PI);
+            ctx.fillStyle = '#00f2ff';
+            ctx.globalAlpha = 0.10;
+            ctx.fill();
+            ctx.restore();
+          });
+        });
+      }
+    }]
   });
 </script>
-<!-- Particles.js KONFIGURATION - muss im Script-Tag stehen! -->
+
+<!-- Particles.js -->
 <script>
   particlesJS("particles-js", {
     particles: {
@@ -387,6 +433,57 @@
     <a href="mailto:kontakt@sqlmate.de">Kontakt</a>
   </p>
 </footer>
-<script src="dashboard.js"></script>
+<!-- Userdaten & Statistiken laden -->
+<script>
+  async function ladeStatistiken() {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3001/api/progress/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Fehler beim Laden der Statistiken");
+      const data = await res.json();
+      const levelTitles = ["Newbie", "Apprentice", "Scholar", "Expert", "Master"];
+      const title = levelTitles[Math.min(data.level, levelTitles.length - 1)];
+      document.getElementById('level').textContent = `${data.level} – ${title}`;
+      document.getElementById('xp-text').textContent = `${data.currentXp} / 100 XP`;
+      document.getElementById('xp-progress').style.width = `${data.progressPercent}%`;
+      document.getElementById('progress-label').textContent = `${data.progressPercent}%`;
+    } catch (err) {
+      console.error('❌ Fehler beim Laden der Statistiken:', err);
+    }
+  }
+
+  async function ladeLessonProgress() {
+    const token = localStorage.getItem('token');
+    const lessonIds = [1,2,3,4,5,6];
+    for (const id of lessonIds) {
+      try {
+        const res = await fetch(`http://localhost:3001/api/progress/lesson/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        document.querySelector(`.lesson-progress[data-lesson="${id}"]`).style.width = `${data.percent}%`;
+        document.querySelector(`.lesson-percent[data-lesson="${id}"]`).textContent = `${data.percent}%`;
+      } catch (e) {
+        console.error('Fehler beim Laden des Fortschritts', e);
+      }
+    }
+  }
+
+  function setzeUsername() {
+    const el = document.getElementById('username');
+    if (!el) return;
+    const firstName = localStorage.getItem('firstName');
+    if (firstName) el.textContent = firstName;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setzeUsername();
+    ladeStatistiken();
+    ladeLessonProgress();
+  });
+</script>
 </body>
 </html>

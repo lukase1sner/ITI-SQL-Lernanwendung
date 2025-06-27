@@ -82,6 +82,7 @@
        // ✅ Login erfolgreich → Token & Vorname speichern und weiterleiten
         alert("Login erfolgreich!");
         localStorage.setItem("token", data.token);
+         localStorage.setItem("userId", data.userId);
         localStorage.setItem("firstName", data.firstName);
         window.location.href = "../hauptprogramm/dashboard.html"; // Weiterleitung ins Dashboard
 
