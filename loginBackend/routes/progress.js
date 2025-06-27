@@ -48,20 +48,7 @@ router.post('/', authenticateToken, (req, res) => {
     });
   });
 });
-// 🔵 einzelnen Button als abgeschlossen markieren
-router.post('/button', authenticateToken, (req, res) => {
-  const { lessonId, buttonId } = req.body;
-  const userId = req.user.id;
-  const query = `
-    INSERT INTO button_progress (user_id, lesson_id, button_id, completed_at)
-    VALUES (?, ?, ?, datetime('now'))
-    ON CONFLICT(user_id, lesson_id, button_id) DO NOTHING
-  `;
-  db.run(query, [userId, lessonId, buttonId], (err) => {
-    if (err) return res.status(500).json({ message: 'Fehler beim Speichern' });
-    res.json({ message: 'Button gespeichert' });
-  });
-});
+
 
 // 🔴 Fortschritt pro Lektion ermitteln
 router.get('/lesson/:id', authenticateToken, (req, res) => {

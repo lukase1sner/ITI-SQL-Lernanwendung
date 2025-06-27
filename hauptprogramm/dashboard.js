@@ -2,7 +2,7 @@ async function ladeStatistiken() {
   try {
     const token = localStorage.getItem('token');
 
-    const res = await fetch('http://localhost:3001/api/stats', {
+  const res = await fetch('http://localhost:3001/api/progress/stats', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -23,6 +23,7 @@ async function ladeStatistiken() {
   } catch (err) {
     console.error('❌ Fehler beim Laden der Statistiken:', err);
   }
+  }
 
 async function ladeLessonProgress() {
   const token = localStorage.getItem('token');
@@ -41,7 +42,7 @@ async function ladeLessonProgress() {
     }
   }
 }
-}
+
 function setzeUsername() {
   const el = document.getElementById('username');
   if (!el) return;

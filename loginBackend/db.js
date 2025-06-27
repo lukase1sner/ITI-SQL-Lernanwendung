@@ -46,7 +46,8 @@ db.run(`
 db.run(`
     CREATE TABLE IF NOT EXISTS user_stats (
         user_id INTEGER PRIMARY KEY,
-        xp INTEGER DEFAULT 0
+       xp INTEGER DEFAULT 0,
+              total_seconds INTEGER DEFAULT 0
     )
 `);
 
