@@ -1,8 +1,8 @@
 let buttonSeq = 0;
 const lessonState = {};
-function addVerstandenButton(container, lessonId) {
+function addVerstandenButton(container, lessonId, subId) {
   buttonSeq += 1;
-  const buttonId = 'b' + buttonSeq;
+   const buttonId = subId ? `${lessonId}_${subId}` : 'b' + buttonSeq;
   const wrap = document.createElement('div');
   const btn = document.createElement('button');
   btn.textContent = 'Verstanden';

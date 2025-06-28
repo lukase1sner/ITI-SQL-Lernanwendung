@@ -1394,7 +1394,7 @@ CREATE SCHEMA Bike
           subContent.innerHTML = section.subsections[i].content;
            const oldBtn = subContent.querySelector('.btn-verstanden');
           if (oldBtn) oldBtn.parentElement.remove();
-            addVerstandenButton(subContent, LESSON_ID);
+            addVerstandenButton(subContent, LESSON_ID, `${idx}_${i}`);
         });
       });
       // <<<<<<<<<<<<<<< FEHLTE IN MANCHEN KAPITELN >>>>>>>>>>>>>>>
@@ -1404,7 +1404,7 @@ CREATE SCHEMA Bike
       // Wenn KEINE Subsections da sind (ganz normale Kapitel), Verstanden-Button ins lessonContent.
       const oldBtn = lessonContent.querySelector('.btn-verstanden');
       if (oldBtn) oldBtn.parentElement.remove();
-       addVerstandenButton(lessonContent, LESSON_ID);
+        addVerstandenButton(lessonContent, LESSON_ID, idx);
 }
 
 

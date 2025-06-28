@@ -5,7 +5,7 @@ const lessonBox = document.getElementById("lessonContent");
 const exerciseBox = document.getElementById("exerciseContent");
 
 
-function renderLessonContent(lesson, container) {
+function renderLessonContent(lesson, container, sectionIdx) {
     container.innerHTML = `
         <h2>${lesson.title}</h2>
         <p>${lesson.description.replace(/\n/g, '<br>')}</p>
@@ -16,7 +16,7 @@ function renderLessonContent(lesson, container) {
         <div id="challengeBox"></div>
     `;
     renderChallengeNew(lesson, "challengeBox");
-        addVerstandenButton(container, LESSON_ID);
+       addVerstandenButton(container, LESSON_ID, sectionIdx);
 }
 
 // RENDERT Challenge, wenn vorhanden:
@@ -54,7 +54,7 @@ function renderChallengeNew(lesson, containerId) {
 
 // Initialisierung der ersten Lektion + Tab-Wechsel:
 document.addEventListener("DOMContentLoaded", () => {
-    renderLessonContent(window.lessons[0], lessonBox);
+      renderLessonContent(window.lessons[0], lessonBox, 0);
     lessonBox.style.display = "block";
     exerciseBox.style.display = "none";
     buttons[0].classList.add("active");
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 exerciseBox.style.display = "block";
                 lessonBox.style.display = "none";
             } else {
-                renderLessonContent(window.lessons[idx], lessonBox);
+               renderLessonContent(window.lessons[idx], lessonBox, idx);
                 lessonBox.style.display = "block";
                 exerciseBox.style.display = "none";
             }

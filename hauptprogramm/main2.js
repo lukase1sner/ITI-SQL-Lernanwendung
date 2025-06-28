@@ -38,7 +38,7 @@ function renderChallengeNew(lesson, containerId) {
 }
 
 // === Lektion-Rendering inklusive Challenge ===
-function renderLessonContent2(lesson, container) {
+function renderLessonContent2(lesson, container, sectionIdx) {
     container.innerHTML = `
         <h2>${lesson.title}</h2>
         <p>${lesson.description.replace(/\n/g, '<br>')}</p>
@@ -49,7 +49,7 @@ function renderLessonContent2(lesson, container) {
         <div id="challengeBox"></div>
     `;
     renderChallengeNew(lesson, "challengeBox");
-          addVerstandenButton(container, LESSON_ID);
+           addVerstandenButton(container, LESSON_ID, sectionIdx);
 }
 
 // === Initialisierung & Tabwechsel ===
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 exerciseBox.style.display = "block";
             } else {
                 const lesson = window.lessons2[idx];
-                renderLessonContent2(lesson, lessonBox);
+                renderLessonContent2(lesson, lessonBox, idx);
                 lessonBox.style.display = "block";
                 exerciseBox.style.display = "none";
             }

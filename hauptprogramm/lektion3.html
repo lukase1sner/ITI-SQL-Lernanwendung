@@ -1510,7 +1510,7 @@ CREATE TABLE Verkaeufer (
         }
         fb.textContent = ok ? '✅ Richtig!' : '❌ Falsch';
         if (ok) {
-          if (typeof updateProgress === 'function') updateProgress(100);
+           if (typeof updateProgress === 'function') updateProgress(100);
           if (typeof saveProgress === 'function') saveProgress(LESSON_ID, 100);
         }
       };
@@ -1550,7 +1550,7 @@ CREATE TABLE Verkaeufer (
             subContent.innerHTML = section.subsections[i].content;
              const oldBtn = lessonContent.querySelector('.btn-verstanden');
             if (oldBtn) oldBtn.parentElement.remove();
-            addVerstandenButton(lessonContent, LESSON_ID); // <-- HIER Eingebaut
+            addVerstandenButton(lessonContent, LESSON_ID, `${idx}_${i}`); // <-- HIER Eingebaut
             renderChallenge(section.subsections[i], subContent); // falls Quiz
           });
         });
@@ -1560,7 +1560,7 @@ CREATE TABLE Verkaeufer (
         // Für reine Sections ohne Subsections (optional)
          const oldBtn = lessonContent.querySelector('.btn-verstanden');
         if (oldBtn) oldBtn.parentElement.remove();
-        addVerstandenButton(lessonContent, LESSON_ID); // <-- HIER Eingebaut
+        addVerstandenButton(lessonContent, LESSON_ID, idx); // <-- HIER Eingebaut
       }
     }
 
