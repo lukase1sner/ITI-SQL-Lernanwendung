@@ -109,7 +109,6 @@
       font-weight: 700;
       display: inline-block;
     }
-    /* CHATBEREICH */
     .chat-main {
       flex: 1 1 0;
       min-width: 0;
@@ -191,31 +190,41 @@
       background: #402222;
       color: #fff;
     }
-    /* Button mittig unter Feedback! */
-    .btn-next {
-      display: block;
-      margin: 2.2rem auto 0 auto;
+    .feedback-header {
+      color: #ffd600;
       font-weight: bold;
-      font-size: 1.07rem;
+      margin-bottom: 0.28em;
+      display: block;
+      font-size: 1.09em;
+    }
+    .feedback-note {
+      color: #fff6;
+      font-size: 1.02em;
+      margin-bottom: 0.19em;
+      display: block;
+    }
+    .schritt-anleitung {
+      background: #232540;
+      border-radius: 1.2em;
+      border: 1.5px solid #00f2ff55;
+      padding: 1.1em 1.5em;
+      margin: 0.4em 0 0.1em 0;
+      box-shadow: 0 2px 14px 0 #00f2ff18;
+    }
+    .schritt-anleitung ol {
+      padding-left: 1.35em;
+      margin-bottom: 0.2em;
+    }
+    .schritt-anleitung li {
+      margin-bottom: 0.45em;
+      font-size: 1.08em;
+      line-height: 1.64;
+      color: #eafaff;
+      background: none;
       border: none;
-      border-radius: 1.1rem;
-      background: linear-gradient(90deg, #8b5cf6 30%, #00f2ff 100%);
-      color: #fff;
-      padding: 0.7rem 2.6rem;
-      box-shadow: 0 0 30px #00f2ff44, 0 0 12px #8b5cf622;
-      cursor: pointer;
-      transition: background 0.14s, box-shadow 0.13s;
-      position: relative;
-      left: 0;
-      right: 0;
-      z-index: 3;
+      border-radius: 0;
+      list-style-type: decimal;
     }
-    .btn-next:hover {
-      background: linear-gradient(90deg, #a68cff 30%, #00f2ff 100%);
-      color: #111;
-      box-shadow: 0 0 38px #8b5cf6bb;
-    }
-    /* Aufgaben-Tabelle */
     .aufgaben-tabelle {
       margin-top: 0.8rem;
       background: #10121e;
@@ -310,6 +319,29 @@
       color: #222;
       box-shadow: 0 0 20px #8b5cf6bb;
     }
+    .btn-next, .btn-retry {
+      display: block;
+      margin: 2.2rem auto 0 auto;
+      font-weight: bold;
+      font-size: 1.07rem;
+      border: none;
+      border-radius: 1.1rem;
+      background: linear-gradient(90deg, #8b5cf6 30%, #00f2ff 100%);
+      color: #fff;
+      padding: 0.7rem 2.6rem;
+      box-shadow: 0 0 30px #00f2ff44, 0 0 12px #8b5cf622;
+      cursor: pointer;
+      transition: background 0.14s, box-shadow 0.13s;
+      position: relative;
+      left: 0;
+      right: 0;
+      z-index: 3;
+    }
+    .btn-next:hover, .btn-retry:hover {
+      background: linear-gradient(90deg, #a68cff 30%, #00f2ff 100%);
+      color: #111;
+      box-shadow: 0 0 38px #8b5cf6bb;
+    }
     @media (max-width: 1150px) {
       .chatbot-frame { max-width: 99vw; padding: 1rem 3vw 1.2rem 3vw; }
       .editor-area, .bubble { max-width: 99vw; }
@@ -360,7 +392,6 @@
   let letzteAntwort = "";
   let aktuellerTippIndex = 0;
 
-  // Erfolgssprüche
   const praiseMessages = [
     "Super, das ist richtig!",
     "Klasse gelöst!",
@@ -441,6 +472,16 @@
     if (e.key === "Enter") handleUserInput();
   });
 
+  function isUserQuestion(text) {
+    const fragewoerter = [
+      "warum", "wieso", "wie", "was", "wer", "wo", "kannst", "kann", "erklär", "erläutere", "bedeutet", "erkläre", "erklären"
+    ];
+    text = text.toLowerCase();
+    if (text.trim().endsWith("?")) return true;
+    if (fragewoerter.some(w => text.includes(w))) return true;
+    return false;
+  }
+
   async function handleUserInput() {
     const input = userInput.value.trim();
     if (!input || !warteAufAntwort) return;
@@ -448,13 +489,38 @@
     letzteAntwort = input;
     addUserMessage(input);
     userInput.value = "";
+
+    if (isUserQuestion(input)) {
+      await handleUserQuestion(input);
+      warteAufAntwort = true;
+      return;
+    }
+
     warteAufAntwort = false;
     await checkAntwort(input);
   }
 
+  async function handleUserQuestion(frage) {
+    const aufgabe = aufgaben[aktuelleAufgabe];
+    try {
+      const res = await fetch("http://localhost:4000/api/gemini/explain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          frage,
+          aufgabe,
+          topic: currentTopic
+        })
+      });
+      const data = await res.json();
+      addBotMessage(data.erklaerung || "Hier ist meine Erklärung:<br>Ich konnte leider nichts Passendes finden.");
+    } catch (err) {
+      addBotMessage("Fehler bei der Erklärung.");
+    }
+  }
+
   async function checkAntwort(antwort) {
     const aufgabe = aufgaben[aktuelleAufgabe];
-
     try {
       const res = await fetch("http://localhost:4000/api/gemini/verify", {
         method: "POST",
@@ -467,7 +533,6 @@
           topic: currentTopic
         })
       });
-
       const data = await res.json();
 
       if (data.korrekt) {
@@ -485,10 +550,10 @@
         );
         addNextButton(container);
       } else {
-        // Schritt-für-Schritt-Erklärung anzeigen, Button „Ähnliche Aufgabe üben“ anbieten
         const container = addFeedbackMessage(
-          `<div style="color:#ffd600;font-weight:bold;margin-bottom:0.7em;">Das war leider nicht korrekt.</div>
-          <div>${data.feedback}</div>`,
+          `<span class="feedback-header">Das war leider nicht korrekt.</span>
+           <span class="feedback-note">Hier ist eine Schritt-für-Schritt-Erläuterung für dich. Zudem kannst du im Anschluss eine ähnliche Aufgabe ausprobieren, um dein Wissen zu festigen.</span>
+           <div class="schritt-anleitung">${data.feedback}</div>`,
           false
         );
         addRetryButton(container, aufgabe);
@@ -537,7 +602,6 @@
     btn.textContent = "Ähnliche Aufgabe üben";
     container.appendChild(btn);
     btn.onclick = async () => {
-      // Ähnliche Aufgabe generieren
       const res = await fetch("http://localhost:4000/api/gemini/aufgabeSimilar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -549,7 +613,6 @@
         })
       });
       const neueAufgabe = await res.json();
-      // Setze als neue aktuelle Aufgabe
       aufgaben.splice(aktuelleAufgabe, 1, neueAufgabe);
       zeigeAktuelleAufgabe();
       warteAufAntwort = true;
