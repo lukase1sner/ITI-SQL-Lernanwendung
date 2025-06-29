@@ -172,6 +172,14 @@ Die Datenbank wird beim Start eines Backends automatisch erstellt bzw. erweitert
 
 ---
 
+## Ergebnisdokument & Demo
+
+- 📄 [Ergebnisdokument](https://docs.google.com/document/d/1B0CD3XWEBWirhIFr7kks6f8AIOGfFL1U_Gu8SeI1HJ8/edit?tab=t.0)
+- 💻 [Demo (Google Drive)](https://drive.google.com/drive/folders/18tev1JQWrA7TwJA_CR6Cyu-5UBUYnYQ4)
+- ✅ [Trello-Board](https://trello.com/b/86cnwcJZ/sql-lernanwendung)
+
+---
+
 ## Kontakt & Mitmachen
 
 Fragen, Feedback und Pull Requests sind jederzeit willkommen.  
