@@ -25,18 +25,6 @@ router.post('/register', async (req, res) => {
             }
 
             const userId = this.lastID;
-                // Nach erfolgreicher Registrierung einen Stats-Eintrag anlegen
-                        db.run(
-                            'INSERT INTO user_stats (user_id, xp, total_seconds) VALUES (?, 0, 0)',
-                            [userId],
-                            (statsErr) => {
-                                if (statsErr) {
-                                    console.error('❌ Fehler beim Anlegen von user_stats:', statsErr.message);
-                                    // Fehler beim Stats-Eintrag sollen Registrierung nicht verhindern
-                                }
-                            }
-                        );
-
 
             res.status(201).json({
                 message: '✅ Registrierung erfolgreich!',

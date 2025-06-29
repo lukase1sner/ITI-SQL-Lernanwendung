@@ -22,35 +22,15 @@ db.run(`
         password TEXT
     )
 `);
-// Tabelle: progress (Lernfortschritt pro Lektion)
+
 db.run(`
-    CREATE TABLE IF NOT EXISTS progress (
+    CREATE TABLE IF NOT EXISTS user_progresschatbot (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        lesson_id INTEGER,
-        percent INTEGER,
-        UNIQUE(user_id, lesson_id)
+        user_id INTEGER NOT NULL,
+        topic TEXT NOT NULL,
+        progress INTEGER NOT NULL DEFAULT 0,
+        UNIQUE(user_id, topic)
     )
 `);
-
-// Tabelle: button_progress (einmalige Verstanden-Klicks)
-db.run(`
-    CREATE TABLE IF NOT EXISTS button_progress (
-        user_id INTEGER,
-        button_id TEXT,
-         lesson_id INTEGER,
-        PRIMARY KEY(user_id, button_id)
-    )
-`);
-
-// Tabelle: user_stats (gesammelte XP)
-db.run(`
-    CREATE TABLE IF NOT EXISTS user_stats (
-        user_id INTEGER PRIMARY KEY,
-       xp INTEGER DEFAULT 0,
-              total_seconds INTEGER DEFAULT 0
-    )
-`);
-
 
 module.exports = db;
