@@ -1,5 +1,13 @@
 SQLMate – ITI-SQL-Lernanwendung
 
+#### Links zur Dokumentation und zum Demo Video
+- [Projektdoku](https://docs.google.com/document/d/1B0CD3XWEBWirhIFr7kks6f8AIOGfFL1U_Gu8SeI1HJ8/edit?usp=sharing)
+- [Demo ITI](https://drive.google.com/file/d/1sHdTdm_5VV59UgfIkf1Lf2x-VC5y6ua3/view?usp=sharing)
+
+#### Link zum Trelloboard
+- [Trelloboard](https://trello.com/b/86cnwcJZ/sql-lernanwendung)
+
+
 SQLMate ist ein Lernprojekt, das Einsteigern die Grundlagen von SQL durch interaktive Lektionen vermittelt. Es nutzt mehrere Node.js-Server und ein modulares Frontend für Registrierung, Login und Lerninhalte. Optional unterstützt ein Gemini-Chatbot beim Lösen von Aufgaben.
 Inhalt
 Schnellstart
