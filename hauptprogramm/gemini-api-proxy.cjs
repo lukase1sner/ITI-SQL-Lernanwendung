@@ -107,15 +107,22 @@ KEINE Einleitung, KEIN anderer Text, nur das JSON-Objekt!
 app.post("/api/gemini/verify", async (req, res) => {
   const { frage, tabelle, loesung, userAntwort } = req.body;
 
+  // Schritt-für-Schritt-Feedback als nummerierte Liste, ohne RICHTIG/FALSCH-Worte
   const prompt = `
 Aufgabe: ${frage}
 Tabelle: ${tabelle}
 Musterlösung: ${loesung}
 Nutzerantwort: ${userAntwort}
 
-Beurteile die Antwort: Gib "Richtig" oder "Falsch" zuerst.
-Danach eine schrittweise, verständliche Erklärung auf Deutsch, wie die Aufgabe richtig gelöst wird, in mehreren nummerierten Schritten.
-KEINE Begrüßung, KEIN Smalltalk.
+Bewerte die Antwort:
+
+- Wenn sie korrekt ist, schreibe nur: "KORREKT"
+- Wenn sie falsch ist, schreibe NICHT das Wort "Falsch", sondern gib ausschließlich eine Schritt-für-Schritt-Anleitung (auf Deutsch, einfach erklärt, als nummerierte Liste). Beginne nicht mit einem Satz wie "Deine Antwort ist falsch" oder "Das wäre die Lösung", sondern steige direkt mit Schritt 1 ein. Nutze keine Sternchen für Fettdruck. Verwende KEIN "Falsch", "Leider", "Korrekt", "Richtig" im Text.
+
+Beispiel für falsch:
+1. ...
+2. ...
+3. ...
   `.trim();
 
   try {
@@ -124,7 +131,18 @@ KEINE Begrüßung, KEIN Smalltalk.
     });
 
     const text = response.data.candidates[0].content.parts[0].text;
-    const korrekt = isSqlLoesungEquivalent(userAntwort, loesung);
+
+    // Nur "KORREKT" als Korrektheitsindikator!
+    const korrekt = /^KORREKT/i.test(text.trim());
+    let feedback = text.trim();
+    if (korrekt) feedback = ""; // Keine Schritt-für-Schritt-Erklärung bei richtig!
+
+    // Wenn nicht korrekt, Feedback als HTML-Liste formatieren
+    if (!korrekt) {
+      // Markdown/Plaintext-Nummerierung -> HTML-Liste
+      feedback = markdownListToHtml(feedback);
+    }
+
     let ergebnis_html = null;
     if (korrekt && tabelle) {
       try {
@@ -135,60 +153,51 @@ KEINE Begrüßung, KEIN Smalltalk.
       }
     }
 
-    res.json({ korrekt, feedback: text.replace(/\n/g, "<br>"), ergebnis_html });
+    res.json({ korrekt, feedback, ergebnis_html });
   } catch (err) {
     console.error("Fehler bei verify:", err.message);
     res.status(500).json({ error: "Verifikation fehlgeschlagen" });
   }
 });
 
+// Erklärmodus
+app.post("/api/gemini/explain", async (req, res) => {
+  const { frage, aufgabe, topic } = req.body;
+  const prompt = `
+Erkläre dem Nutzer Schritt für Schritt und mit einfachen Worten die Aufgabe aus dem Bereich "${topic}". Gehe auf die folgende Frage ein: "${frage}".
+Nutze wenn möglich Beispiele aus der Tabelle. Keine Einleitung oder Begrüßung.
+Aufgabe: ${aufgabe.frage}
+Tabelle:
+${aufgabe.tabelle}
+
+Erklärung:
+  `.trim();
+
+  try {
+    const response = await axios.post(GEMINI_URL, {
+      contents: [{ parts: [{ text: prompt }] }]
+    });
+    const text = response.data.candidates[0].content.parts[0].text;
+    res.json({ erklaerung: text.replace(/\*\*/g, "") });
+  } catch (err) {
+    console.error("Fehler bei explain:", err.message);
+    res.status(500).json({ error: "Fehler bei Erklärung" });
+  }
+});
+
 // --- Hilfsfunktionen ---
 
-function isSqlLoesungEquivalent(user, solution) {
-  if (!user || !solution) return false;
-  let normalize = s =>
-    s
-      .replace(/;/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .toLowerCase();
-
-  let a = normalize(user);
-  let b = normalize(solution);
-  if (a === b) return true;
-  if (a.replace(/\s+/g, '') === b.replace(/\s+/g, '')) return true;
-
-  // Hauptfall: SELECT <spalte> FROM <tabelle>
-  let regex = /select\s+(.+)\s+from\s+([a-z0-9_]+)/i;
-  let matchA = a.match(regex);
-  let matchB = b.match(regex);
-  if (matchA && matchB) {
-    // Tabellennamen
-    let tabA = matchA[2].trim();
-    let tabB = matchB[2].trim();
-    // Spaltennamen
-    let colsA = matchA[1].split(',').map(x => x.trim());
-    let colsB = matchB[1].split(',').map(x => x.trim());
-
-    // Variante 1: Beide nutzen '*'
-    if (colsA.length === 1 && colsA[0] === '*' && colsB.length === 1 && colsB[0] === '*' && tabA === tabB) {
-      return true;
-    }
-    // Variante 2: Eine Seite '*' die andere alle Spalten (z.B. 'kundenid, name, stadt')
-    if ((colsA.length === 1 && colsA[0] === '*' && tabA === tabB) ||
-        (colsB.length === 1 && colsB[0] === '*' && tabA === tabB)) {
-      return true;
-    }
-    // Variante 3: Beide listen alle Spalten – Reihenfolge egal
-    if (
-      tabA === tabB &&
-      colsA.length === colsB.length &&
-      colsA.every(col => colsB.includes(col))
-    ) {
-      return true;
-    }
+function markdownListToHtml(md) {
+  // Wandelt eine markdown/nummerierte Liste in HTML <ol><li>
+  if (!md) return '';
+  const lines = md.trim().split(/\r?\n/);
+  let html = "<ol>";
+  for (let line of lines) {
+    const match = line.match(/^\d+\.\s*(.+)$/);
+    if (match) html += `<li>${match[1].trim()}</li>`;
   }
-  return false;
+  html += "</ol>";
+  return html;
 }
 
 function parseMarkdownTable(md) {
